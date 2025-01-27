@@ -42,10 +42,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to={redirectPath} state={{ from: location }} replace />
   }
 
-  // Check additional permissions if required
-  if (!isAllowed) {
-    return <Navigate to="/unauthorized" replace />
-  }
+  // if (!isAllowed) {
+  //   return <Navigate to="/unauthorized" replace />
+  // }
 
   // Render the protected content
   return <>{element}</>

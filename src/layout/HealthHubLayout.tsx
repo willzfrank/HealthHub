@@ -3,6 +3,8 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { Icon } from '@iconify/react'
 import { useMutation } from 'react-query'
 import { logout } from '../api/authApi'
+import { useAuth } from '../context/AuthContext'
+import { getAuthCookie, removeAuthCookie } from '../api/axiosInstance'
 
 type MenuItem = {
   label: string
@@ -45,10 +47,12 @@ const menuItems: MenuItem[] = [
 
 const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
   children,
-  role,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const authState = getAuthCookie()
+  const user = authState?.user
+  const role = authState?.role
 
   const navigate = useNavigate()
 
@@ -68,25 +72,16 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
     }
   }, [isMobile])
 
-  const filteredMenuItems = menuItems.filter((item) => {
-    if (role === 'nurse' || role === 'doctor') {
-      return ['Dashboard', 'Appointments', 'Settings'].includes(item.label)
-    }
-    return true // Show all items for other roles
-  })
-
-  const logoutMutation = useMutation(logout, {
-    onSuccess: () => {
-      localStorage.removeItem('token')
-      navigate('/login')
-    },
-    onError: (error) => {
-      console.error('Logout failed:', error)
-    },
-  })
+  // const filteredMenuItems = menuItems.filter((item) => {
+  //   if (role === 'nurse' || role === 'doctor') {
+  //     return ['Dashboard', 'Appointments', 'Settings'].includes(item.label)
+  //   }
+  //   return true
+  // })
 
   const handleLogout = () => {
-    logoutMutation.mutate()
+    removeAuthCookie()
+    navigate('/login')
   }
 
   return (
@@ -125,7 +120,7 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
             )}
           </div>
           <nav className="space-y-2 mt-8">
-            {filteredMenuItems.map((item) => (
+            {menuItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
@@ -165,7 +160,7 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
               <span className="text-[#030229] opacity-40 text-[22px]">
                 Welcome Back,{' '}
               </span>
-              <span className="font-bold text-[22px]">Sandra!</span>
+              <span className="font-bold text-[22px]">{user?.first_name}!</span>
             </div>
 
             <div className="flex items-center gap-3.5">
@@ -175,8 +170,10 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
                 className="rounded w-[45px] h-[45px]"
               />
               <div className="flex flex-col">
-                <span className="text-[12px] font-bold">Sandra</span>
-                <span className="text-[10px] opacity-50">Doctor </span>
+                <span className="text-[12px] font-bold">
+                  {user?.first_name}
+                </span>
+                <span className="text-[10px] opacity-50">{role?.name} </span>
               </div>
               <button onClick={handleLogout} title="logout">
                 <Icon

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation } from 'react-query'
-import { axiosInstance } from '../../api/axiosInstance'
+import { axiosInstance, setAuthCookie } from '../../api/axiosInstance'
 import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
@@ -31,7 +31,7 @@ export const useLogin = (): UseLoginResult => {
         const { status, message, response: data } = response.data
 
         if (status) {
-          localStorage.setItem('authState', JSON.stringify(data))
+          setAuthCookie(data)
           setLoginStatus('Logged In')
           setTimeout(() => navigate('/'), 1500)
           toast.success(message || 'Login successful!')

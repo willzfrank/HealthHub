@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import Cookies from 'js-cookie'
 import { AuthState, User } from '../types'
 
 interface AuthContextType extends AuthState {
@@ -6,15 +7,16 @@ interface AuthContextType extends AuthState {
   logout: () => void
   updateUser: (userData: Partial<User>) => void
 }
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const STORAGE_KEY = 'authState'
+const COOKIE_KEY = 'authState'
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [authState, setAuthState] = useState<AuthState>(() => {
-    const storedAuth = localStorage.getItem(STORAGE_KEY)
+    const storedAuth = Cookies.get(COOKIE_KEY)
     if (storedAuth) {
       try {
         return JSON.parse(storedAuth)
@@ -35,7 +37,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   })
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(authState))
+    Cookies.set(COOKIE_KEY, JSON.stringify(authState), {
+      secure: true, // Ensures cookies are sent over HTTPS
+      sameSite: 'Strict', // Prevents CSRF
+      expires: 7, // Set cookie expiration (in days)
+    })
   }, [authState])
 
   const login = (authData: any) => {
@@ -71,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       facility: null,
       environment: null,
     })
-    localStorage.removeItem(STORAGE_KEY)
+    Cookies.remove(COOKIE_KEY) // Remove the cookie
   }
 
   const updateUser = (userData: Partial<User>) => {
