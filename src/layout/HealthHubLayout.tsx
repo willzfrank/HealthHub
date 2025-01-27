@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { Icon } from '@iconify/react'
+import { useMutation } from 'react-query'
+import { logout } from '../api/authApi'
 
 type MenuItem = {
   label: string
@@ -48,6 +50,8 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 768px)')
     const handleResize = () => setIsMobile(mediaQuery.matches)
@@ -70,6 +74,20 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
     }
     return true // Show all items for other roles
   })
+
+  const logoutMutation = useMutation(logout, {
+    onSuccess: () => {
+      localStorage.removeItem('token')
+      navigate('/login')
+    },
+    onError: (error) => {
+      console.error('Logout failed:', error)
+    },
+  })
+
+  const handleLogout = () => {
+    logoutMutation.mutate()
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -160,12 +178,14 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
                 <span className="text-[12px] font-bold">Sandra</span>
                 <span className="text-[10px] opacity-50">Doctor </span>
               </div>
-              <Icon
-                icon="majesticons:logout"
-                width="24"
-                height="24"
-                className="text-[#030229] opacity-40"
-              />
+              <button onClick={handleLogout} title="logout">
+                <Icon
+                  icon="majesticons:logout"
+                  width="24"
+                  height="24"
+                  className="text-[#030229] opacity-40"
+                />
+              </button>
             </div>
           </div>
         </div>
