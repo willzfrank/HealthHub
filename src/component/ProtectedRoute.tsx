@@ -1,5 +1,6 @@
 import React from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
+import { getAuthCookie } from '../api/axiosInstance'
 
 interface ProtectedRouteProps {
   element: React.ReactNode
@@ -17,22 +18,20 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   isAllowed = true,
 }) => {
   const location = useLocation()
-  const authToken = localStorage.getItem('authState')
+  const authState = getAuthCookie()
 
-  // Check if user is authenticated and has required permissions
   const isAuthenticated = React.useMemo(() => {
     try {
-      if (!authToken) return false
+      if (!authState?.access_token) return false
 
-      const tokenData = JSON.parse(authToken)
       const isTokenExpired =
-        Date.now() >= new Date(tokenData.expires_at).getTime()
+        Date.now() >= new Date(authState.expires_at).getTime()
 
       return !isTokenExpired
     } catch {
       return false
     }
-  }, [authToken])
+  }, [authState])
 
   if (!isAuthenticated) {
     // URL for redirecting after login

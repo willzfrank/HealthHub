@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './component/ProtectedRoute'
+import { getAuthCookie } from './api/axiosInstance'
 
 const queryClient = new QueryClient()
 
@@ -17,9 +18,9 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    const authState = localStorage.getItem('authState')
+    const authState = getAuthCookie()
     if (authState) {
-      const { expires_at } = JSON.parse(authState)
+      const expires_at = authState?.expires_at
       const isTokenExpired = Date.now() >= new Date(expires_at).getTime()
       setIsAuthenticated(!isTokenExpired)
     }

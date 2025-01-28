@@ -38,9 +38,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     Cookies.set(COOKIE_KEY, JSON.stringify(authState), {
-      secure: true, // Ensures cookies are sent over HTTPS
-      sameSite: 'Strict', // Prevents CSRF
-      expires: 7, // Set cookie expiration (in days)
+      secure: true,
+      sameSite: 'Strict',
+      expires: 7,
     })
   }, [authState])
 
@@ -77,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       facility: null,
       environment: null,
     })
-    Cookies.remove(COOKIE_KEY) // Remove the cookie
+    Cookies.remove(COOKIE_KEY)
   }
 
   const updateUser = (userData: Partial<User>) => {

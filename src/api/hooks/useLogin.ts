@@ -3,6 +3,7 @@ import { useMutation } from 'react-query'
 import { axiosInstance, setAuthCookie } from '../../api/axiosInstance'
 import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 interface LoginCredentials {
   email: string
@@ -19,6 +20,7 @@ export const useLogin = (): UseLoginResult => {
     'Login' | 'loading' | 'Logged In'
   >('Login')
   const navigate = useNavigate()
+  const { login: loginContext } = useAuth()
 
   const loginMutation = useMutation(
     (credentials: LoginCredentials) =>
@@ -31,6 +33,7 @@ export const useLogin = (): UseLoginResult => {
         const { status, message, response: data } = response.data
 
         if (status) {
+          loginContext(data)
           setAuthCookie(data)
           setLoginStatus('Logged In')
           setTimeout(() => navigate('/'), 1500)
