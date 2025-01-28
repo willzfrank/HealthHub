@@ -5,48 +5,27 @@ import HeaderSection from '../../component/common/HeaderSection'
 import { Icon } from '@iconify/react'
 import Modal from '../../component/common/Modal'
 import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
+import useAppointments from '../../api/hooks/useAppointments'
+import { getAuthCookie } from '../../api/axiosInstance'
 
 const Patients = () => {
-  // Sample Data
-  const [data, setData] = useState([
-    {
-      key: '1',
-      patientID: 'P001',
-      patientName: 'John Doe',
-      regDate: '04 Sep 2019',
-      doctor: 'Dr. Smith',
-      lastAppointment: '04 Sep 2019',
-      lastVisit: 'Tooth Removal',
-      payment: 'Paid',
-      nextAppointment: '20 Sep 2019',
-    },
-    {
-      key: '2',
-      patientID: 'P002',
-      patientName: 'Jane Roe',
-      regDate: 'Consultation',
-      doctor: 'Dr. Brown',
-      lastAppointment: '04 Sep 2019',
-      lastVisit: 'Tooth Removal',
-      payment: 'Pending',
-      nextAppointment: '24 Sep 2019',
-    },
-  ])
-
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [filter, setFilter] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('Details')
+  const [perPage, setPerPage] = useState(10)
+  const [page, setPage] = useState(1)
 
-  // Handle row selection
+  const { data, isLoading, error } = useAppointments('2', perPage, page)
+
+  console.log('data', data?.response)
+
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(selectedRowKeys)
   }
 
-  // Handle filtering
   const handleFilterChange = (value: string) => {
     setFilter(value)
-    // Apply filtering logic here if needed
   }
 
   const filterMenu = (
@@ -64,16 +43,20 @@ const Patients = () => {
     setActiveTab(tab)
   }
 
-  // Columns definition
+  const handlePaginationChange = (newPage: number, newPageSize: number) => {
+    setPage(newPage)
+    setPerPage(newPageSize)
+  }
+
   const columns = [
     {
       title: <span className="text-[#3A3A49]">Patient ID </span>,
-      dataIndex: 'patientID',
+      dataIndex: 'file_number',
       key: 'patientID',
     },
     {
       title: <span className="text-[#3A3A49]">Patient Name </span>,
-      dataIndex: 'patientName',
+      dataIndex: 'name',
       key: 'patientName',
     },
     {
@@ -115,12 +98,10 @@ const Patients = () => {
       ),
     },
   ]
-
   return (
     <Layout role="receptionist">
       <HeaderSection title="Patients" />
 
-      {/* Header */}
       <div className="flex justify-end gap-1.5 items-center mb-4">
         <Dropdown overlay={filterMenu} trigger={['click']}>
           <button className="flex items-center gap-0.5 p-1.5 bg-[#0061FF] rounded">
@@ -150,7 +131,6 @@ const Patients = () => {
         </button>
       </div>
 
-      {/* Table */}
       <Table
         rowSelection={{
           type: 'checkbox',
@@ -158,34 +138,37 @@ const Patients = () => {
           onChange: onSelectChange,
         }}
         columns={columns}
-        dataSource={data}
+        dataSource={data?.response?.data || []}
         pagination={false}
+        loading={isLoading}
+        rowKey="patientID"
       />
 
-      {/* Footer */}
       <footer className="flex justify-between items-center mt-4">
         <div>
           <span className="border-[#0061FF] border-b text-[#3A3A49]">
-            {data.length}{' '}
+            {data?.response?.data?.length}{' '}
           </span>
           <span className="text-[#3A3A49]">Shown on page</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[#3A3A49]">Page</span>
-          <Pagination defaultCurrent={1} total={50} />
-        </div>
+        <Pagination
+          current={data?.response?.current_page || 1}
+          total={data?.response?.total || 0}
+          pageSize={perPage}
+          onChange={handlePaginationChange}
+          showSizeChanger
+        />
       </footer>
 
-      {/* MODAL */}
       <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         title="Joe Biden - CPD-5002"
       >
-        <PatientInformationModal 
-        handleTabClick={handleTabClick}
-        activeTab={activeTab}
-        role="receptionist"
+        <PatientInformationModal
+          handleTabClick={handleTabClick}
+          activeTab={activeTab}
+          role="receptionist"
         />
       </Modal>
     </Layout>

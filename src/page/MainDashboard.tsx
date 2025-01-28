@@ -7,7 +7,7 @@ import ReceptionistDashboard from './Receptionist/Dashboard'
 type Role = 'nurse' | 'receptionist' | 'doctor'
 
 const MainDashboard = () => {
-  const [role, setRole] = useState<Role>('doctor')
+  const [role, setRole] = useState<Role>('receptionist')
 
   const renderDashboard = () => {
     switch (role) {
