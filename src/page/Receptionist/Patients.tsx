@@ -18,8 +18,6 @@ const Patients = () => {
 
   const { data, isLoading, error } = useAppointments('2', perPage, page)
 
-  console.log('data', data?.response)
-
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(selectedRowKeys)
   }
@@ -99,7 +97,7 @@ const Patients = () => {
     },
   ]
   return (
-    <Layout role="receptionist">
+    <Layout>
       <HeaderSection title="Patients" />
 
       <div className="flex justify-end gap-1.5 items-center mb-4">
@@ -168,7 +166,6 @@ const Patients = () => {
         <PatientInformationModal
           handleTabClick={handleTabClick}
           activeTab={activeTab}
-          role="receptionist"
         />
       </Modal>
     </Layout>

@@ -1,10 +1,5 @@
 import React, { useState } from 'react'
-import {
-  Table,
-  Pagination,
-  Menu,
-  Dropdown,
-} from 'antd'
+import { Table, Pagination, Menu, Dropdown } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
@@ -99,7 +94,7 @@ const AppointmentsTable = () => {
   ]
 
   return (
-    <Layout role="receptionist">
+    <Layout>
       <HeaderSection title="Appointments" />
 
       {/* Header */}

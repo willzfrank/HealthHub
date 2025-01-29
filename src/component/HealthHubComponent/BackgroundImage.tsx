@@ -36,7 +36,7 @@ const BackgroundImage: React.FC<Props> = ({ isMobile }) => {
     >
       <motion.img
         initial={{ x: 0, opacity: 0 }}
-        animate={{ x: -200, opacity: 1 }}
+        animate={{ x: -140, opacity: 1 }}
         transition={{ duration: 0.7, delay: 0.3 }}
         src="/images/healthhub/login_man_smiling.svg"
         alt="Doctor smiling"

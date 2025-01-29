@@ -6,8 +6,8 @@ type HeaderSectionProps = {
 }
 
 const HeaderSection = ({ title }: HeaderSectionProps) => (
-  <div className="p-4 md:p-6 flex items-center justify-between gap-4">
-    <span className="text-lg font-bold text-[#696666]">
+  <div className="p-4 flex items-center justify-between gap-2.5">
+    <span className="text-base font-bold text-[#696666]">
       {title ? title : getCurrentDateTime()}
     </span>
     <div className="flex items-center gap-3 w-[70%] rounded-full bg-white px-4 py-2">
