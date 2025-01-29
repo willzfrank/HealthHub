@@ -6,6 +6,7 @@ import DashboardCardSection from '../../component/HealthHubComponent/DashboardSe
 import DashboardTable from '../../component/HealthHubComponent/DashboardSection/DashboardTable'
 import Modal from '../../component/common/Modal'
 import UserRegistrationModal from '../../component/ModalComponent/UserRegistrationModal'
+import DashboardMetricCard from '../../component/HealthHubComponent/DashboardSection/DashboardMetricCard'
 
 // Main Dashboard Component
 const ReceptionistDashboard = () => {
@@ -80,13 +81,13 @@ const ReceptionistDashboard = () => {
       <HeaderSection />
 
       <div className="grid grid-cols-4 gap-4">
+        <DashboardMetricCard />
         {[
           {
             id: 'new-patient',
             title: 'New Patient',
             onClick: handleNewPatientClick,
           },
-          { id: 'existing-patient', title: 'Existing Patient' },
           { id: 'book-appointment', title: 'Book Appointment' },
           { id: 'payments', title: 'Payments' },
         ].map(({ id, title, onClick }) => (
