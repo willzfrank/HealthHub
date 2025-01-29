@@ -51,36 +51,31 @@ const Patients = () => {
       title: <span className="text-[#3A3A49]">Patient ID </span>,
       dataIndex: 'file_number',
       key: 'patientID',
+      render: (text: string) => text || 'N/A',
     },
     {
       title: <span className="text-[#3A3A49]">Patient Name </span>,
       dataIndex: 'name',
       key: 'patientName',
+      render: (text: string) => text || 'N/A',
+    },
+    {
+      title: <span className="text-[#3A3A49]">Gender</span>,
+      dataIndex: 'gender',
+      key: 'gender',
+      render: (text: string) => text || 'N/A',
+    },
+    {
+      title: <span className="text-[#3A3A49]">Phone Number </span>,
+      dataIndex: 'phone',
+      key: 'phoneNumber',
+      render: (text: string) => text || 'N/A',
     },
     {
       title: <span className="text-[#3A3A49]">Reg. Date </span>,
       dataIndex: 'regDate',
       key: 'regDate',
-    },
-    {
-      title: <span className="text-[#3A3A49]">Last Appointment </span>,
-      dataIndex: 'lastAppointment',
-      key: 'lastAppointment',
-    },
-    {
-      title: <span className="text-[#3A3A49]">Last Visit </span>,
-      dataIndex: 'lastVisit',
-      key: 'lastVisit',
-    },
-    {
-      title: <span className="text-[#3A3A49]">Doctor</span>,
-      dataIndex: 'doctor',
-      key: 'doctor',
-    },
-    {
-      title: <span className="text-[#3A3A49]">Next Appointment</span>,
-      dataIndex: 'nextAppointment',
-      key: 'nextAppointment',
+      render: (text: string) => text || 'N/A',
     },
     {
       title: <span className="text-[#3A3A49]">Actions </span>,
@@ -96,6 +91,7 @@ const Patients = () => {
       ),
     },
   ]
+
   return (
     <Layout>
       <HeaderSection title="Patients" />
