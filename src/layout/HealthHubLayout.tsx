@@ -70,12 +70,26 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     }
   }, [isMobile])
 
-  const filteredMenuItems = menuItems.filter((item) => {
-    if (role?.name === 'FACILITY NURSE' || role?.name === 'FACILITY DOCTOR') {
-      return ['Dashboard', 'Appointments', 'Settings'].includes(item.label)
-    }
-    return true
-  })
+  const getDashboardPath = (roleName: string) => {
+    if (roleName === 'FACILITY DOCTOR') return '/doctor-dashboard'
+    if (roleName === 'FACILITY NURSE') return '/nurse-dashboard'
+    return '/'
+  }
+
+  const filteredMenuItems = menuItems
+    .filter((item) => {
+      if (role?.name === 'FACILITY NURSE' || role?.name === 'FACILITY DOCTOR') {
+        return ['Dashboard', 'Appointments', 'Settings'].includes(item.label)
+      }
+      return true
+    })
+    .map((item) => {
+      // Dynamically update the Dashboard path
+      if (item.label === 'Dashboard') {
+        return { ...item, path: getDashboardPath(role?.name ?? '') }
+      }
+      return item
+    })
 
   const handleLogout = () => {
     removeAuthCookie()

@@ -15,6 +15,13 @@ interface UseLoginResult {
   login: (credentials: LoginCredentials) => void
 }
 
+// Function to determine the correct dashboard path based on role
+const getDashboardPath = (roleName?: string) => {
+  if (roleName === 'FACILITY DOCTOR') return '/doctor-dashboard'
+  if (roleName === 'FACILITY NURSE') return '/nurse-dashboard'
+  return '/' // Default dashboard
+}
+
 export const useLogin = (): UseLoginResult => {
   const [loginStatus, setLoginStatus] = useState<
     'Login' | 'loading' | 'Logged In'
@@ -36,7 +43,12 @@ export const useLogin = (): UseLoginResult => {
           loginContext(data)
           setAuthCookie(data)
           setLoginStatus('Logged In')
-          setTimeout(() => navigate('/'), 1500)
+
+          // Extract role and determine correct dashboard
+          const roleName = data?.role?.name ?? ''
+          const dashboardPath = getDashboardPath(roleName)
+
+          setTimeout(() => navigate(dashboardPath), 1500)
           toast.success(message || 'Login successful!')
         } else {
           toast.error(message || 'Invalid credentials!')

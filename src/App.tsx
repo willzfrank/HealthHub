@@ -11,6 +11,8 @@ import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './component/ProtectedRoute'
 import { getAuthCookie } from './api/axiosInstance'
+import NurseDashboard from './page/Nurse/NurseDashboard'
+import DoctorDashboard from './page/Doctor/DoctorDashboard'
 
 const queryClient = new QueryClient()
 
@@ -41,6 +43,24 @@ function App() {
               element={
                 <ProtectedRoute
                   element={<MainDashboard />}
+                  isAllowed={isAuthenticated}
+                />
+              }
+            />
+            <Route
+              path="/doctor-dashboard"
+              element={
+                <ProtectedRoute
+                  element={<DoctorDashboard />}
+                  isAllowed={isAuthenticated}
+                />
+              }
+            />
+            <Route
+              path="/nurse-dashboard"
+              element={
+                <ProtectedRoute
+                  element={<NurseDashboard />}
                   isAllowed={isAuthenticated}
                 />
               }
