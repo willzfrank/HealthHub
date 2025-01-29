@@ -28,16 +28,16 @@ const menuItems: MenuItem[] = [
     icon: <Icon icon="guidance:in-patient" width="24" height="24" />,
     path: '/patients',
   },
-  // {
-  //   label: 'Doctors',
-  //   icon: <Icon icon="vaadin:doctor" width="16" height="16" />,
-  //   path: '/doctors',
-  // },
-  // {
-  //   label: 'Notifications',
-  //   icon: <Icon icon="mingcute:notification-fill" width="24" height="24" />,
-  //   path: '/notifications',
-  // },
+  {
+    label: 'Transactions',
+    icon: <Icon icon="tdesign:undertake-transaction" width="24" height="24" />,
+    path: '/transactions',
+  },
+  {
+    label: 'Invoice',
+    icon: <Icon icon="hugeicons:invoice-03" width="24" height="24" />,
+    path: '/invoice',
+  },
   {
     label: 'Settings',
     icon: <Icon icon="weui:setting-filled" width="24" height="24" />,
@@ -70,12 +70,26 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     }
   }, [isMobile])
 
-  const filteredMenuItems = menuItems.filter((item) => {
-    if (role?.name === 'FACILITY NURSE' || role?.name === 'FACILITY DOCTOR') {
-      return ['Dashboard', 'Appointments', 'Settings'].includes(item.label)
-    }
-    return true
-  })
+  const getDashboardPath = (roleName: string) => {
+    if (roleName === 'FACILITY DOCTOR') return '/doctor-dashboard'
+    if (roleName === 'FACILITY NURSE') return '/nurse-dashboard'
+    return '/'
+  }
+
+  const filteredMenuItems = menuItems
+    .filter((item) => {
+      if (role?.name === 'FACILITY NURSE' || role?.name === 'FACILITY DOCTOR') {
+        return ['Dashboard', 'Appointments','Patients', 'Settings'].includes(item.label)
+      }
+      return true
+    })
+    .map((item) => {
+      // Dynamically update the Dashboard path
+      if (item.label === 'Dashboard') {
+        return { ...item, path: getDashboardPath(role?.name ?? '') }
+      }
+      return item
+    })
 
   const handleLogout = () => {
     removeAuthCookie()
