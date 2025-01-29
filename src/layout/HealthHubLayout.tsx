@@ -171,7 +171,7 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
               />
               <div className="flex flex-col">
                 <span className="text-[12px] font-bold">
-                  {user?.first_name}
+                  {user?.first_name} {user?.last_name}
                 </span>
                 <span className="text-[10px] opacity-50">{role?.name} </span>
               </div>

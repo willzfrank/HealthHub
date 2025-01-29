@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
     >
       <div className="flex items-center justify-between md:justify-center gap-10 md:px-8">
         <p className="text-xs md:text-sm text-[#4964DB] text-[18px]">
-          Powered by Blouza Tech Limited
+          Powered by Blouza Technologies Limited
         </p>
         <p className="text-xs md:text-sm  text-[#4964DB]">
           All Rights Reserved. 2024

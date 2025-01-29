@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import useRegisterPatient from '../../api/hooks/useRegisterPatient'
 import useFetchGender from '../../api/hooks/useFetchGender'
 import { toast } from 'react-hot-toast'
@@ -43,6 +43,7 @@ const UserRegistrationModal = () => {
     phone: '',
     first_name: '',
     last_name: '',
+    middle_name: '',
     date_of_birth: '',
     address: '',
   })
@@ -70,16 +71,12 @@ const UserRegistrationModal = () => {
   const validate = () => {
     const newErrors: any = {}
 
-    // Validate required fields
     if (!formData.first_name) newErrors.first_name = 'First name is required'
-    if (!formData.last_name) newErrors.last_name = 'Last name is required'
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = 'Please enter a valid email'
-    if (!formData.phone || !/^\d{10}$/.test(formData.phone))
-      newErrors.phone = 'Please enter a valid phone number'
+    if (!formData.last_name) newErrors.last_name = 'Surname is required'
     if (!formData.date_of_birth)
       newErrors.date_of_birth = 'Date of birth is required'
-    if (!formData.address) newErrors.address = 'Address is required'
+    if (!formData.phone || !/^\d{10}$/.test(formData.phone))
+      newErrors.phone = 'Please enter a valid phone number'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -107,7 +104,7 @@ const UserRegistrationModal = () => {
             htmlFor="title"
             className="text-[#0061FF] text-[15px] mb-2 font-medium"
           >
-            Title
+            Title <span className="text-red-500">*</span>
           </label>
           <select
             id="title_id"
@@ -123,35 +120,13 @@ const UserRegistrationModal = () => {
           </select>
         </div>
 
-        {/* Gender Field */}
-        <div>
-          <label
-            htmlFor="gender"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Gender
-          </label>
-          <select
-            id="gender_id"
-            value={formData.gender_id}
-            onChange={handleChange}
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          >
-            {genderData.map((gender: { id: number; name: string }) => (
-              <option key={gender.id} value={gender.id}>
-                {gender.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Surname Field */}
         <div>
           <label
             htmlFor="surname"
             className="text-[#0061FF] text-[15px] mb-2 font-medium"
           >
-            Surname
+            Surname <span className="text-red-500">*</span>
           </label>
           <input
             id="last_name"
@@ -171,7 +146,7 @@ const UserRegistrationModal = () => {
             htmlFor="firstName"
             className="text-[#0061FF] text-[15px] mb-2 font-medium"
           >
-            First Name
+            First Name <span className="text-red-500">*</span>
           </label>
           <input
             id="first_name"
@@ -185,13 +160,55 @@ const UserRegistrationModal = () => {
           )}
         </div>
 
+        {/* Middle Name Field */}
+        <div>
+          <label
+            htmlFor="middleName"
+            className="text-[#0061FF] text-[15px] mb-2 font-medium"
+          >
+            Middle Name
+          </label>
+          <input
+            id="middle_name"
+            value={formData.middle_name}
+            onChange={handleChange}
+            type="text"
+            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+          />
+          {errors.middle_name && (
+            <p className="text-red-500 text-sm">{errors.middle_name}</p>
+          )}
+        </div>
+
+        {/* Gender Field */}
+        <div>
+          <label
+            htmlFor="gender"
+            className="text-[#0061FF] text-[15px] mb-2 font-medium"
+          >
+            Gender <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="gender_id"
+            value={formData.gender_id}
+            onChange={handleChange}
+            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+          >
+            {genderData.map((gender: { id: number; name: string }) => (
+              <option key={gender.id} value={gender.id}>
+                {gender.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Date of Birth Field */}
         <div>
           <label
             htmlFor="dob"
             className="text-[#0061FF] text-[15px] mb-2 font-medium"
           >
-            Date of Birth
+            Date of Birth <span className="text-red-500">*</span>
           </label>
           <input
             id="date_of_birth"
@@ -211,7 +228,7 @@ const UserRegistrationModal = () => {
             htmlFor="phoneNumber"
             className="text-[#0061FF] text-[15px] mb-2 font-medium"
           >
-            Phone Number
+            Phone Number <span className="text-red-500">*</span>
           </label>
           <input
             id="phone"
