@@ -1,4 +1,3 @@
-
 import HeaderSection from '../../component/common/HeaderSection'
 import TodayAppointmentsTable from '../../component/common/TodayAppointmentsTable'
 import VitalsSummaryGrid from '../../component/HealthHubComponent/DashboardSection/NurseVitalsSummaryGrid'
@@ -9,7 +8,7 @@ type Props = {}
 
 const DoctorDashboard = (props: Props) => {
   return (
-    <Layout role="doctor">
+    <Layout>
       <HeaderSection />
       <VitalsSummaryGrid statsData={doctorStatsData} />
 

@@ -127,7 +127,7 @@ const NurseAppointment = () => {
   ]
 
   return (
-    <Layout role="nurse">
+    <Layout>
       <HeaderSection title="Appointments" />
 
       {/* Header */}

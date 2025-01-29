@@ -37,7 +37,7 @@ const Settings = () => {
 
   if (profileLoading) {
     return (
-      <Layout role="receptionist">
+      <Layout>
         <div className="p-2.5 md:p-6">
           <h2 className="text-[32px] font-bold text-[#030229] mb-6 font-nunito">
             Settings
@@ -71,7 +71,7 @@ const Settings = () => {
   }
 
   return (
-    <Layout role="receptionist">
+    <Layout>
       <div className="p-2.5 md:p-6">
         {/* Page Header */}
         <h2 className="text-[32px] font-bold text-[#030229] mb-6 font-nunito">

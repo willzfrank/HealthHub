@@ -6,7 +6,7 @@ import HeaderSection from '../../component/common/HeaderSection'
 import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPatientViewFormModal'
 import Modal from '../../component/common/Modal'
 import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
-
+import { getAuthCookie } from '../../api/axiosInstance'
 
 interface AppointmentItem {
   key: string
@@ -50,6 +50,9 @@ const DoctorAppointment = () => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('Details')
+
+  const authState = getAuthCookie()
+  const role = authState?.role
 
   // Handle row selection
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
@@ -103,7 +106,7 @@ const DoctorAppointment = () => {
       key: 'doctor',
     },
     {
-      title: <span className="text-[#69686A]">Status </span>,
+      title: <span className="text-[#69686A]">Payment Status </span>,
       key: 'vitals',
       render: (_text: any, item: AppointmentItem) => (
         <span
@@ -115,19 +118,6 @@ const DoctorAppointment = () => {
         >
           {item.vitals}
         </span>
-      ),
-    },
-    {
-      title: <span className="text-[#69686A]">Actions </span>,
-      key: 'actions',
-      render: () => (
-        <Icon
-          icon="bitcoin-icons:exit-outline"
-          width="20"
-          height="20"
-          onClick={() => setIsOpen(true)}
-          className="cursor-pointer"
-        />
       ),
     },
 
@@ -147,7 +137,7 @@ const DoctorAppointment = () => {
   ]
 
   return (
-    <Layout role="nurse">
+    <Layout>
       <HeaderSection title="Appointments" />
 
       {/* Header */}
@@ -264,9 +254,7 @@ const DoctorAppointment = () => {
         </div>
       </div>
 
-      
-
-        <Modal
+      <Modal
         isOpen={isModalVisible}
         onClose={handleCancel}
         title="Health Information"
@@ -283,7 +271,6 @@ const DoctorAppointment = () => {
         <PatientInformationModal
           handleTabClick={handleTabClick}
           activeTab={activeTab}
-          role="doctor"
         />
       </Modal>
     </Layout>

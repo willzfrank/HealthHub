@@ -1,8 +1,11 @@
 import { Icon } from '@iconify/react'
 import { Table } from 'antd'
+import { getAuthCookie } from '../../../api/axiosInstance'
 
 // New Table for Patient History
-const PatientHistoryFormSection = ({ role }: { role: string }) => {
+const PatientHistoryFormSection = () => {
+  const authState = getAuthCookie()
+  const role = authState?.role?.name
   // Define columns based on role
   const columns = [
     {
@@ -20,7 +23,7 @@ const PatientHistoryFormSection = ({ role }: { role: string }) => {
       dataIndex: 'doctor',
       key: 'doctor',
     },
-    ...(role === 'doctor'
+    ...(role === 'FACILITY NURSE' || 'FACILITY DOCTOR'
       ? [
           {
             title: (
@@ -37,7 +40,7 @@ const PatientHistoryFormSection = ({ role }: { role: string }) => {
             key: 'otherPressure',
           },
           {
-      title: <span className="text-[#69686A] text-[12px]">Action</span>,
+            title: <span className="text-[#69686A] text-[12px]">Action</span>,
 
             key: 'action',
             render: () => (
@@ -49,15 +52,15 @@ const PatientHistoryFormSection = ({ role }: { role: string }) => {
           },
         ]
       : [
-          {
-            key: 'action',
-            render: () => (
-              <div className="flex items-center gap-1 text-[#0061FF] cursor-pointer">
-                <Icon icon="bx:unlink" width="16" height="16" />
-                <span className="underline text-[12px]">Unlink</span>
-              </div>
-            ),
-          },
+          // {
+          //   key: 'action',
+          //   render: () => (
+          //     <div className="flex items-center gap-1 text-[#0061FF] cursor-pointer">
+          //       <Icon icon="bx:unlink" width="16" height="16" />
+          //       <span className="underline text-[12px]">Unlink</span>
+          //     </div>
+          //   ),
+          // },
         ]),
   ]
 
@@ -79,7 +82,7 @@ const PatientHistoryFormSection = ({ role }: { role: string }) => {
       bloodPressure: '130/85',
       otherPressure: '85/65',
     },
-  ];
+  ]
 
   return (
     <div>
@@ -90,7 +93,7 @@ const PatientHistoryFormSection = ({ role }: { role: string }) => {
         className="shadow rounded"
       />
     </div>
-  );
-};
+  )
+}
 
 export default PatientHistoryFormSection

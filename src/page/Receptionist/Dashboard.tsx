@@ -7,7 +7,6 @@ import DashboardTable from '../../component/HealthHubComponent/DashboardSection/
 import Modal from '../../component/common/Modal'
 import UserRegistrationModal from '../../component/ModalComponent/UserRegistrationModal'
 
-
 // Main Dashboard Component
 const ReceptionistDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -77,7 +76,7 @@ const ReceptionistDashboard = () => {
   ]
 
   return (
-    <Layout role="doctor">
+    <Layout>
       <HeaderSection />
 
       <div className="grid grid-cols-4 gap-4">

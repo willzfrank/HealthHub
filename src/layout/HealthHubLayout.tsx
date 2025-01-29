@@ -28,16 +28,16 @@ const menuItems: MenuItem[] = [
     icon: <Icon icon="guidance:in-patient" width="24" height="24" />,
     path: '/patients',
   },
-  {
-    label: 'Doctors',
-    icon: <Icon icon="vaadin:doctor" width="16" height="16" />,
-    path: '/doctors',
-  },
-  {
-    label: 'Notifications',
-    icon: <Icon icon="mingcute:notification-fill" width="24" height="24" />,
-    path: '/notifications',
-  },
+  // {
+  //   label: 'Doctors',
+  //   icon: <Icon icon="vaadin:doctor" width="16" height="16" />,
+  //   path: '/doctors',
+  // },
+  // {
+  //   label: 'Notifications',
+  //   icon: <Icon icon="mingcute:notification-fill" width="24" height="24" />,
+  //   path: '/notifications',
+  // },
   {
     label: 'Settings',
     icon: <Icon icon="weui:setting-filled" width="24" height="24" />,
@@ -45,9 +45,7 @@ const menuItems: MenuItem[] = [
   },
 ]
 
-const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
-  children,
-}) => {
+const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const authState = getAuthCookie()
@@ -72,12 +70,12 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
     }
   }, [isMobile])
 
-  // const filteredMenuItems = menuItems.filter((item) => {
-  //   if (role === 'nurse' || role === 'doctor') {
-  //     return ['Dashboard', 'Appointments', 'Settings'].includes(item.label)
-  //   }
-  //   return true
-  // })
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (role?.name === 'FACILITY NURSE' || role?.name === 'FACILITY DOCTOR') {
+      return ['Dashboard', 'Appointments', 'Settings'].includes(item.label)
+    }
+    return true
+  })
 
   const handleLogout = () => {
     removeAuthCookie()
@@ -120,7 +118,7 @@ const Layout: React.FC<{ children?: React.ReactNode; role: string }> = ({
             )}
           </div>
           <nav className="space-y-2 mt-8">
-            {menuItems.map((item) => (
+            {filteredMenuItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}

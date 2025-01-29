@@ -10,8 +10,7 @@ type PatientInformationModalProps = {
 const PatientInformationModal = ({
   handleTabClick,
   activeTab,
-  role,
-}: PatientInformationModalProps & { role: string }) => {
+}: PatientInformationModalProps) => {
   return (
     <div>
       <div className="flex items-center justify-between gap-10">
@@ -46,7 +45,7 @@ const PatientInformationModal = ({
       {/* Conditional Content */}
       <div className="mt-4">
         {activeTab === 'Details' && <PatientDetailsFormSection />}
-        {activeTab === 'History' && <PatientHistoryFormSection role={role} />}
+        {activeTab === 'History' && <PatientHistoryFormSection />}
         {activeTab === 'Transactions' && <TransactionsTable />}
       </div>
     </div>
