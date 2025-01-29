@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Button } from 'antd'
+import { Table, Pagination, Button, Modal as AntdModal } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPatientViewFormModal'
 import Modal from '../../component/common/Modal'
+import InvoiceDetailsModal from '../../component/ModalComponent/InvoiceDetailsModal'
 
 interface InvoiceItem {
   key: string
@@ -40,6 +41,10 @@ const Invoice = () => {
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedTransactionID, setSelectedTransactionID] = useState<
+    string | null
+  >(null)
 
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(selectedRowKeys)
@@ -51,6 +56,11 @@ const Invoice = () => {
 
   const handleCancel = () => {
     setIsModalVisible(false)
+  }
+
+  const handlePayClick = (invoice: InvoiceItem) => {
+    setSelectedTransactionID(invoice.invoiceID) // Only pass the invoiceID as the transaction
+    setIsModalOpen(true)
   }
 
   const columns = [
@@ -102,7 +112,12 @@ const Invoice = () => {
       render: (_text: any, item: InvoiceItem) => (
         <div className="flex gap-2">
           {item.status === 'Pending' ? (
-            <Button className="rounded-full bg-[#0061FFA1] text-white">Pay</Button>
+            <Button
+              className="rounded-full bg-[#0061FFA1] text-white"
+              onClick={() => handlePayClick(item)} // Pass the invoice as transaction
+            >
+              Pay
+            </Button>
           ) : (
             <Button className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]">
               View
@@ -158,6 +173,16 @@ const Invoice = () => {
       >
         <DoctorPatientViewFormModal />
       </Modal>
+
+      <AntdModal
+        title={`Transaction Details - ${selectedTransactionID}`}
+        visible={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+      >
+        <InvoiceDetailsModal selectedTransaction={selectedTransactionID} />{' '}
+        {/* Pass invoiceID as transaction */}
+      </AntdModal>
     </Layout>
   )
 }

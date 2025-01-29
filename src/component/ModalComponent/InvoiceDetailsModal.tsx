@@ -4,7 +4,7 @@ import React from 'react'
 import { ITransaction } from '../../types/globaltype'
 
 type InvoiceDetailsModalProps = {
-  selectedTransaction: ITransaction | null
+  selectedTransaction: any
 }
 
 // Sample services data for the modal table
@@ -61,8 +61,8 @@ const InvoiceDetailsModal = ({
       {selectedTransaction && (
         <div>
           <div className="flex items-start justify-between gap-2">
-            <img src="/images/healthhub/logo.svg" alt="logo" />
-            <span>Invoice ID: {selectedTransaction.invoiceID}</span>
+            <img src="/images/shalom-logo.svg" alt="logo" />
+            <span>Invoice ID: {selectedTransaction}</span>
           </div>
 
           <div className="grid grid-cols-2 ">
