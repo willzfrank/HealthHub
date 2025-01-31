@@ -100,6 +100,15 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
           'Settings',
         ].includes(item.label)
       }
+      if (role?.name === 'RECEPTIONIST FACILITY') {
+        return [
+          'Dashboard',
+          'Appointments',
+          'Patients',
+          'Invoice',
+          'Settings',
+        ].includes(item.label)
+      }
       return true
     })
     .map((item) => {
@@ -117,6 +126,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       }
       return item
     })
+
 
   const handleLogout = () => {
     removeAuthCookie()
