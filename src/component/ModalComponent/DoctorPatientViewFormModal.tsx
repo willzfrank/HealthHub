@@ -141,60 +141,16 @@ const DoctorPatientViewFormModal = (props: Props) => {
             className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
           />
         </div>
-
-        <div>
-          <label
-            htmlFor="procedure"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Procedure
-          </label>
-          <input
-            id="procedure"
-            type="text"
-            defaultValue="Check-up"
-            readOnly
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          />
-          <span className="text-[#0061FF] text-[12px] cursor-pointer underline">
-            Add Another Procedure
-          </span>
-        </div>
-
-        <div>
-          <label
-            htmlFor="procedureDate"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Date
-          </label>
-          <DatePicker
-            id="procedureDate"
-            className="w-full p-1.5 bg-[#F5F6FA] border border-[#CCCCCC] rounded-[8px]"
-            defaultValue={dayjs(new Date(2023, 9, 1))}
-            disabled
-            placeholder="Select Date"
-          />
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="caseNote"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Case Note
-          </label>
-          <textarea
-            id="caseNote"
-            defaultValue="Patient is in good health."
-            readOnly
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-            rows={4}
-          />
-        </div>
       </div>
 
-     
+      <div className="flex items-center justify-between my-5">
+        <button className="border border-[#0061FF] rounded px-20 py-2.5">
+          CANCEL
+        </button>
+        <button className="text-white bg-[#0061FF] rounded px-20 py-2.5">
+          SUBMIT
+        </button>
+      </div>
     </form>
   )
 }
