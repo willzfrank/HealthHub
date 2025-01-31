@@ -15,6 +15,9 @@ import NurseDashboard from './page/Nurse/NurseDashboard'
 import DoctorDashboard from './page/Doctor/DoctorDashboard'
 import Transaction from './page/Receptionist/Transaction'
 import Invoice from './page/Receptionist/Invoice'
+import AccountantDashboard from './page/accountant/AccountantDashboard'
+import AccountantProcedures from './page/accountant/AccountantProcedures'
+import DoctorAppointment from './page/Doctor/DoctorAppointment'
 
 const queryClient = new QueryClient()
 
@@ -68,10 +71,28 @@ function App() {
               }
             />
             <Route
+              path="/accountant-dashboard"
+              element={
+                <ProtectedRoute
+                  element={<AccountantDashboard />}
+                  isAllowed={isAuthenticated}
+                />
+              }
+            />
+            <Route
               path="/appointments"
               element={
                 <ProtectedRoute
                   element={<MainAppointment />}
+                  isAllowed={isAuthenticated}
+                />
+              }
+            />
+            <Route
+              path="/medical-appointment"
+              element={
+                <ProtectedRoute
+                  element={<DoctorAppointment />}
                   isAllowed={isAuthenticated}
                 />
               }
@@ -90,6 +111,15 @@ function App() {
               element={
                 <ProtectedRoute
                   element={<Invoice />}
+                  isAllowed={isAuthenticated}
+                />
+              }
+            />
+            <Route
+              path="/accountant-procedures"
+              element={
+                <ProtectedRoute
+                  element={<AccountantProcedures />}
                   isAllowed={isAuthenticated}
                 />
               }

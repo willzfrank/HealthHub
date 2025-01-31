@@ -16,24 +16,16 @@ const ReceptionistDashboard = () => {
     setIsModalOpen(true)
   }
 
-  const appointmentsHeaders = [
-    'Date',
-    'Patient',
-    'Purpose',
-    'Doctor',
-    'Payment',
-    'View',
-  ]
+  const appointmentsHeaders = ['Time', 'Patient', 'Purpose', 'Doctor', 'View']
   const appointmentsData = [
     {
       id: 'apt-1',
       cells: [
-        '10 Nov 2024 08:30 AM',
+        '10 Nov 2024',
         'John Doe',
         'Consultation',
         'Dr. Smith',
-        'Unpaid',
-        <Icon icon="bitcoin-icons:exit-outline" width="20" height="20" />,
+        <Icon icon="mdi:eye-outline" width="20" height="20" />,
       ],
     },
   ]
@@ -42,13 +34,13 @@ const ReceptionistDashboard = () => {
   const consultationsData = [
     {
       id: 'cons-1',
-      cells: ['10 Nov 2024 08:30 AM', 'John Doe', 'Dr. Smith'],
+      cells: ['10 Nov 2024', 'John Doe', 'Dr. Smith'],
     },
   ]
 
   const patientsHeaders = [
     'Patient ID',
-    'Name',
+    'Patient Name',
     'Reg. Date',
     'Last Visit',
     'Date',
@@ -62,7 +54,7 @@ const ReceptionistDashboard = () => {
         'John Doe',
         '10 Nov 2004',
         'Consultation',
-        '10 Nov 2024 08:30 AM',
+        '10 Nov 2024',
         <Icon icon="bitcoin-icons:exit-outline" width="20" height="20" />,
       ],
     },
@@ -72,7 +64,7 @@ const ReceptionistDashboard = () => {
   const eventsData = [
     {
       id: 'evt-1',
-      cells: ['10 Nov 2024 08:30 AM', 'John Doe', 'Birthday'],
+      cells: ['10 Nov 2024', 'John Doe', 'Birthday'],
     },
   ]
 
@@ -82,6 +74,13 @@ const ReceptionistDashboard = () => {
 
       <div className="grid grid-cols-4 gap-4">
         <DashboardMetricCard />
+        <div className="rounded-lg h-[95px] bg-white p-3.5 shadow-sm">
+          <div className="space-y-4 flex items-start flex-col">
+            <span className="text-gray-600">New Patients</span>
+            <span className="text-3xl font-bold text-gray-900">20</span>
+          </div>
+        </div>
+
         {[
           {
             id: 'new-patient',
@@ -89,33 +88,32 @@ const ReceptionistDashboard = () => {
             onClick: handleNewPatientClick,
           },
           { id: 'book-appointment', title: 'Book Appointment' },
-          { id: 'payments', title: 'Payments' },
         ].map(({ id, title, onClick }) => (
           <DashboardCardSection key={id} title={title} onClick={onClick} />
         ))}
       </div>
-
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+      <div className="my-5">
         <DashboardTable
           title="Today’s Appointments"
           headers={appointmentsHeaders}
           data={appointmentsData}
         />
-        <DashboardTable
-          title="Consultations"
-          headers={consultationsHeaders}
-          data={consultationsData}
-        />
-        <DashboardTable
-          title="Recent Patients"
-          headers={patientsHeaders}
-          data={patientsData}
-        />
-        <DashboardTable
-          title="Upcoming Events"
-          headers={eventsHeaders}
-          data={eventsData}
-        />
+      </div>
+      <div className="mt-4 flex items-center gap-4">
+        <div className="w-[70%]">
+          <DashboardTable
+            title="Recent Patients"
+            headers={patientsHeaders}
+            data={patientsData}
+          />
+        </div>
+        <div className="w-[30%]">
+          <DashboardTable
+            title="Upcoming Events"
+            headers={eventsHeaders}
+            data={eventsData}
+          />
+        </div>
       </div>
 
       {/* MODAL */}

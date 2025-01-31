@@ -7,12 +7,8 @@ type DashboardTableProps = {
   }>
 }
 
-const DashboardTable = ({
-  title,
-  headers,
-  data,
-}:DashboardTableProps) => (
-  <div className="rounded-[10px] bg-white p-4 md:p-6 shadow-md">
+const DashboardTable = ({ title, headers, data }: DashboardTableProps) => (
+  <div className="rounded-[10px] bg-white w-full p-4 md:p-6 shadow-md">
     <h2 className="text-[18px] opacity-70 text-[#030229] font-bold mb-4">
       {title}
     </h2>
@@ -23,7 +19,7 @@ const DashboardTable = ({
             {headers.map((header) => (
               <th
                 key={`header-${header}`}
-                className="p-2 text-[12px] font-medium"
+                className="p-2 text-[12px] font-bold"
               >
                 {header}
               </th>
@@ -34,7 +30,7 @@ const DashboardTable = ({
           {data.map((row) => (
             <tr key={row.id} className="hover:bg-[#F9FAFB]">
               {row.cells.map((cell, i) => (
-                <td key={`${row.id}-cell-${i}`} className="p-2 text-[12px]">
+                <td key={`${row.id}-cell-${i}`} className="p-2 text-[14px]">
                   {cell}
                 </td>
               ))}

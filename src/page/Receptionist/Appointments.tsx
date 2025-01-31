@@ -3,31 +3,33 @@ import { Table, Pagination, Menu, Dropdown } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
+import Modal from '../../component/common/Modal'
+import ReceptionistPatientFormModal from '../../component/ModalComponent/ReceptionistPatientFormModal'
 
 const AppointmentsTable = () => {
   // Sample Data
   const [data, setData] = useState([
     {
       key: '1',
+      date: '2023-10-01 10:00 AM',
       patientID: 'P001',
       patientName: 'John Doe',
       purpose: 'Check-up',
       doctor: 'Dr. Smith',
-      payment: 'Paid',
     },
     {
       key: '2',
+      date: '2023-10-01 10:00 AM',
       patientID: 'P002',
       patientName: 'Jane Roe',
       purpose: 'Consultation',
       doctor: 'Dr. Brown',
-      payment: 'Pending',
     },
-    // Add more rows as needed
   ])
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [filter, setFilter] = useState('')
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
   // Handle row selection
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
@@ -38,6 +40,14 @@ const AppointmentsTable = () => {
   const handleFilterChange = (value: string) => {
     setFilter(value)
     // Apply filtering logic here if needed
+  }
+
+  const showModal = () => {
+    setIsModalVisible(true)
+  }
+
+  const handleCancel = () => {
+    setIsModalVisible(false)
   }
 
   const filterMenu = (
@@ -53,6 +63,11 @@ const AppointmentsTable = () => {
 
   // Columns definition
   const columns = [
+    {
+      title: <span className="text-[#3A3A49]">Date</span>,
+      dataIndex: 'date',
+      key: 'date',
+    },
     {
       title: <span className="text-[#3A3A49]">Patient ID </span>,
       dataIndex: 'patientID',
@@ -74,11 +89,7 @@ const AppointmentsTable = () => {
       dataIndex: 'doctor',
       key: 'doctor',
     },
-    {
-      title: <span className="text-[#3A3A49]">Payment </span>,
-      dataIndex: 'payment',
-      key: 'payment',
-    },
+
     {
       title: <span className="text-[#3A3A49]">Actions </span>,
       key: 'actions',
@@ -87,7 +98,8 @@ const AppointmentsTable = () => {
           icon="mdi:eye-outline"
           width="20"
           height="20"
-          className="text-[#0061FF]"
+          className="text-[#0061FF] cursor-pointer"
+          onClick={showModal}
         />
       ),
     },
@@ -152,6 +164,15 @@ const AppointmentsTable = () => {
           <Pagination defaultCurrent={1} total={50} />
         </div>
       </div>
+
+      <Modal
+        isOpen={isModalVisible}
+        onClose={handleCancel}
+        title="Schedule Appointment"
+        centerTitle={true}
+      >
+        <ReceptionistPatientFormModal />
+      </Modal>
     </Layout>
   )
 }

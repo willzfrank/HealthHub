@@ -29,8 +29,8 @@ const BackgroundImage: React.FC<Props> = ({ isMobile }) => {
       transition={{ duration: 0.7 }}
       style={{
         backgroundImage: `url('/images/healthhub/Health_hub_login_blue_background.svg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundSize: 'contain',
+        // backgroundPosition: 'center',
       }}
       className="w-full hidden md:flex md:w-1/2 h-full items-center justify-center relative"
     >

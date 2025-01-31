@@ -86,7 +86,7 @@ const TransactionsTable = () => {
       render: (_: any, record: any) => (
         <div
           className="flex items-center text-blue-500 cursor-pointer"
-          onClick={() => openModal(record)}
+          // onClick={() => openModal(record)}
         >
           <Icon icon="mdi:eye-outline" width="20" height="20" />
           <span className="ml-1">View</span>

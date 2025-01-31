@@ -106,7 +106,7 @@ const DoctorAppointment = () => {
       key: 'doctor',
     },
     {
-      title: <span className="text-[#69686A]">Payment Status </span>,
+      title: <span className="text-[#69686A]">Status </span>,
       key: 'vitals',
       render: (_text: any, item: AppointmentItem) => (
         <span

@@ -75,7 +75,7 @@ const UserRegistrationModal = () => {
     if (!formData.last_name) newErrors.last_name = 'Surname is required'
     if (!formData.date_of_birth)
       newErrors.date_of_birth = 'Date of birth is required'
-    if (!formData.phone || !/^\d{10}$/.test(formData.phone))
+    if (!formData.phone || !/^\d{11}$/.test(formData.phone))
       newErrors.phone = 'Please enter a valid phone number'
 
     setErrors(newErrors)

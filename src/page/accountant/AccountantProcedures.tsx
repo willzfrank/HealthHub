@@ -8,7 +8,7 @@ import PatientInformationModal from '../../component/ModalComponent/PatientInfor
 import useAppointments from '../../api/hooks/useAppointments'
 import { getAuthCookie } from '../../api/axiosInstance'
 
-const Patients = () => {
+const AccountantProcedures = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [filter, setFilter] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -37,49 +37,51 @@ const Patients = () => {
     />
   )
 
-  const handleTabClick = (tab: string) => {
-    setActiveTab(tab)
-  }
-
-  const handlePaginationChange = (newPage: number, newPageSize: number) => {
-    setPage(newPage)
-    setPerPage(newPageSize)
-  }
-
   const columns = [
     {
-      title: <span className="text-[#3A3A49]">Patient ID </span>,
-      dataIndex: 'file_number',
-      key: 'patientID',
+      title: 'Procedure',
+      dataIndex: 'procedure',
+      key: 'procedure',
       render: (text: string) => text || 'N/A',
     },
     {
-      title: <span className="text-[#3A3A49]">Patient Name </span>,
-      dataIndex: 'name',
-      key: 'patientName',
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
       render: (text: string) => text || 'N/A',
     },
     {
-      title: <span className="text-[#3A3A49]">Reg. Date </span>,
-      dataIndex: 'regDate',
-      key: 'regDate',
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
       render: (text: string) => text || 'N/A',
     },
     {
-      title: <span className="text-[#3A3A49]">Gender</span>,
-      dataIndex: 'gender',
-      key: 'gender',
+      title: 'Date Created',
+      dataIndex: 'dateCreated',
+      key: 'dateCreated',
       render: (text: string) => text || 'N/A',
     },
     {
-      title: <span className="text-[#3A3A49]">Phone Number </span>,
-      dataIndex: 'phone',
-      key: 'phoneNumber',
+      title: 'Created By',
+      dataIndex: 'createdBy',
+      key: 'createdBy',
       render: (text: string) => text || 'N/A',
     },
-
     {
-      title: <span className="text-[#3A3A49]">Actions </span>,
+      title: 'Last Edit',
+      dataIndex: 'lastEdit',
+      key: 'lastEdit',
+      render: (text: string) => text || 'N/A',
+    },
+    {
+      title: 'Edited By',
+      dataIndex: 'editedBy',
+      key: 'editedBy',
+      render: (text: string) => text || 'N/A',
+    },
+    {
+      title: 'Actions',
       key: 'actions',
       render: () => (
         <Icon
@@ -95,9 +97,9 @@ const Patients = () => {
 
   return (
     <Layout>
-      <HeaderSection title="Patients" />
-
-      <div className="flex justify-end gap-1.5 items-center mb-4">
+      <HeaderSection title="Procedures" />
+      <div className="flex justify-between gap-1.5 items-center mb-4">
+        <div>Add new Procedures </div>
         <Dropdown overlay={filterMenu} trigger={['click']}>
           <button className="flex items-center gap-0.5 p-1.5 bg-[#0061FF] rounded">
             <Icon
@@ -125,7 +127,6 @@ const Patients = () => {
           />
         </button>
       </div>
-
       <Table
         rowSelection={{
           type: 'checkbox',
@@ -134,34 +135,26 @@ const Patients = () => {
         }}
         columns={columns}
         dataSource={data?.response?.data || []}
-        pagination={false}
+        pagination={{
+          current: data?.response?.current_page || 1,
+          total: data?.response?.total || 0,
+          pageSize: perPage,
+          onChange: (newPage, newPageSize) => {
+            setPage(newPage)
+            setPerPage(newPageSize)
+          },
+          showSizeChanger: true,
+        }}
         loading={isLoading}
-        rowKey="patientID"
+        rowKey="procedure"
       />
-
-      <footer className="flex justify-between items-center mt-4">
-        <div>
-          <span className="border-[#0061FF] border-b text-[#3A3A49]">
-            {data?.response?.data?.length}{' '}
-          </span>
-          <span className="text-[#3A3A49]">Shown on page</span>
-        </div>
-        <Pagination
-          current={data?.response?.current_page || 1}
-          total={data?.response?.total || 0}
-          pageSize={perPage}
-          onChange={handlePaginationChange}
-          showSizeChanger
-        />
-      </footer>
-
       <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        title="Joe Biden - CPD-5002"
+        title="Procedure Details"
       >
         <PatientInformationModal
-          handleTabClick={handleTabClick}
+          handleTabClick={setActiveTab}
           activeTab={activeTab}
         />
       </Modal>
@@ -169,4 +162,4 @@ const Patients = () => {
   )
 }
 
-export default Patients
+export default AccountantProcedures

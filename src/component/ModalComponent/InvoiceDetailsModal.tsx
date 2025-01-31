@@ -104,11 +104,7 @@ const InvoiceDetailsModal = ({
             pagination={false}
           />
 
-          <div className="flex my-2.5 items-center justify-between">
-            <div className="bg-[#ccf0eb] text-[#008000] px-5 py-1 rounded-md">
-              Paid
-            </div>
-
+          <div className="flex my-2.5 items-center justify-end">
             <span className="font-bold text-black text-[14px]">
               Total = ₦400,000
             </span>
@@ -131,7 +127,7 @@ const InvoiceDetailsModal = ({
                 <Icon icon="bi:three-dots-vertical" width="16" height="16" />
               </button>
               <button className="flex items-center gap-2 border border-[#4880FF] rounded-[8px] text-white bg-[#4880FF] px-2.5 py-1.5">
-                Send{' '}
+                Pay{' '}
                 <div className="bg-[#6e9aff] rounded-[5px] flex items-center justify-center p-1">
                   <Icon
                     icon="mingcute:send-fill"
