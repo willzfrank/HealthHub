@@ -29,14 +29,19 @@ const menuItems: MenuItem[] = [
     path: '/patients',
   },
   {
+    label: 'Invoice',
+    icon: <Icon icon="hugeicons:invoice-03" width="24" height="24" />,
+    path: '/invoice',
+  },
+  {
     label: 'Transactions',
     icon: <Icon icon="tdesign:undertake-transaction" width="24" height="24" />,
     path: '/transactions',
   },
   {
-    label: 'Invoice',
-    icon: <Icon icon="hugeicons:invoice-03" width="24" height="24" />,
-    path: '/invoice',
+    label: 'Procedures',
+    icon: <Icon icon="mdi:medical-bag" width="24" height="24" />,
+    path: '/accountant-procedures',
   },
   {
     label: 'Settings',
@@ -73,23 +78,55 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const getDashboardPath = (roleName: string) => {
     if (roleName === 'FACILITY DOCTOR') return '/doctor-dashboard'
     if (roleName === 'FACILITY NURSE') return '/nurse-dashboard'
+    if (roleName === 'ACCOUNTANT FACILITY') return '/accountant-dashboard'
+
     return '/'
   }
 
   const filteredMenuItems = menuItems
     .filter((item) => {
       if (role?.name === 'FACILITY NURSE' || role?.name === 'FACILITY DOCTOR') {
-        return ['Dashboard', 'Appointments','Patients', 'Settings'].includes(item.label)
+        return ['Dashboard', 'Appointments', 'Patients', 'Settings'].includes(
+          item.label
+        )
+      }
+      if (role?.name === 'ACCOUNTANT FACILITY') {
+        return [
+          'Dashboard',
+          'Patients',
+          'Invoice',
+          'Transactions',
+          'Procedures',
+          'Settings',
+        ].includes(item.label)
+      }
+      if (role?.name === 'RECEPTIONIST FACILITY') {
+        return [
+          'Dashboard',
+          'Appointments',
+          'Patients',
+          'Invoice',
+          'Settings',
+        ].includes(item.label)
       }
       return true
     })
     .map((item) => {
-      // Dynamically update the Dashboard path
       if (item.label === 'Dashboard') {
         return { ...item, path: getDashboardPath(role?.name ?? '') }
       }
+      if (item.label === 'Appointments') {
+        return {
+          ...item,
+          path:
+            role?.name === 'FACILITY DOCTOR' || role?.name === 'FACILITY NURSE'
+              ? '/medical-appointment'
+              : '/appointments',
+        }
+      }
       return item
     })
+
 
   const handleLogout = () => {
     removeAuthCookie()
@@ -185,7 +222,11 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
                 <span className="text-[12px] font-bold">
                   {user?.first_name} {user?.last_name}
                 </span>
-                <span className="text-[10px] opacity-50">{role?.name} </span>
+                <span className="text-[10px] opacity-50">
+                  {role?.name === 'RECEPTIONIST FACILITY'
+                    ? 'RECEPTIONIST'
+                    : role?.name}
+                </span>
               </div>
               <button onClick={handleLogout} title="logout">
                 <Icon

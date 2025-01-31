@@ -114,7 +114,7 @@ const Invoice = () => {
           {item.status === 'Pending' ? (
             <Button
               className="rounded-full bg-[#0061FFA1] text-white"
-              onClick={() => handlePayClick(item)} // Pass the invoice as transaction
+              onClick={() => handlePayClick(item)}
             >
               Pay
             </Button>

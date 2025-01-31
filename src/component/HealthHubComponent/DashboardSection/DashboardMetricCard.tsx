@@ -10,7 +10,7 @@ const DashboardMetricCard = () => {
     <div className="rounded-lg h-[95px] bg-white p-3.5 shadow-sm">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <div className="text-gray-600">New Patients</div>
+          <span className="text-gray-600">New Patients</span>
           <div className="relative">
             <button
               onClick={() => setIsOpen(!isOpen)}
