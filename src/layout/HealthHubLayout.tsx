@@ -76,12 +76,22 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   }, [isMobile])
 
   const getDashboardPath = (roleName: string) => {
+    if (
+      [
+        'Facility Accountant',
+        'Chief Facility Accountant',
+        'State Accountant',
+        'Chief State Accountant',
+      ].includes(roleName)
+    ) {
+      return '/accountant-dashboard'
+    }
     if (roleName === 'FACILITY DOCTOR') return '/doctor-dashboard'
     if (roleName === 'FACILITY NURSE') return '/nurse-dashboard'
-    if (roleName === 'ACCOUNTANT FACILITY') return '/accountant-dashboard'
 
     return '/'
   }
+
 
   const filteredMenuItems = menuItems
     .filter((item) => {
