@@ -11,16 +11,81 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Sector,
 } from 'recharts'
 import DashboardTable from '../../component/HealthHubComponent/DashboardSection/DashboardTable'
 
 type Props = {}
 
+const renderActiveShape = (props: any) => {
+  const {
+    cx,
+    cy,
+    innerRadius,
+    outerRadius,
+    startAngle,
+    endAngle,
+    fill,
+    payload,
+    value,
+  } = props
+
+  return (
+    <g>
+      <text
+        x={cx}
+        y={cy - 10}
+        dy={8}
+        textAnchor="middle"
+        fill="#030229"
+        className="text-[16px] font-medium"
+      >
+        {payload.name}
+      </text>
+      <text
+        x={cx}
+        y={cy + 10}
+        dy={8}
+        textAnchor="middle"
+        fill="#030229"
+        className="text-[14px]"
+      >
+        {`${value}%`}
+      </text>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+      <Sector
+        cx={cx}
+        cy={cy}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        innerRadius={outerRadius + 6}
+        outerRadius={outerRadius + 10}
+        fill={fill}
+      />
+    </g>
+  )
+}
+
 const AccountantDashboard = (props: Props) => {
   const [filter, setFilter] = useState('')
+  const [activeIndex, setActiveIndex] = useState(0)
 
   const handleFilterChange = (value: string) => {
     setFilter(value)
+  }
+
+  const onPieEnter = (_: any, index: number) => {
+    setActiveIndex(index)
   }
 
   const paymentsHeaders = [
@@ -43,6 +108,13 @@ const AccountantDashboard = (props: Props) => {
         '10-06-2021',
       ],
     },
+  ]
+
+  const paymentChannelsData = [
+    { name: 'POS', value: 61, fill: '#5B93FF' },
+    { name: 'Bank', value: 31, fill: '#FFD66B' },
+    { name: 'Card', value: 8, fill: '#FF8F6B' },
+    { name: 'Cash', value: 8, fill: '#96E7E5' },
   ]
 
   // Revenue data from Oct 2023 to July 2024 with random values between 0-80
@@ -173,7 +245,7 @@ const AccountantDashboard = (props: Props) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between my-5 w-full gap-5">
+      <div className="flex items-start justify-between my-5 w-full gap-5">
         <div className="w-[60%]">
           <DashboardTable
             title="Recent Payments"
@@ -182,10 +254,45 @@ const AccountantDashboard = (props: Props) => {
           />
         </div>
 
-        <div className="w-[40%]">
-          <span className="text-[#030229] opacity-70 text-[18px] font-[700]">
+        <div className="w-[40%] bg-white rounded p-5">
+          <span className="text-[#030229] opacity-70 text-[18px] font-[700] block mb-4">
             Payment Channels
           </span>
+          <div className="flex items-center">
+            <div className="w-full h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    activeIndex={activeIndex}
+                    activeShape={renderActiveShape}
+                    data={paymentChannelsData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={80}
+                    outerRadius={100}
+                    dataKey="value"
+                    onMouseEnter={onPieEnter}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex flex-col gap-4 justify-center mt-4">
+              {paymentChannelsData.map((entry, index) => (
+                <div key={entry.name} className="flex items-center gap-5">
+                  <div className="flex items-center">
+                    <div
+                      className="w-3 h-3 rounded mr-2"
+                      style={{ backgroundColor: entry.fill }}
+                    />
+                    <span className="text-xs text-[#030229]">{entry.name}</span>
+                  </div>
+                  <span className="text-xs text-[#030229]">
+                    ({entry.value}%)
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </Layout>

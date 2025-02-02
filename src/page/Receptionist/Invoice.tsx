@@ -14,6 +14,8 @@ import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPat
 import Modal from '../../component/common/Modal'
 import InvoiceDetailsModal from '../../component/ModalComponent/InvoiceDetailsModal'
 import BillFormModal from '../../component/ModalComponent/BillFormModal'
+import { getAuthCookie } from '../../api/axiosInstance'
+import ScheduleModal from '../../component/ModalComponent/ScheduleModal'
 
 interface InvoiceItem {
   key: string
@@ -49,14 +51,14 @@ const Invoice = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isBillModalOpen, setIsBillModalOpen] = useState(false) // State for BillFormModal
+  const [isBillModalOpen, setIsBillModalOpen] = useState(false)
   const [selectedTransactionID, setSelectedTransactionID] = useState<
     string | null
   >(null)
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false) // New state
 
-  const showModal = () => {
-    setIsModalVisible(true)
-  }
+  const authState = getAuthCookie()
+  const role = authState?.role?.name
 
   const handleCancel = () => {
     setIsModalVisible(false)
@@ -79,6 +81,14 @@ const Invoice = () => {
   const handleDelete = (invoiceID: string) => {
     console.log('Delete invoice:', invoiceID)
     // Add your delete logic here
+  }
+
+  const handleScheduleClick = () => {
+    setIsScheduleModalOpen(true) // Open Schedule Modal
+  }
+
+  const handleScheduleCancel = () => {
+    setIsScheduleModalOpen(false) // Close Schedule Modal
   }
 
   const columns = [
@@ -129,7 +139,23 @@ const Invoice = () => {
       key: 'action',
       render: (_text: any, item: InvoiceItem) => (
         <div className="flex gap-2">
-          {item.status === 'Pending' ? (
+          {role === 'RECEPTIONIST FACILITY' ? (
+            item.status === 'Pending' ? (
+              <Button
+                className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
+                onClick={handleScheduleClick}
+              >
+                Schedule
+              </Button>
+            ) : (
+              <Button
+                className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
+                disabled
+              >
+                Schedule
+              </Button>
+            )
+          ) : item.status === 'Pending' ? (
             <Button
               className="rounded-full bg-[#0061FFA1] text-white"
               onClick={() => handlePayClick(item)}
@@ -139,7 +165,7 @@ const Invoice = () => {
           ) : (
             <Button
               className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-              onClick={handleViewClick} // Open BillFormModal on click
+              onClick={handleViewClick}
             >
               View
             </Button>
@@ -147,6 +173,7 @@ const Invoice = () => {
         </div>
       ),
     },
+
     {
       title: 'Modify',
       key: 'modify',
@@ -212,10 +239,19 @@ const Invoice = () => {
         <InvoiceDetailsModal selectedTransaction={selectedTransactionID} />{' '}
       </AntdModal>
 
+      <AntdModal
+        visible={isScheduleModalOpen}
+        onCancel={handleScheduleCancel}
+        footer={null}
+        centered
+      >
+        <ScheduleModal />
+      </AntdModal>
+
       {/* BillFormModal */}
       <AntdModal
         visible={isBillModalOpen}
-        onCancel={() => setIsBillModalOpen(false)} 
+        onCancel={() => setIsBillModalOpen(false)}
         footer={null}
       >
         <BillFormModal />
