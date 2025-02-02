@@ -29,7 +29,7 @@ const menuItems: MenuItem[] = [
     path: '/patients',
   },
   {
-    label: 'Invoice',
+    label: 'Bill',
     icon: <Icon icon="hugeicons:invoice-03" width="24" height="24" />,
     path: '/invoice',
   },
@@ -104,7 +104,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         return [
           'Dashboard',
           'Patients',
-          'Invoice',
+          'Bill',
           'Transactions',
           'Procedures',
           'Settings',
@@ -115,7 +115,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
           'Dashboard',
           'Appointments',
           'Patients',
-          'Invoice',
+          'Bill',
           'Settings',
         ].includes(item.label)
       }
