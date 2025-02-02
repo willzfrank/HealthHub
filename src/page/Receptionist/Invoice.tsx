@@ -215,7 +215,7 @@ const Invoice = () => {
       {/* BillFormModal */}
       <AntdModal
         visible={isBillModalOpen}
-        onCancel={() => setIsBillModalOpen(false)} // Close the modal
+        onCancel={() => setIsBillModalOpen(false)} 
         footer={null}
       >
         <BillFormModal />
