@@ -1,11 +1,21 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Button, Modal as AntdModal } from 'antd'
+import {
+  Table,
+  Pagination,
+  Button,
+  Modal as AntdModal,
+  Dropdown,
+  Menu,
+} from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPatientViewFormModal'
 import Modal from '../../component/common/Modal'
 import InvoiceDetailsModal from '../../component/ModalComponent/InvoiceDetailsModal'
+import BillFormModal from '../../component/ModalComponent/BillFormModal'
+import { getAuthCookie } from '../../api/axiosInstance'
+import ScheduleModal from '../../component/ModalComponent/ScheduleModal'
 
 interface InvoiceItem {
   key: string
@@ -39,20 +49,16 @@ const Invoice = () => {
     },
   ])
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isBillModalOpen, setIsBillModalOpen] = useState(false)
   const [selectedTransactionID, setSelectedTransactionID] = useState<
     string | null
   >(null)
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false) // New state
 
-  const onSelectChange = (selectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(selectedRowKeys)
-  }
-
-  const showModal = () => {
-    setIsModalVisible(true)
-  }
+  const authState = getAuthCookie()
+  const role = authState?.role?.name
 
   const handleCancel = () => {
     setIsModalVisible(false)
@@ -61,6 +67,28 @@ const Invoice = () => {
   const handlePayClick = (invoice: InvoiceItem) => {
     setSelectedTransactionID(invoice.invoiceID) // Only pass the invoiceID as the transaction
     setIsModalOpen(true)
+  }
+
+  const handleViewClick = () => {
+    setIsBillModalOpen(true) // Open the BillFormModal
+  }
+
+  const handleEdit = (invoiceID: string) => {
+    console.log('Edit invoice:', invoiceID)
+    // Add your edit logic here
+  }
+
+  const handleDelete = (invoiceID: string) => {
+    console.log('Delete invoice:', invoiceID)
+    // Add your delete logic here
+  }
+
+  const handleScheduleClick = () => {
+    setIsScheduleModalOpen(true) // Open Schedule Modal
+  }
+
+  const handleScheduleCancel = () => {
+    setIsScheduleModalOpen(false) // Close Schedule Modal
   }
 
   const columns = [
@@ -111,7 +139,23 @@ const Invoice = () => {
       key: 'action',
       render: (_text: any, item: InvoiceItem) => (
         <div className="flex gap-2">
-          {item.status === 'Pending' ? (
+          {role === 'RECEPTIONIST FACILITY' ? (
+            item.status === 'Pending' ? (
+              <Button
+                className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
+                onClick={handleScheduleClick}
+              >
+                Schedule
+              </Button>
+            ) : (
+              <Button
+                className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
+                disabled
+              >
+                Schedule
+              </Button>
+            )
+          ) : item.status === 'Pending' ? (
             <Button
               className="rounded-full bg-[#0061FFA1] text-white"
               onClick={() => handlePayClick(item)}
@@ -119,23 +163,44 @@ const Invoice = () => {
               Pay
             </Button>
           ) : (
-            <Button className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]">
+            <Button
+              className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
+              onClick={handleViewClick}
+            >
               View
             </Button>
           )}
         </div>
       ),
     },
+
     {
       title: 'Modify',
       key: 'modify',
-      render: (_text: any) => (
-        <Icon
-          icon="mdi:dots-vertical"
-          width="20"
-          height="20"
-          className="cursor-pointer"
-        />
+      render: (_text: any, item: InvoiceItem) => (
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item key="edit" onClick={() => handleEdit(item.invoiceID)}>
+                Edit
+              </Menu.Item>
+              <Menu.Item
+                key="delete"
+                onClick={() => handleDelete(item.invoiceID)}
+              >
+                Delete
+              </Menu.Item>
+            </Menu>
+          }
+          trigger={['click']}
+        >
+          <Icon
+            icon="mdi:dots-vertical"
+            width="20"
+            height="20"
+            className="cursor-pointer"
+          />
+        </Dropdown>
       ),
     },
   ]
@@ -144,16 +209,7 @@ const Invoice = () => {
     <Layout>
       <HeaderSection title="Invoice" />
 
-      <Table
-        rowSelection={{
-          type: 'checkbox',
-          selectedRowKeys,
-          onChange: onSelectChange,
-        }}
-        columns={columns}
-        dataSource={data}
-        pagination={false}
-      />
+      <Table columns={columns} dataSource={data} pagination={false} />
 
       <div className="flex justify-between items-center mt-4">
         <div>
@@ -181,7 +237,24 @@ const Invoice = () => {
         footer={null}
       >
         <InvoiceDetailsModal selectedTransaction={selectedTransactionID} />{' '}
-        {/* Pass invoiceID as transaction */}
+      </AntdModal>
+
+      <AntdModal
+        visible={isScheduleModalOpen}
+        onCancel={handleScheduleCancel}
+        footer={null}
+        centered
+      >
+        <ScheduleModal />
+      </AntdModal>
+
+      {/* BillFormModal */}
+      <AntdModal
+        visible={isBillModalOpen}
+        onCancel={() => setIsBillModalOpen(false)}
+        footer={null}
+      >
+        <BillFormModal />
       </AntdModal>
     </Layout>
   )

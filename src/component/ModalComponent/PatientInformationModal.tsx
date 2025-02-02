@@ -38,7 +38,7 @@ const PatientInformationModal = ({
             ? 'Registration Date : 15 Dec 2004'
             : activeTab !== 'Transactions'
             ? 'Next Appointment : 15 Dec 2024'
-            : 'Unpaid Invoice : NGN 300,000'}
+            : ''}
         </span>
       </div>
 

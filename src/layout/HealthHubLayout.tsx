@@ -19,17 +19,17 @@ const menuItems: MenuItem[] = [
     path: '/',
   },
   {
-    label: 'Appointments',
-    icon: <Icon icon="teenyicons:appointments-solid" width="15" height="15" />,
-    path: '/appointments',
-  },
-  {
     label: 'Patients',
     icon: <Icon icon="guidance:in-patient" width="24" height="24" />,
     path: '/patients',
   },
   {
-    label: 'Invoice',
+    label: 'Appointments',
+    icon: <Icon icon="teenyicons:appointments-solid" width="15" height="15" />,
+    path: '/appointments',
+  },
+  {
+    label: 'Bill',
     icon: <Icon icon="hugeicons:invoice-03" width="24" height="24" />,
     path: '/invoice',
   },
@@ -92,11 +92,10 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return '/'
   }
 
-
   const filteredMenuItems = menuItems
     .filter((item) => {
       if (role?.name === 'FACILITY NURSE' || role?.name === 'FACILITY DOCTOR') {
-        return ['Dashboard', 'Appointments', 'Patients', 'Settings'].includes(
+        return ['Dashboard', 'Patients', 'Appointments', 'Settings'].includes(
           item.label
         )
       }
@@ -104,7 +103,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         return [
           'Dashboard',
           'Patients',
-          'Invoice',
+          'Bill',
           'Transactions',
           'Procedures',
           'Settings',
@@ -115,7 +114,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
           'Dashboard',
           'Appointments',
           'Patients',
-          'Invoice',
+          'Bill',
           'Settings',
         ].includes(item.label)
       }
@@ -126,17 +125,16 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         return { ...item, path: getDashboardPath(role?.name ?? '') }
       }
       if (item.label === 'Appointments') {
-        return {
-          ...item,
-          path:
-            role?.name === 'FACILITY DOCTOR' || role?.name === 'FACILITY NURSE'
-              ? '/medical-appointment'
-              : '/appointments',
+        if (role?.name === 'FACILITY DOCTOR') {
+          return { ...item, path: '/doctor-appointment' } // Route to doctor-appointment
         }
+        if (role?.name === 'FACILITY NURSE') {
+          return { ...item, path: '/nurse-appointment' } // Route to nurse-appointment
+        }
+        return { ...item, path: '/appointments' } // Default route for other roles
       }
       return item
     })
-
 
   const handleLogout = () => {
     removeAuthCookie()

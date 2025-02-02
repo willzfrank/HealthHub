@@ -18,6 +18,7 @@ import Invoice from './page/Receptionist/Invoice'
 import AccountantDashboard from './page/accountant/AccountantDashboard'
 import AccountantProcedures from './page/accountant/AccountantProcedures'
 import DoctorAppointment from './page/Doctor/DoctorAppointment'
+import NurseAppointment from './page/Nurse/NurseAppointment'
 
 const queryClient = new QueryClient()
 
@@ -89,10 +90,19 @@ function App() {
               }
             />
             <Route
-              path="/medical-appointment"
+              path="/doctor-appointment"
               element={
                 <ProtectedRoute
                   element={<DoctorAppointment />}
+                  isAllowed={isAuthenticated}
+                />
+              }
+            />
+            <Route
+              path="/nurse-appointment"
+              element={
+                <ProtectedRoute
+                  element={<NurseAppointment />}
                   isAllowed={isAuthenticated}
                 />
               }

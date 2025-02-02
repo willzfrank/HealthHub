@@ -140,16 +140,7 @@ const AppointmentsTable = () => {
       </div>
 
       {/* Table */}
-      <Table
-        rowSelection={{
-          type: 'checkbox',
-          selectedRowKeys,
-          onChange: onSelectChange,
-        }}
-        columns={columns}
-        dataSource={data}
-        pagination={false}
-      />
+      <Table columns={columns} dataSource={data} pagination={false} />
 
       {/* Footer */}
       <div className="flex justify-between items-center mt-4">

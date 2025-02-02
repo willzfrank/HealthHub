@@ -30,14 +30,6 @@ const ReceptionistDashboard = () => {
     },
   ]
 
-  const consultationsHeaders = ['Date', 'Patient', 'Doctor']
-  const consultationsData = [
-    {
-      id: 'cons-1',
-      cells: ['10 Nov 2024', 'John Doe', 'Dr. Smith'],
-    },
-  ]
-
   const patientsHeaders = [
     'Patient ID',
     'Patient Name',
@@ -76,7 +68,7 @@ const ReceptionistDashboard = () => {
         <DashboardMetricCard />
         <div className="rounded-lg h-[95px] bg-white p-3.5 shadow-sm">
           <div className="space-y-4 flex items-start flex-col">
-            <span className="text-gray-600">New Patients</span>
+            <span className="text-gray-600">Patients Queue</span>
             <span className="text-3xl font-bold text-gray-900">20</span>
           </div>
         </div>

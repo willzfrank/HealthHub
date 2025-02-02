@@ -181,7 +181,7 @@ const ReceptionistPatientFormModal = (props: Props) => {
       </div>
 
       <div className="flex items-center justify-between my-5">
-        <button className="border border-[#0061FF] rounded px-20 py-2.5">
+        <button className="border text-[#0061FF] border-[#0061FF] rounded px-20 py-2.5">
           CANCEL
         </button>
         <button className="text-white bg-[#0061FF] rounded px-20 py-2.5">
