@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Menu, Dropdown, Modal as AntdModal } from 'antd'
+import { Table, Menu, Dropdown, Modal as AntdModal } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
-import Modal from '../../component/common/Modal'
-import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
 import useAppointments from '../../api/hooks/useAppointments'
 import AccountantProceduresModal from '../../component/ModalComponent/AccountantProceduresModal'
 
@@ -13,7 +11,6 @@ const AccountantProcedures = () => {
   const [filter, setFilter] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [isAddProcedureModalOpen, setIsAddProcedureModalOpen] = useState(false) // State for Add Procedure Modal
-  const [activeTab, setActiveTab] = useState('Details')
   const [perPage, setPerPage] = useState(10)
   const [page, setPage] = useState(1)
 

@@ -19,15 +19,16 @@ const menuItems: MenuItem[] = [
     path: '/',
   },
   {
-    label: 'Appointments',
-    icon: <Icon icon="teenyicons:appointments-solid" width="15" height="15" />,
-    path: '/appointments',
-  },
-  {
     label: 'Patients',
     icon: <Icon icon="guidance:in-patient" width="24" height="24" />,
     path: '/patients',
   },
+  {
+    label: 'Appointments',
+    icon: <Icon icon="teenyicons:appointments-solid" width="15" height="15" />,
+    path: '/appointments',
+  },
+
   {
     label: 'Bill',
     icon: <Icon icon="hugeicons:invoice-03" width="24" height="24" />,
@@ -92,11 +93,10 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return '/'
   }
 
-
   const filteredMenuItems = menuItems
     .filter((item) => {
       if (role?.name === 'FACILITY NURSE' || role?.name === 'FACILITY DOCTOR') {
-        return ['Dashboard', 'Appointments', 'Patients', 'Settings'].includes(
+        return ['Dashboard', 'Patients', 'Appointments', 'Settings'].includes(
           item.label
         )
       }
@@ -136,7 +136,6 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       }
       return item
     })
-
 
   const handleLogout = () => {
     removeAuthCookie()

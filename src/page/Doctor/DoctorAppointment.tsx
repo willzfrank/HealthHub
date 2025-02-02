@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Dropdown } from 'antd'
+import { Table, Pagination, Modal as AntdModal } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
-import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPatientViewFormModal'
 import Modal from '../../component/common/Modal'
 import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
-import { getAuthCookie } from '../../api/axiosInstance'
+import DoctorPatientVitalsModal from '../../component/ModalComponent/DoctorPatientVitalsModal'
 
 interface AppointmentItem {
   key: string
@@ -101,6 +100,18 @@ const DoctorAppointment = () => {
       ),
     },
     {
+      title: <span className="text-[#69686A]">Action </span>,
+      key: 'view',
+      render: () => (
+        <Icon
+          icon="system-uicons:enter"
+          width="21"
+          height="21"
+          className="cursor-pointer "
+        />
+      ),
+    },
+    {
       title: <span className="text-[#69686A]">View </span>,
       key: 'view',
       render: () => (
@@ -136,14 +147,14 @@ const DoctorAppointment = () => {
         </div>
       </div>
 
-      <Modal
-        isOpen={isModalVisible}
-        onClose={handleCancel}
-        title="Vitals"
-        centerTitle={true}
+      <AntdModal
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        centered
       >
-        <DoctorPatientViewFormModal />
-      </Modal>
+        <DoctorPatientVitalsModal />
+      </AntdModal>
 
       <Modal
         isOpen={isOpen}
