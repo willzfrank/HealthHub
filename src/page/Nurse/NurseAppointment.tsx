@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Dropdown } from 'antd'
+import { Table, Pagination, Dropdown, Modal as AntdModal } from 'antd'
 
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import Modal from '../../component/common/Modal'
 import NursePatientDetailsFormModal from '../../component/ModalComponent/NursePatientDetailsFormModal'
+import NursePatientVitalsModal from '../../component/ModalComponent/NursePatientVitalsModal'
 
 interface AppointmentItem {
   key: string
@@ -96,7 +97,7 @@ const NurseAppointment = () => {
       key: 'doctor',
     },
     {
-      title: <span className="text-[#69686A]">Status </span>,
+      title: <span className="text-[#69686A]">Vitals </span>,
       key: 'vitals',
       render: (_text: any, item: AppointmentItem) => (
         <span
@@ -219,26 +220,16 @@ const NurseAppointment = () => {
       </div>
 
       {/* Table */}
-      <Table
-        rowSelection={{
-          type: 'checkbox',
-          selectedRowKeys,
-          onChange: onSelectChange,
-        }}
-        columns={columns}
-        dataSource={data}
-        pagination={false}
-      />
+      <Table columns={columns} dataSource={data} pagination={false} />
 
-      {/* Custom Modal */}
-      <Modal
-        isOpen={isModalVisible}
-        onClose={handleCancel}
-        title="Vitals"
-        centerTitle={true}
+      <AntdModal
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        centered
       >
-        <NursePatientDetailsFormModal />
-      </Modal>
+        <NursePatientVitalsModal />
+      </AntdModal>
 
       {/* Footer */}
       <div className="flex justify-between items-center mt-4">

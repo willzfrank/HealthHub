@@ -28,7 +28,6 @@ const menuItems: MenuItem[] = [
     icon: <Icon icon="teenyicons:appointments-solid" width="15" height="15" />,
     path: '/appointments',
   },
-
   {
     label: 'Bill',
     icon: <Icon icon="hugeicons:invoice-03" width="24" height="24" />,
@@ -126,13 +125,13 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         return { ...item, path: getDashboardPath(role?.name ?? '') }
       }
       if (item.label === 'Appointments') {
-        return {
-          ...item,
-          path:
-            role?.name === 'FACILITY DOCTOR' || role?.name === 'FACILITY NURSE'
-              ? '/medical-appointment'
-              : '/appointments',
+        if (role?.name === 'FACILITY DOCTOR') {
+          return { ...item, path: '/doctor-appointment' } // Route to doctor-appointment
         }
+        if (role?.name === 'FACILITY NURSE') {
+          return { ...item, path: '/nurse-appointment' } // Route to nurse-appointment
+        }
+        return { ...item, path: '/appointments' } // Default route for other roles
       }
       return item
     })
