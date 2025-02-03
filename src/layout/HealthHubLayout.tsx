@@ -76,14 +76,9 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   }, [isMobile])
 
   const getDashboardPath = (roleName: string) => {
-    if (
-      [
-        'Facility Accountant',
-        'Chief Facility Accountant',
-        'State Accountant',
-        'Chief State Accountant',
-      ].includes(roleName)
-    ) {
+    const lowerCaseRole = roleName.toLowerCase()
+
+    if (lowerCaseRole.includes('accountant')) {
       return '/accountant-dashboard'
     }
     if (roleName === 'FACILITY DOCTOR') return '/doctor-dashboard'
@@ -99,7 +94,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
           item.label
         )
       }
-      if (role?.name === 'ACCOUNTANT FACILITY') {
+      if (role?.name?.toLowerCase().includes('accountant')) {
         return [
           'Dashboard',
           'Patients',
@@ -126,12 +121,12 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       }
       if (item.label === 'Appointments') {
         if (role?.name === 'FACILITY DOCTOR') {
-          return { ...item, path: '/doctor-appointment' } // Route to doctor-appointment
+          return { ...item, path: '/doctor-appointment' }
         }
         if (role?.name === 'FACILITY NURSE') {
-          return { ...item, path: '/nurse-appointment' } // Route to nurse-appointment
+          return { ...item, path: '/nurse-appointment' }
         }
-        return { ...item, path: '/appointments' } // Default route for other roles
+        return { ...item, path: '/appointments' }
       }
       return item
     })
