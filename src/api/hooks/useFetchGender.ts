@@ -4,7 +4,7 @@ import { useQuery } from 'react-query'
 
 const fetchGender = async () => {
   try {
-    const response = await axiosInstance.get('/api/common/genders')
+    const response = await axiosInstance.get('/common/genders')
     if (response.data.status) {
       return response.data.response
     } else {

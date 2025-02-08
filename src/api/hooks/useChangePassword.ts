@@ -10,7 +10,7 @@ const useChangePassword = () => {
       password_confirmation: string
     }) => {
       const response = await axiosInstance.post(
-        '/api/admin/profile/change-password',
+        '/admin/profile/change-password',
         passwordData
       )
       if (!response.data.status) {

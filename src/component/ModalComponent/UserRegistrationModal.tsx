@@ -1,42 +1,47 @@
 import { useState } from 'react'
-import useRegisterPatient from '../../api/hooks/useRegisterPatient'
+
 import useFetchGender from '../../api/hooks/useFetchGender'
 import { toast } from 'react-hot-toast'
 import useFetchTitles from '../../api/hooks/useFetchTitles'
+import { useRegisterPatient } from '../../api/hooks/useRegisterPatient'
+import { useFetchLGAs } from '../../api/hooks/useFetchLGAs'
+import { useFetchStates } from '../../api/hooks/useFetchStates'
+import { useFetchMaritalStatus } from '../../api/hooks/useFetchMaritalStatus'
 
 const UserRegistrationModal = () => {
-  const [formData, setFormData] = useState({
-    facility_id: '2',
-    marital_status_id: '2',
-    title_id: '10',
-    gender_id: '2',
-    occupation_id: '1',
-    religion_id: '2',
-    educational_level_id: '2',
-    language_id: '1',
-    citizenship_id: '2',
-    country_id: '1',
-    state_id: '23',
-    lga_id: '476',
-    city_id: '3948',
-    nok_country_id: '1',
-    nok_state_id: '1',
-    nok_lga_id: '1',
-    nok_relationship_id: '18',
-    first_name: '',
-    middle_name: '',
-    last_name: '',
-    date_of_birth: '',
-    email: '',
-    phone: '',
-    address: '',
-    nearest_bus_stop: '',
-    nok_first_name: '',
-    nok_middle_name: '',
-    nok_last_name: '',
-    nok_phone: '',
-    nok_address: '',
-  })
+   const [formData, setFormData] = useState({
+     facility_id: '2',
+     marital_status_id: '',
+     title_id: '10',
+     gender_id: '',
+     occupation_id: '1',
+     religion_id: '2',
+     educational_level_id: '2',
+     language_id: '1',
+     citizenship_id: '2',
+     country_id: '1',
+     state_id: '',
+     lga_id: '',
+     city_id: '3948',
+     nok_country_id: '1',
+     nok_state_id: '1',
+     nok_lga_id: '1',
+     nok_relationship_id: '18',
+     first_name: '',
+     middle_name: '',
+     last_name: '',
+     date_of_birth: '',
+     email: '',
+     phone: '',
+     address: '',
+     nearest_bus_stop: '',
+     nok_first_name: '',
+     nok_middle_name: '',
+     nok_last_name: '',
+     nok_phone: '',
+     nok_address: '',
+   })
+
 
   const [errors, setErrors] = useState({
     email: '',
@@ -46,13 +51,36 @@ const UserRegistrationModal = () => {
     middle_name: '',
     date_of_birth: '',
     address: '',
+    gender_id: '',
+    marital_status_id: '',
+    state_id: '',
+    lga_id: '',
   })
+
 
   const {
     data: genderData,
     isLoading: genderLoading,
     isError: genderError,
   } = useFetchGender()
+
+    const {
+      data: maritalStatusData,
+      isLoading: maritalStatusLoading,
+      isError: maritalStatusError,
+    } = useFetchMaritalStatus()
+
+    const {
+      data: statesData,
+      isLoading: statesLoading,
+      isError: statesError,
+    } = useFetchStates()
+
+    const {
+      data: lgasData,
+      isLoading: lgasLoading,
+      isError: lgasError,
+    } = useFetchLGAs(formData.state_id)
 
   const { mutate, isLoading } = useRegisterPatient()
   const {
@@ -77,6 +105,11 @@ const UserRegistrationModal = () => {
       newErrors.date_of_birth = 'Date of birth is required'
     if (!formData.phone || !/^\d{11}$/.test(formData.phone))
       newErrors.phone = 'Please enter a valid phone number'
+    if (!formData.gender_id) newErrors.gender_id = 'Gender is required'
+    if (!formData.marital_status_id)
+      newErrors.marital_status_id = 'Marital status is required'
+    if (!formData.state_id) newErrors.state_id = 'State is required'
+    if (!formData.lga_id) newErrors.lga_id = 'LGA is required'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -92,8 +125,10 @@ const UserRegistrationModal = () => {
     }
   }
 
-  if (genderLoading || titleLoading) return <div>Loading...</div>
-  if (genderError || titleError) return <div>Error loading data</div>
+  if (genderLoading || titleLoading || maritalStatusLoading || statesLoading)
+    return <div>Loading...</div>
+  if (genderError || titleError || maritalStatusError || statesError)
+    return <div>Error loading data</div>
 
   return (
     <form onSubmit={handleSubmit}>
@@ -200,6 +235,84 @@ const UserRegistrationModal = () => {
               </option>
             ))}
           </select>
+        </div>
+        {/* Marital Status Field */}
+        <div>
+          <label
+            htmlFor="marital_status_id"
+            className="text-[#0061FF] text-[15px] mb-2 font-medium"
+          >
+            Marital Status <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="marital_status_id"
+            value={formData.marital_status_id}
+            onChange={handleChange}
+            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+          >
+            <option value="">Select Marital Status</option>
+            {maritalStatusData?.map((status: { id: number; name: string }) => (
+              <option key={status.id} value={status.id}>
+                {status.name}
+              </option>
+            ))}
+          </select>
+          {errors.marital_status_id && (
+            <p className="text-red-500 text-sm">{errors.marital_status_id}</p>
+          )}
+        </div>
+
+        {/* State Field */}
+        <div>
+          <label
+            htmlFor="state_id"
+            className="text-[#0061FF] text-[15px] mb-2 font-medium"
+          >
+            State of Residence <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="state_id"
+            value={formData.state_id}
+            onChange={handleChange}
+            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+          >
+            <option value="">Select State</option>
+            {statesData?.map((state: { id: number; name: string }) => (
+              <option key={state.id} value={state.id}>
+                {state.name}
+              </option>
+            ))}
+          </select>
+          {errors.state_id && (
+            <p className="text-red-500 text-sm">{errors.state_id}</p>
+          )}
+        </div>
+
+        {/* LGA Field */}
+        <div>
+          <label
+            htmlFor="lga_id"
+            className="text-[#0061FF] text-[15px] mb-2 font-medium"
+          >
+            LGA of Residence <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="lga_id"
+            value={formData.lga_id}
+            onChange={handleChange}
+            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+            disabled={!formData.state_id}
+          >
+            <option value="">Select LGA</option>
+            {lgasData?.map((lga: { id: number; name: string }) => (
+              <option key={lga.id} value={lga.id}>
+                {lga.name}
+              </option>
+            ))}
+          </select>
+          {errors.lga_id && (
+            <p className="text-red-500 text-sm">{errors.lga_id}</p>
+          )}
         </div>
 
         {/* Date of Birth Field */}

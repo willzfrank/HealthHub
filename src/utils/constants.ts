@@ -1,1 +1,1 @@
-export const baseUrl = 'https://apps.blouzatech.ng/hms-api/public/'
+export const baseUrl = 'https://apps.blouzatech.ng/hms-api/public/api'

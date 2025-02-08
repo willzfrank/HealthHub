@@ -5,7 +5,7 @@ import { axiosInstance } from '../axiosInstance'
 // Function to fetch the profile
 const fetchProfile = async () => {
   try {
-    const response = await axiosInstance.get('/api/admin/profile')
+    const response = await axiosInstance.get('/admin/profile')
 
     if (response.data.status) {
       return response.data

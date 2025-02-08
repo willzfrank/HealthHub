@@ -10,7 +10,7 @@ const fetchAppointments = async (
   page: number
 ) => {
   const response = await axiosInstance.get(
-    `/api/admin/reports/facility/patient-list?facility_id=${facilityId}&per_page=${perPage}&page=${page}`
+    `/admin/reports/facility/patient-list?facility_id=${facilityId}&per_page=${perPage}&page=${page}`
   )
   return response.data
 }

@@ -9,7 +9,7 @@ interface Title {
 
 const fetchTitles = async (): Promise<Title[]> => {
   try {
-    const response = await axiosInstance.get('/api/common/titles')
+    const response = await axiosInstance.get('/common/titles')
     if (response.data.status) {
       return response.data.response
     } else {
