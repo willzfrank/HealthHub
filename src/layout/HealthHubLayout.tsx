@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Icon } from '@iconify/react'
-import { useMutation } from 'react-query'
-import { logout } from '../api/authApi'
-import { useAuth } from '../context/AuthContext'
 import { getAuthCookie, removeAuthCookie } from '../api/axiosInstance'
 
 type MenuItem = {
@@ -75,44 +72,60 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     }
   }, [isMobile])
 
+  const dashboardPaths: Record<string, string> = {
+    doctor: '/doctor-dashboard',
+    nurse: '/nurse-dashboard',
+    accountant: '/accountant-dashboard',
+  }
+
   const getDashboardPath = (roleName: string) => {
     const lowerCaseRole = roleName.toLowerCase()
 
-    if (lowerCaseRole.includes('accountant')) {
-      return '/accountant-dashboard'
+    for (const key in dashboardPaths) {
+      if (lowerCaseRole.includes(key)) {
+        return dashboardPaths[key]
+      }
     }
-    if (roleName === 'FACILITY DOCTOR') return '/doctor-dashboard'
-    if (roleName === 'FACILITY NURSE') return '/nurse-dashboard'
 
     return '/'
   }
 
+  const roleBasedMenu = {
+    doctor: ['Dashboard', 'Patients', 'Appointments', 'Settings'],
+    nurse: ['Dashboard', 'Patients', 'Appointments', 'Settings'],
+    accountant: [
+      'Dashboard',
+      'Patients',
+      'Bill',
+      'Transactions',
+      'Procedures',
+      'Settings',
+    ],
+    admin: [
+      'Dashboard',
+      'Patients',
+      'Bill',
+      'Transactions',
+      'Procedures',
+      'Settings',
+    ],
+    receptionist: ['Dashboard', 'Appointments', 'Patients', 'Bill', 'Settings'],
+  }
+
   const filteredMenuItems = menuItems
     .filter((item) => {
-      if (role?.name === 'FACILITY NURSE' || role?.name === 'FACILITY DOCTOR') {
-        return ['Dashboard', 'Patients', 'Appointments', 'Settings'].includes(
-          item.label
-        )
-      }
-      if (role?.name?.toLowerCase().includes('accountant')) {
-        return [
-          'Dashboard',
-          'Patients',
-          'Bill',
-          'Transactions',
-          'Procedures',
-          'Settings',
-        ].includes(item.label)
-      }
-      if (role?.name === 'RECEPTIONIST FACILITY') {
-        return [
-          'Dashboard',
-          'Appointments',
-          'Patients',
-          'Bill',
-          'Settings',
-        ].includes(item.label)
-      }
+      const roleName = role?.name?.toLowerCase() ?? ''
+      if (roleName.includes('doctor'))
+        return roleBasedMenu.doctor.includes(item.label)
+      if (roleName.includes('nurse'))
+        return roleBasedMenu.nurse.includes(item.label)
+      if (roleName.includes('accountant'))
+        return roleBasedMenu.accountant.includes(item.label)
+      if (roleName.includes('admin'))
+        return roleBasedMenu.admin.includes(item.label)
+      if (roleName.includes('receptionist'))
+        return roleBasedMenu.receptionist.includes(item.label)
+
       return true
     })
     .map((item) => {
@@ -120,10 +133,10 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         return { ...item, path: getDashboardPath(role?.name ?? '') }
       }
       if (item.label === 'Appointments') {
-        if (role?.name === 'FACILITY DOCTOR') {
+        if (role?.name?.toLowerCase().includes('doctor')) {
           return { ...item, path: '/doctor-appointment' }
         }
-        if (role?.name === 'FACILITY NURSE') {
+        if (role?.name?.toLowerCase().includes('nurse')) {
           return { ...item, path: '/nurse-appointment' }
         }
         return { ...item, path: '/appointments' }
