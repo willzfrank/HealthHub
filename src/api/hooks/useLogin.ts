@@ -31,7 +31,7 @@ export const useLogin = (): UseLoginResult => {
 
   const loginMutation = useMutation(
     (credentials: LoginCredentials) =>
-      axiosInstance.post('/api/admin/login', credentials),
+      axiosInstance.post('/admin/login', credentials),
     {
       onMutate: () => {
         setLoginStatus('loading')
