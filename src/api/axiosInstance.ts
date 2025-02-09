@@ -3,7 +3,6 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 import { baseUrl } from '../utils/constants'
 import { toast } from 'react-hot-toast'
-import { AuthState } from '../types'
 
 export const axiosInstance = axios.create({
   baseURL: `${baseUrl}`,
@@ -13,7 +12,31 @@ export const axiosInstance = axios.create({
   timeout: 30000,
 })
 
-
+interface AuthState {
+  access_token: string
+  token_type: string
+  expires_at: string
+  user: {
+    last_name: string
+    middle_name: string | null
+    first_name: string
+    facility_id: number | null
+    email: string
+    phone: string
+    id: number
+    last_login: string
+    login_count: number
+    active: number
+    facility_name: string | null
+  }
+  role: {
+    id: number
+    slug: string
+    name: string
+  }
+  facility: null
+  environment: string
+}
 
 // Cookie configuration
 const COOKIE_NAME = 'auth_state'
