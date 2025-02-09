@@ -9,39 +9,38 @@ import { useFetchStates } from '../../api/hooks/useFetchStates'
 import { useFetchMaritalStatus } from '../../api/hooks/useFetchMaritalStatus'
 
 const UserRegistrationModal = () => {
-   const [formData, setFormData] = useState({
-     facility_id: '2',
-     marital_status_id: '',
-     title_id: '10',
-     gender_id: '',
-     occupation_id: '1',
-     religion_id: '2',
-     educational_level_id: '2',
-     language_id: '1',
-     citizenship_id: '2',
-     country_id: '1',
-     state_id: '',
-     lga_id: '',
-     city_id: '3948',
-     nok_country_id: '1',
-     nok_state_id: '1',
-     nok_lga_id: '1',
-     nok_relationship_id: '18',
-     first_name: '',
-     middle_name: '',
-     last_name: '',
-     date_of_birth: '',
-     email: '',
-     phone: '',
-     address: '',
-     nearest_bus_stop: '',
-     nok_first_name: '',
-     nok_middle_name: '',
-     nok_last_name: '',
-     nok_phone: '',
-     nok_address: '',
-   })
-
+  const [formData, setFormData] = useState({
+    facility_id: '2',
+    marital_status_id: '',
+    title_id: '10',
+    gender_id: '',
+    occupation_id: '1',
+    religion_id: '2',
+    educational_level_id: '2',
+    language_id: '1',
+    citizenship_id: '2',
+    country_id: '1',
+    state_id: '',
+    lga_id: '',
+    city_id: '3948',
+    nok_country_id: '1',
+    nok_state_id: '1',
+    nok_lga_id: '1',
+    nok_relationship_id: '18',
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    date_of_birth: '',
+    email: '',
+    phone: '',
+    address: '',
+    nearest_bus_stop: '',
+    nok_first_name: '',
+    nok_middle_name: '',
+    nok_last_name: '',
+    nok_phone: '',
+    nok_address: '',
+  })
 
   const [errors, setErrors] = useState({
     email: '',
@@ -57,30 +56,29 @@ const UserRegistrationModal = () => {
     lga_id: '',
   })
 
-
   const {
     data: genderData,
     isLoading: genderLoading,
     isError: genderError,
   } = useFetchGender()
 
-    const {
-      data: maritalStatusData,
-      isLoading: maritalStatusLoading,
-      isError: maritalStatusError,
-    } = useFetchMaritalStatus()
+  const {
+    data: maritalStatusData,
+    isLoading: maritalStatusLoading,
+    isError: maritalStatusError,
+  } = useFetchMaritalStatus()
 
-    const {
-      data: statesData,
-      isLoading: statesLoading,
-      isError: statesError,
-    } = useFetchStates()
+  const {
+    data: statesData,
+    isLoading: statesLoading,
+    isError: statesError,
+  } = useFetchStates()
 
-    const {
-      data: lgasData,
-      isLoading: lgasLoading,
-      isError: lgasError,
-    } = useFetchLGAs(formData.state_id)
+  const {
+    data: lgasData,
+    isLoading: lgasLoading,
+    isError: lgasError,
+  } = useFetchLGAs(formData.state_id)
 
   const { mutate, isLoading } = useRegisterPatient()
   const {
@@ -132,7 +130,7 @@ const UserRegistrationModal = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Title Field */}
         <div>
           <label
@@ -214,7 +212,8 @@ const UserRegistrationModal = () => {
             <p className="text-red-500 text-sm">{errors.middle_name}</p>
           )}
         </div>
-
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 my-2.5">
         {/* Gender Field */}
         <div>
           <label
@@ -261,7 +260,90 @@ const UserRegistrationModal = () => {
             <p className="text-red-500 text-sm">{errors.marital_status_id}</p>
           )}
         </div>
+        {/* Date of Birth Field */}
+        <div>
+          <label
+            htmlFor="dob"
+            className="text-[#0061FF] text-[15px] mb-2 font-medium"
+          >
+            Date of Birth <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="date_of_birth"
+            value={formData.date_of_birth}
+            onChange={handleChange}
+            type="date"
+            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+          />
+          {errors.date_of_birth && (
+            <p className="text-red-500 text-sm">{errors.date_of_birth}</p>
+          )}
+        </div>
+      </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2  gap-5">
+        {/* Phone Number Field */}
+        <div>
+          <label
+            htmlFor="phoneNumber"
+            className="text-[#0061FF] text-[15px] mb-2 font-medium"
+          >
+            Phone Number <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            type="tel"
+            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+          />
+          {errors.phone && (
+            <p className="text-red-500 text-sm">{errors.phone}</p>
+          )}
+        </div>
+
+        {/* Email Field */}
+        <div>
+          <label
+            htmlFor="email"
+            className="text-[#0061FF] text-[15px] mb-2 font-medium"
+          >
+            Email
+          </label>
+          <input
+            id="email"
+            value={formData.email}
+            onChange={handleChange}
+            type="email"
+            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Address Field */}
+      <div className="mt-2.5">
+        <label
+          htmlFor="address"
+          className="text-[#0061FF] text-[15px] font-medium"
+        >
+          Address
+        </label>
+        <input
+          id="address"
+          value={formData.address}
+          onChange={handleChange}
+          type="text"
+          className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+        />
+        {errors.address && (
+          <p className="text-red-500 text-sm">{errors.address}</p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 my-5">
         {/* State Field */}
         <div>
           <label
@@ -314,86 +396,6 @@ const UserRegistrationModal = () => {
             <p className="text-red-500 text-sm">{errors.lga_id}</p>
           )}
         </div>
-
-        {/* Date of Birth Field */}
-        <div>
-          <label
-            htmlFor="dob"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Date of Birth <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="date_of_birth"
-            value={formData.date_of_birth}
-            onChange={handleChange}
-            type="date"
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          />
-          {errors.date_of_birth && (
-            <p className="text-red-500 text-sm">{errors.date_of_birth}</p>
-          )}
-        </div>
-
-        {/* Phone Number Field */}
-        <div>
-          <label
-            htmlFor="phoneNumber"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Phone Number <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            type="tel"
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          />
-          {errors.phone && (
-            <p className="text-red-500 text-sm">{errors.phone}</p>
-          )}
-        </div>
-
-        {/* Email Field */}
-        <div>
-          <label
-            htmlFor="email"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Email
-          </label>
-          <input
-            id="email"
-            value={formData.email}
-            onChange={handleChange}
-            type="email"
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email}</p>
-          )}
-        </div>
-      </div>
-
-      {/* Address Field */}
-      <div className="mt-5">
-        <label
-          htmlFor="address"
-          className="text-[#0061FF] text-[15px] font-medium"
-        >
-          Address
-        </label>
-        <input
-          id="address"
-          value={formData.address}
-          onChange={handleChange}
-          type="text"
-          className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-        />
-        {errors.address && (
-          <p className="text-red-500 text-sm">{errors.address}</p>
-        )}
       </div>
 
       {/* Submit Button */}

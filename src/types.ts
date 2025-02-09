@@ -61,29 +61,3 @@ export interface PatientRegistrationData {
   nok_phone: string
   nok_address: string
 }
-
-export interface AuthState {
-  access_token: string
-  token_type: string
-  expires_at: string
-  user: {
-    last_name: string
-    middle_name: string | null
-    first_name: string
-    facility_id: number | null
-    email: string
-    phone: string
-    id: number
-    last_login: string
-    login_count: number
-    active: number
-    facility_name: string | null
-  }
-  role: {
-    id: number
-    slug: string
-    name: string
-  }
-  facility: null
-  environment: string
-}
