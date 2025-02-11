@@ -18,7 +18,7 @@ const registerPatient = async (
   data: PatientRegistrationData
 ): Promise<RegistrationResponse> => {
   const { data: response } = await axiosInstance.post<RegistrationResponse>(
-    '/patient/register',
+    'admin/patient/register',
     data
   )
   return response

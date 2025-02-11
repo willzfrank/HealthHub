@@ -7,7 +7,6 @@ import {
   Dropdown,
   Menu,
 } from 'antd'
-import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPatientViewFormModal'
@@ -224,7 +223,8 @@ const Invoice = () => {
         footer={null}
         centered
       >
-        <ScheduleModal />
+        {/* <ScheduleModal /> */}
+        hell
       </AntdModal>
 
       {/* BillFormModal */}

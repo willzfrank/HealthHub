@@ -1,21 +1,94 @@
 import { Select, DatePicker } from 'antd'
 import dayjs from 'dayjs'
+import { useState } from 'react'
+import { useBookAppointment } from '../../api/hooks/useBookAppointment'
+import toast from 'react-hot-toast'
+import useDoctors from '../../api/hooks/useDoctors'
+import { Doctor, Gender } from '../../types'
+import useFetchGender from '../../api/hooks/useFetchGender'
+import useFetchTitles from '../../api/hooks/useFetchTitles'
 
-type Props = {}
+type ScheduleModalProps = {
+  patientId: number | null
+  onClose: (value: React.SetStateAction<boolean>) => void
+  selectedPatientData: any
+}
 
-const genderOptions = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
-]
+const ScheduleModal = ({
+  patientId,
+  onClose,
+  selectedPatientData,
+}: ScheduleModalProps) => {
+  const [scheduledDate, setScheduledDate] = useState<string | null>(null)
+  const [doctorId, setDoctorId] = useState<number | null>(null)
+  const [receptionistComment, setReceptionistComment] = useState('')
+  const { mutate: bookAppointment, isLoading } = useBookAppointment()
+  const {
+    data: doctors,
+    isLoading: isDoctorsLoading,
+    error: doctorsError,
+  } = useDoctors(1)
+  const { data: genderData } = useFetchGender()
+  const { titleData } = useFetchTitles()
 
-const ScheduleModal = (props: Props) => {
+  const title =
+    titleData?.find((t) => t.id === selectedPatientData.title_id)?.name || ''
+
+  // Find gender name
+  const gender =
+    genderData?.find((g: Gender) => g.id === selectedPatientData.gender_id)
+      ?.name || ''
+
+  // Convert DOB to DatePicker format
+  const dateOfBirth = selectedPatientData.date_of_birth
+    ? dayjs(selectedPatientData.date_of_birth)
+    : null
+
+  console.log('selectedPatientData', selectedPatientData)
+  const doctorOptions =
+    doctors?.map((doctor: Doctor) => ({
+      value: doctor.id,
+      label: doctor.name,
+    })) || []
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!patientId || !doctorId) {
+      toast.error('Patient and Doctor must be selected.')
+      return
+    }
+
+    if (!scheduledDate) {
+      toast.error('Please select a date.')
+      return
+    }
+
+    bookAppointment(
+      {
+        patient_id: patientId,
+        doctor_id: doctorId,
+        receptionist_comment: receptionistComment,
+        scheduled_date: scheduledDate,
+      },
+      {
+        onSuccess: () => {
+          setDoctorId(null)
+          setScheduledDate(null)
+          setReceptionistComment('')
+          toast.success('Appointment booked successfully!')
+          onClose(false)
+        },
+      }
+    )
+  }
+
   return (
     <div>
       <h3 className="text-[#030229] text-2xl font-semibold text-center mb-8">
         Schedule Appointment
       </h3>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-5">
           <div>
             <label
@@ -25,11 +98,10 @@ const ScheduleModal = (props: Props) => {
               Title
             </label>
             <input
-              id="title"
               type="text"
-              defaultValue="Dr."
+              value={title}
               readOnly
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full cursor-not-allowed"
             />
           </div>
 
@@ -41,11 +113,10 @@ const ScheduleModal = (props: Props) => {
               Surname
             </label>
             <input
-              id="surname"
               type="text"
-              defaultValue="Doe"
+              value={selectedPatientData.last_name || ''}
               readOnly
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full cursor-not-allowed"
             />
           </div>
 
@@ -57,11 +128,10 @@ const ScheduleModal = (props: Props) => {
               First Name
             </label>
             <input
-              id="firstName"
               type="text"
-              defaultValue="John"
+              value={selectedPatientData.first_name || ''}
               readOnly
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full cursor-not-allowed"
             />
           </div>
 
@@ -73,11 +143,10 @@ const ScheduleModal = (props: Props) => {
               Middle Name
             </label>
             <input
-              id="middleName"
               type="text"
-              defaultValue="A."
+              value={selectedPatientData.middle_name || ''}
               readOnly
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full cursor-not-allowed"
             />
           </div>
 
@@ -88,13 +157,11 @@ const ScheduleModal = (props: Props) => {
             >
               Gender
             </label>
-            <Select
-              id="gender"
-              className="w-full bg-[#F5F6FA] border  rounded-[8px]  border-[#CCCCCC]"
-              options={genderOptions}
-              defaultValue="male"
-              disabled
-              placeholder="Select Gender"
+            <input
+              type="text"
+              value={gender}
+              readOnly
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full cursor-not-allowed"
             />
           </div>
 
@@ -106,11 +173,9 @@ const ScheduleModal = (props: Props) => {
               Date of birth
             </label>
             <DatePicker
-              id="dob"
-              className="w-full p-1.5 bg-[#F5F6FA] border border-[#CCCCCC] rounded-[8px]"
-              defaultValue={dayjs(new Date(1990, 0, 1))}
+              value={dateOfBirth}
               disabled
-              placeholder="Select Date of Birth"
+              className="w-full p-1.5 bg-[#F5F6FA] border border-[#CCCCCC] rounded-[8px]"
             />
           </div>
           <div className="w-full col-span-2">
@@ -141,11 +206,14 @@ const ScheduleModal = (props: Props) => {
                   </label>
                   <Select
                     id="doctor"
-                    className="w-full bg-[#F5F6FA] border  rounded-[8px]  border-[#CCCCCC]"
-                    options={genderOptions}
-                    defaultValue="male"
-                    disabled
-                    placeholder="Select Gender"
+                    className="w-full bg-[#F5F6FA] border rounded-[8px] border-[#CCCCCC]"
+                    options={doctorOptions}
+                    onChange={(value) => setDoctorId(value)}
+                    placeholder={
+                      isDoctorsLoading ? 'Loading doctors...' : 'Select Doctor'
+                    }
+                    loading={isDoctorsLoading}
+                    disabled={isDoctorsLoading || !!doctorsError}
                   />
                 </div>
                 <div className="w-[30%]">
@@ -158,8 +226,9 @@ const ScheduleModal = (props: Props) => {
                   <DatePicker
                     id="procedureDate"
                     className="w-full p-1.5 bg-[#F5F6FA] border border-[#CCCCCC] rounded-[8px]"
-                    defaultValue={dayjs(new Date(2023, 9, 1))}
-                    disabled
+                    onChange={(date) =>
+                      setScheduledDate(date ? date.format('YYYY-MM-DD') : null)
+                    }
                     placeholder="Select Date"
                   />
                 </div>
@@ -176,8 +245,8 @@ const ScheduleModal = (props: Props) => {
             </label>
             <textarea
               id="caseNote"
-              defaultValue="Patient is in good health."
-              readOnly
+              value={receptionistComment}
+              onChange={(e) => setReceptionistComment(e.target.value)}
               className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
               rows={4}
             />
@@ -185,11 +254,18 @@ const ScheduleModal = (props: Props) => {
         </div>
 
         <div className="flex items-center justify-between my-5">
-          <button className="border text-[#0061FF] border-[#0061FF] rounded px-20 py-2.5">
+          <button
+            className="border text-[#0061FF] border-[#0061FF] rounded px-20 py-2.5"
+            onClick={() => onClose(false)}
+            type="button"
+          >
             CANCEL
           </button>
-          <button className="text-white bg-[#0061FF] rounded px-20 py-2.5">
-            SUBMIT
+          <button
+            className="text-white bg-[#0061FF] rounded px-20 py-2.5"
+            type="submit"
+          >
+            {isLoading ? 'Submitting...' : 'SUBMIT'}
           </button>
         </div>
       </form>

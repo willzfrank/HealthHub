@@ -18,6 +18,17 @@ export interface Role {
   name: string
 }
 
+export interface Gender {
+  id: number
+  name: string
+}
+
+export interface Doctor {
+  id: number
+  name: string
+  email: string
+  hospital: string
+}
 export interface AuthState {
   isAuthenticated: boolean
   accessToken: string | null

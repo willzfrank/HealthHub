@@ -1,22 +1,42 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Menu, Dropdown } from 'antd'
+
+import { Table, Modal as AntdModal, Pagination, Menu, Dropdown } from 'antd'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import { Icon } from '@iconify/react'
 import Modal from '../../component/common/Modal'
 import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
-import useAppointments from '../../api/hooks/useAppointments'
-import { getAuthCookie } from '../../api/axiosInstance'
+import useFetchGender from '../../api/hooks/useFetchGender'
+import useFetchPatientsList from '../../api/hooks/useFetchPatientsList'
+import { Gender } from '../../types'
+import { formatDate } from '../../utils/utils'
+import ScheduleModal from '../../component/ModalComponent/ScheduleModal'
 
 const Patients = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
   const [filter, setFilter] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('Details')
   const [perPage, setPerPage] = useState(10)
   const [page, setPage] = useState(1)
 
-  const { data, isLoading, error } = useAppointments('2', perPage, page)
+  const {
+    data: patientData,
+    isLoading: isPatientLoading,
+    error: patientError,
+  } = useFetchPatientsList(perPage, page)
+  const { data: genderData, isLoading: isGenderLoading } = useFetchGender()
+  const [selectedPatientData, setSelectedPatientData] = useState<any>(
+    null
+  )
+
+  // Mapping the gender ID to gender name
+  const getGenderName = (genderId: number | null) => {
+    if (!genderId || !genderData.length) return 'N/A'
+    const gender = genderData.find((g: Gender) => g.id === genderId)
+    return gender ? gender.name : 'N/A'
+  }
 
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(selectedRowKeys)
@@ -46,6 +66,27 @@ const Patients = () => {
     setPerPage(newPageSize)
   }
 
+  const getAppointmentMessage = (
+    appointmentDate: string | null,
+    record: any
+  ) => {
+    if (!appointmentDate || isNaN(new Date(appointmentDate).getTime())) {
+      return (
+        <div
+          className="flex items-center gap-2.5 cursor-pointer"
+          onClick={() => {
+            setSelectedPatientData(record)
+            setIsScheduleModalOpen(true)
+          }}
+        >
+          <img src="/images/icons/tooth-calendar.svg" alt="calendar" />
+          <span className="underline text-[#0061FF]">Schedule</span>
+        </div>
+      )
+    }
+    return formatDate(appointmentDate)
+  }
+
   const columns = [
     {
       title: <span className="text-[#3A3A49]">Patient ID </span>,
@@ -61,15 +102,15 @@ const Patients = () => {
     },
     {
       title: <span className="text-[#3A3A49]">Reg. Date </span>,
-      dataIndex: 'regDate',
+      dataIndex: 'created_at',
       key: 'regDate',
-      render: (text: string) => text || 'N/A',
+      render: (text: string) => formatDate(text),
     },
     {
       title: <span className="text-[#3A3A49]">Gender</span>,
-      dataIndex: 'gender',
+      dataIndex: 'gender_id',
       key: 'gender',
-      render: (text: string) => text || 'N/A',
+      render: (genderId: number) => getGenderName(genderId),
     },
     {
       title: <span className="text-[#3A3A49]">Phone Number </span>,
@@ -77,7 +118,25 @@ const Patients = () => {
       key: 'phoneNumber',
       render: (text: string) => text || 'N/A',
     },
-
+    {
+      title: <span className="text-[#3A3A49]">Last Appointment</span>,
+      dataIndex: 'last_visited',
+      key: 'lastAppointment',
+      render: (text: string) => formatDate(text) || 'N/A',
+    },
+    {
+      title: <span className="text-[#3A3A49]">Last Visit</span>,
+      dataIndex: 'last_visited',
+      key: 'lastVisit',
+      render: (text: string) => formatDate(text) || 'N/A',
+    },
+    {
+      title: <span className="text-[#3A3A49]">Next Appointment</span>,
+      dataIndex: 'next_scheduled_date',
+      key: 'nextAppointment',
+      render: (text: string, record: any) =>
+        getAppointmentMessage(text, record),
+    },
     {
       title: <span className="text-[#3A3A49]">Actions </span>,
       key: 'actions',
@@ -133,22 +192,22 @@ const Patients = () => {
           onChange: onSelectChange,
         }}
         columns={columns}
-        dataSource={data?.response?.data || []}
+        dataSource={patientData?.response?.data || []}
         pagination={false}
-        loading={isLoading}
+        loading={isPatientLoading || isGenderLoading}
         rowKey="patientID"
       />
 
       <footer className="flex justify-between items-center mt-4">
         <div>
           <span className="border-[#0061FF] border-b text-[#3A3A49]">
-            {data?.response?.data?.length}{' '}
+            {patientData?.response?.data?.length}{' '}
           </span>
           <span className="text-[#3A3A49]">Shown on page</span>
         </div>
         <Pagination
-          current={data?.response?.current_page || 1}
-          total={data?.response?.total || 0}
+          current={patientData?.response?.current_page || 1}
+          total={patientData?.response?.total || 0}
           pageSize={perPage}
           onChange={handlePaginationChange}
           showSizeChanger
@@ -165,6 +224,19 @@ const Patients = () => {
           activeTab={activeTab}
         />
       </Modal>
+
+      <AntdModal
+        visible={isScheduleModalOpen}
+        onCancel={() => setIsScheduleModalOpen(false)}
+        footer={null}
+        centered
+      >
+        <ScheduleModal
+          patientId={selectedPatientData?.id}
+          selectedPatientData={selectedPatientData}
+          onClose={() => setIsScheduleModalOpen(false)}
+        />
+      </AntdModal>
     </Layout>
   )
 }
