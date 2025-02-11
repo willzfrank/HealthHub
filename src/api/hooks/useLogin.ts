@@ -4,6 +4,7 @@ import { axiosInstance, setAuthCookie } from '../../api/axiosInstance'
 import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { getDashboardPath } from '../../utils/utils'
 
 interface LoginCredentials {
   email: string
@@ -13,13 +14,6 @@ interface LoginCredentials {
 interface UseLoginResult {
   loginStatus: 'Login' | 'loading' | 'Logged In'
   login: (credentials: LoginCredentials) => void
-}
-
-// Function to determine the correct dashboard path based on role
-const getDashboardPath = (roleName?: string) => {
-  if (roleName === 'FACILITY DOCTOR') return '/doctor-dashboard'
-  if (roleName === 'FACILITY NURSE') return '/nurse-dashboard'
-  return '/' // Default dashboard
 }
 
 export const useLogin = (): UseLoginResult => {

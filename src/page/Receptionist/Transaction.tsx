@@ -5,7 +5,6 @@ import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPatientViewFormModal'
 import Modal from '../../component/common/Modal'
-import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
 
 interface TransactionItem {
   key: string

@@ -11,3 +11,22 @@ export const getCurrentDateTime = () => {
   }
   return date.toLocaleDateString('en-US', options)
 }
+
+const dashboardPaths: Record<string, string> = {
+  doctor: '/doctor-dashboard',
+  nurse: '/nurse-dashboard',
+  accountant: '/accountant-dashboard',
+  admin: '/accountant-dashboard',
+}
+
+export const getDashboardPath = (roleName: string) => {
+  const lowerCaseRole = roleName.toLowerCase()
+
+  for (const key in dashboardPaths) {
+    if (lowerCaseRole.includes(key)) {
+      return dashboardPaths[key]
+    }
+  }
+
+  return '/'
+}
