@@ -1,31 +1,18 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Menu, Dropdown } from 'antd'
+import { Table, Pagination, Menu, Dropdown, Spin, Alert } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import Modal from '../../component/common/Modal'
 import ReceptionistPatientFormModal from '../../component/ModalComponent/ReceptionistPatientFormModal'
+import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
 
 const AppointmentsTable = () => {
-  // Sample Data
-  const [data, setData] = useState([
-    {
-      key: '1',
-      date: '2023-10-01 10:00 AM',
-      patientID: 'P001',
-      patientName: 'John Doe',
-      purpose: 'Check-up',
-      doctor: 'Dr. Smith',
-    },
-    {
-      key: '2',
-      date: '2023-10-01 10:00 AM',
-      patientID: 'P002',
-      patientName: 'Jane Roe',
-      purpose: 'Consultation',
-      doctor: 'Dr. Brown',
-    },
-  ])
+  const {
+    data: appointmentData,
+    error: isAppointmentError,
+    isLoading: isAppointmentLoading,
+  } = useFetchAppointmentsList()
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [filter, setFilter] = useState('')
@@ -65,31 +52,30 @@ const AppointmentsTable = () => {
   const columns = [
     {
       title: <span className="text-[#3A3A49]">Date</span>,
-      dataIndex: 'date',
-      key: 'date',
+      dataIndex: 'scheduled_date',
+      key: 'scheduled_date',
+      render: (date: string) => new Date(date).toLocaleString(),
     },
     {
       title: <span className="text-[#3A3A49]">Patient ID </span>,
-      dataIndex: 'patientID',
-      key: 'patientID',
+      dataIndex: 'file_number',
+      key: 'file_number',
     },
     {
       title: <span className="text-[#3A3A49]">Patient Name </span>,
-
-      dataIndex: 'patientName',
-      key: 'patientName',
+      dataIndex: 'patient_name',
+      key: 'patient_name',
     },
     {
       title: <span className="text-[#3A3A49]">Purpose </span>,
-      dataIndex: 'purpose',
-      key: 'purpose',
+      dataIndex: 'consultation_name',
+      key: 'consultation_name',
     },
     {
       title: <span className="text-[#3A3A49]">Doctor </span>,
       dataIndex: 'doctor',
       key: 'doctor',
     },
-
     {
       title: <span className="text-[#3A3A49]">Actions </span>,
       key: 'actions',
@@ -104,6 +90,17 @@ const AppointmentsTable = () => {
       ),
     },
   ]
+
+  // Prepare data for the table
+  const dataSource =
+    appointmentData?.response?.data.map((appointment) => ({
+      key: appointment.id,
+      scheduled_date: appointment.scheduled_date,
+      file_number: appointment.file_number,
+      patient_name: appointment.patient_name,
+      consultation_name: appointment.consultation_name,
+      doctor: appointment.doctor,
+    })) || []
 
   return (
     <Layout>
@@ -139,20 +136,39 @@ const AppointmentsTable = () => {
         </button>
       </div>
 
-      {/* Table */}
-      <Table columns={columns} dataSource={data} pagination={false} />
+      {/* Loading State */}
+      {isAppointmentError ? (
+        <Alert
+          message="Error"
+          description="There was an error loading the appointments data."
+          type="error"
+          showIcon
+        />
+      ) : (
+        // Table
+        <Table
+          columns={columns}
+          dataSource={dataSource}
+          pagination={false}
+          loading={isAppointmentLoading}
+        />
+      )}
 
       {/* Footer */}
       <div className="flex justify-between items-center mt-4">
         <div>
           <span className="border-[#0061FF] border-b text-[#3A3A49]">
-            {data.length}{' '}
+            {appointmentData?.response?.data.length}{' '}
           </span>
           <span className="text-[#3A3A49]">Shown on page</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-[#3A3A49]">Page</span>
-          <Pagination defaultCurrent={1} total={50} />
+          <Pagination
+            current={appointmentData?.response?.current_page}
+            total={appointmentData?.response?.total}
+            pageSize={appointmentData?.response?.per_page}
+          />
         </div>
       </div>
 
