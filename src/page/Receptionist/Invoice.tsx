@@ -55,6 +55,7 @@ const Invoice = () => {
   const [selectedTransactionID, setSelectedTransactionID] = useState<
     string | null
   >(null)
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false) // New state
 
   const authState = getAuthCookie()
@@ -91,14 +92,13 @@ const Invoice = () => {
     setIsScheduleModalOpen(false) // Close Schedule Modal
   }
 
+  const onSelectChange = (selectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(selectedRowKeys)
+  }
+
   const columns = [
     {
-      title: 'Invoice ID',
-      dataIndex: 'invoiceID',
-      key: 'invoiceID',
-    },
-    {
-      title: 'Invoice Date',
+      title: 'Bill',
       dataIndex: 'invoiceDate',
       key: 'invoiceDate',
     },
@@ -157,50 +157,20 @@ const Invoice = () => {
             )
           ) : item.status === 'Pending' ? (
             <Button
-              className="rounded-full bg-[#0061FFA1] text-white"
-              onClick={() => handlePayClick(item)}
-            >
-              Pay
-            </Button>
-          ) : (
-            <Button
               className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
               onClick={handleViewClick}
             >
-              View
+              Schedule
+            </Button>
+          ) : (
+            <Button
+              className="rounded-full bg-[#0061FFA1] text-white"
+              onClick={() => handlePayClick(item)}
+            >
+              Schedule
             </Button>
           )}
         </div>
-      ),
-    },
-
-    {
-      title: 'Modify',
-      key: 'modify',
-      render: (_text: any, item: InvoiceItem) => (
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item key="edit" onClick={() => handleEdit(item.invoiceID)}>
-                Edit
-              </Menu.Item>
-              <Menu.Item
-                key="delete"
-                onClick={() => handleDelete(item.invoiceID)}
-              >
-                Delete
-              </Menu.Item>
-            </Menu>
-          }
-          trigger={['click']}
-        >
-          <Icon
-            icon="mdi:dots-vertical"
-            width="20"
-            height="20"
-            className="cursor-pointer"
-          />
-        </Dropdown>
       ),
     },
   ]
@@ -209,7 +179,16 @@ const Invoice = () => {
     <Layout>
       <HeaderSection title="Invoice" />
 
-      <Table columns={columns} dataSource={data} pagination={false} />
+      <Table
+        rowSelection={{
+          type: 'checkbox',
+          selectedRowKeys,
+          onChange: onSelectChange,
+        }}
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+      />
 
       <div className="flex justify-between items-center mt-4">
         <div>
@@ -254,7 +233,7 @@ const Invoice = () => {
         onCancel={() => setIsBillModalOpen(false)}
         footer={null}
       >
-        <BillFormModal />
+        <BillFormModal onClose={() => setIsBillModalOpen(false)} />
       </AntdModal>
     </Layout>
   )

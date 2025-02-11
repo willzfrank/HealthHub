@@ -119,6 +119,8 @@ const AccountantDashboard = (props: Props) => {
 
   // Revenue data from Oct 2023 to July 2024 with random values between 0-80
   const revenueData = [
+    { month: 'Aug 2023', revenue: 45 },
+    { month: 'Sept 2023', revenue: 45 },
     { month: 'Oct 2023', revenue: 45 },
     { month: 'Nov 2023', revenue: 62 },
     { month: 'Dec 2023', revenue: 78 },

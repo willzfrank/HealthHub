@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Icon } from '@iconify/react'
 import { getAuthCookie, removeAuthCookie } from '../api/axiosInstance'
+import { getDashboardPath } from '../utils/utils'
 
 type MenuItem = {
   label: string
@@ -26,7 +27,7 @@ const menuItems: MenuItem[] = [
     path: '/appointments',
   },
   {
-    label: 'Bill',
+    label: 'Bills',
     icon: <Icon icon="hugeicons:invoice-03" width="24" height="24" />,
     path: '/invoice',
   },
@@ -39,6 +40,11 @@ const menuItems: MenuItem[] = [
     label: 'Procedures',
     icon: <Icon icon="mdi:medical-bag" width="24" height="24" />,
     path: '/accountant-procedures',
+  },
+  {
+    label: 'Staffs',
+    icon: <Icon icon="guidance:care-staff-area" width="24" height="24" />,
+    path: '/staffs',
   },
   {
     label: 'Settings',
@@ -72,31 +78,13 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     }
   }, [isMobile])
 
-  const dashboardPaths: Record<string, string> = {
-    doctor: '/doctor-dashboard',
-    nurse: '/nurse-dashboard',
-    accountant: '/accountant-dashboard',
-  }
-
-  const getDashboardPath = (roleName: string) => {
-    const lowerCaseRole = roleName.toLowerCase()
-
-    for (const key in dashboardPaths) {
-      if (lowerCaseRole.includes(key)) {
-        return dashboardPaths[key]
-      }
-    }
-
-    return '/'
-  }
-
   const roleBasedMenu = {
     doctor: ['Dashboard', 'Patients', 'Appointments', 'Settings'],
     nurse: ['Dashboard', 'Patients', 'Appointments', 'Settings'],
     accountant: [
       'Dashboard',
       'Patients',
-      'Bill',
+      'Bills',
       'Transactions',
       'Procedures',
       'Settings',
@@ -104,12 +92,13 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     admin: [
       'Dashboard',
       'Patients',
-      'Bill',
+      'Bills',
       'Transactions',
       'Procedures',
+      'Staffs',
       'Settings',
     ],
-    receptionist: ['Dashboard', 'Appointments', 'Patients', 'Bill', 'Settings'],
+    receptionist: ['Dashboard', 'Appointments', 'Patients', 'Bills', 'Settings'],
   }
 
   const filteredMenuItems = menuItems

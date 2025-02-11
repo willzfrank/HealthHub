@@ -19,6 +19,7 @@ import AccountantDashboard from './page/accountant/AccountantDashboard'
 import AccountantProcedures from './page/accountant/AccountantProcedures'
 import DoctorAppointment from './page/Doctor/DoctorAppointment'
 import NurseAppointment from './page/Nurse/NurseAppointment'
+import Staffs from './page/admin/Staffs'
 
 const queryClient = new QueryClient()
 
@@ -139,6 +140,15 @@ function App() {
               element={
                 <ProtectedRoute
                   element={<Patients />}
+                  isAllowed={isAuthenticated}
+                />
+              }
+            />
+            <Route
+              path="/staffs"
+              element={
+                <ProtectedRoute
+                  element={<Staffs />}
                   isAllowed={isAuthenticated}
                 />
               }

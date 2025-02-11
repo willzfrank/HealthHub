@@ -3,7 +3,7 @@ import { Table } from 'antd'
 import React from 'react'
 import { ITransaction } from '../../types/globaltype'
 
-type InvoiceDetailsModalProps = {
+type PayDetailsModalProps = {
   selectedTransaction: any
 }
 
@@ -53,9 +53,9 @@ const modalTableColumns = [
   },
 ]
 
-const InvoiceDetailsModal = ({
+const PayDetailsModal = ({
   selectedTransaction,
-}: InvoiceDetailsModalProps) => {
+}: PayDetailsModalProps) => {
   return (
     <div>
       {selectedTransaction && (
@@ -92,7 +92,7 @@ const InvoiceDetailsModal = ({
               </span>
 
               <span className="text-[#404040] text-[14px] mt-1.5">
-                Payment Date : 25 Dec 2019
+                Due Date : 25 Dec 2019
               </span>
             </div>
           </div>
@@ -126,6 +126,17 @@ const InvoiceDetailsModal = ({
                 <span className="text-black text-[14px]">Export</span>
                 <Icon icon="bi:three-dots-vertical" width="16" height="16" />
               </button>
+              <button className="flex items-center gap-2 border border-[#4880FF] rounded-[8px] text-white bg-[#4880FF] px-2.5 py-1.5">
+                Pay{' '}
+                <div className="bg-[#6e9aff] rounded-[5px] flex items-center justify-center p-1">
+                  <Icon
+                    icon="mingcute:send-fill"
+                    width="16"
+                    height="16"
+                    className="text-white"
+                  />
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -134,4 +145,4 @@ const InvoiceDetailsModal = ({
   )
 }
 
-export default InvoiceDetailsModal
+export default PayDetailsModal

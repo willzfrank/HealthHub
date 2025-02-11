@@ -1,7 +1,10 @@
-import React from 'react'
-import { Table } from 'antd'
+import { Table, Modal as AntdModal } from 'antd'
+import { useState } from 'react'
+import PayDetailsModal from './PayDetailsModal'
 
-type Props = {}
+type BillFormModalProps = {
+  onClose: (value: React.SetStateAction<boolean>) => void
+}
 
 interface BillItem {
   key: string
@@ -11,7 +14,13 @@ interface BillItem {
   addedBy: string
 }
 
-const BillFormModal = (props: Props) => {
+const BillFormModal = ({ onClose }: BillFormModalProps) => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const onSelectChange = (selectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(selectedRowKeys)
+  }
   // Sample data for the table
   const dataSource: BillItem[] = [
     {
@@ -53,7 +62,7 @@ const BillFormModal = (props: Props) => {
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      render: (amount: number) => `$${amount.toFixed(2)}`, // Format amount as currency
+      render: (amount: number) => `$${amount.toFixed(2)}`,
     },
     {
       title: 'Added by',
@@ -70,6 +79,11 @@ const BillFormModal = (props: Props) => {
 
       {/* Table to display bill items */}
       <Table
+        rowSelection={{
+          type: 'checkbox',
+          selectedRowKeys,
+          onChange: onSelectChange,
+        }}
         dataSource={dataSource}
         columns={columns}
         pagination={false}
@@ -81,13 +95,28 @@ const BillFormModal = (props: Props) => {
       </div>
 
       <div className="flex items-center justify-between my-5">
-        <button className="border border-[#0061FF] text-[#0061FF] [rounded px-20 py-2.5">
+        <button
+          className="border border-[#0061FF] text-[#0061FF] rounded px-20 py-2.5"
+          onClick={() => onClose(false)}
+        >
           CANCEL
         </button>
-        <button className="text-white bg-[#0061FF] rounded px-20 py-2.5">
-          SUBMIT
+        <button
+          className="text-white bg-[#0061FF] rounded px-20 py-2.5"
+          onClick={() => setIsModalOpen(true)}
+        >
+          PAY
         </button>
       </div>
+
+      <AntdModal
+        title="Transaction Details"
+        visible={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+      >
+        <PayDetailsModal selectedTransaction={123} />{' '}
+      </AntdModal>
     </div>
   )
 }
