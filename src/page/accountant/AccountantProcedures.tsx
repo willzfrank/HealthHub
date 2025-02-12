@@ -5,16 +5,21 @@ import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import useAppointments from '../../api/hooks/useAppointments'
 import AccountantProceduresModal from '../../component/ModalComponent/AccountantProceduresModal'
+import { useGetBills } from '../../api/hooks/useAddBill'
+import EditBillModal from '../../component/ModalComponent/EditBillModal'
 
 const AccountantProcedures = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [filter, setFilter] = useState('')
   const [isOpen, setIsOpen] = useState(false)
-  const [isAddProcedureModalOpen, setIsAddProcedureModalOpen] = useState(false) // State for Add Procedure Modal
+  const [isAddProcedureModalOpen, setIsAddProcedureModalOpen] = useState(false)
   const [perPage, setPerPage] = useState(10)
   const [page, setPage] = useState(1)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [selectedBill, setSelectedBill] = useState(null)
 
   const { data, isLoading, error } = useAppointments('2', perPage, page)
+  const { data: bills, isLoading: isBillsLoading, isError } = useGetBills()
 
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(selectedRowKeys)
@@ -37,58 +42,39 @@ const AccountantProcedures = () => {
 
   // Handle Edit action
   const handleEdit = (record: any) => {
-    console.log('Edit record:', record)
-    // Add your edit logic here
-  }
-
-  // Handle Activate/Deactivate action
-  const handleActivateDeactivate = (record: any) => {
-    console.log('Activate/Deactivate record:', record)
-    // Add your activate/deactivate logic here
+    setSelectedBill(record)
+    setIsEditModalOpen(true)
   }
 
   const columns = [
     {
       title: 'Procedure',
-      dataIndex: 'procedure',
-      key: 'procedure',
-      render: (text: string) => text || 'N/A',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (text: string) => text || 'N/A',
+      render: (status: number) => (status === 1 ? 'Active' : 'Inactive'),
     },
     {
       title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
-      render: (text: string) => text || 'N/A',
+      dataIndex: 'selling_price',
+      key: 'selling_price',
+      render: (price: number) => `₦${price.toLocaleString()}`,
     },
     {
       title: 'Date Created',
-      dataIndex: 'dateCreated',
-      key: 'dateCreated',
-      render: (text: string) => text || 'N/A',
-    },
-    {
-      title: 'Created By',
-      dataIndex: 'createdBy',
-      key: 'createdBy',
-      render: (text: string) => text || 'N/A',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {
       title: 'Last Edit',
-      dataIndex: 'lastEdit',
-      key: 'lastEdit',
-      render: (text: string) => text || 'N/A',
-    },
-    {
-      title: 'Edited By',
-      dataIndex: 'editedBy',
-      key: 'editedBy',
-      render: (text: string) => text || 'N/A',
+      dataIndex: 'last_edit',
+      key: 'last_edit',
+      render: (text: string | null) => text || 'N/A',
     },
     {
       title: 'Actions',
@@ -99,12 +85,6 @@ const AccountantProcedures = () => {
             <Menu>
               <Menu.Item key="edit" onClick={() => handleEdit(record)}>
                 Edit
-              </Menu.Item>
-              <Menu.Item
-                key="activateDeactivate"
-                onClick={() => handleActivateDeactivate(record)}
-              >
-                Activate/Deactivate
               </Menu.Item>
             </Menu>
           }
@@ -173,10 +153,10 @@ const AccountantProcedures = () => {
       {/* Table */}
       <Table
         columns={columns}
-        dataSource={data?.response?.data || []}
+        dataSource={bills?.response?.data || []}
         pagination={{
-          current: data?.response?.current_page || 1,
-          total: data?.response?.total || 0,
+          current: bills?.response?.current_page || 1,
+          total: bills?.response?.total || 0,
           pageSize: perPage,
           onChange: (newPage, newPageSize) => {
             setPage(newPage)
@@ -184,8 +164,8 @@ const AccountantProcedures = () => {
           },
           showSizeChanger: true,
         }}
-        loading={isLoading}
-        rowKey="procedure"
+        loading={isBillsLoading}
+        rowKey="id"
       />
 
       {/* Add Procedure Modal */}
@@ -196,6 +176,12 @@ const AccountantProcedures = () => {
       >
         <AccountantProceduresModal />
       </AntdModal>
+
+      <EditBillModal
+        isEditModalOpen={isEditModalOpen}
+        setIsEditModalOpen={setIsEditModalOpen}
+        billData={selectedBill}
+      />
     </Layout>
   )
 }

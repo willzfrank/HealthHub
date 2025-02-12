@@ -270,9 +270,6 @@ const DoctorPatientVitalsModal = (props: Props) => {
                     disabled
                     placeholder="Select Gender"
                   />
-                  <span className="text-[#0061FF] underline">
-                    Add new procedure
-                  </span>
                 </div>
                 <div className="w-[30%]">
                   <label
@@ -288,6 +285,9 @@ const DoctorPatientVitalsModal = (props: Props) => {
                   />
                 </div>
               </div>
+              <span className="text-[#0061FF] underline">
+                Add new procedure
+              </span>
             </div>
           </div>
 

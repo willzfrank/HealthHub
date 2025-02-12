@@ -2,7 +2,7 @@
 import { useMutation } from 'react-query'
 import axiosInstance from '../axiosInstance'
 import { toast } from 'react-hot-toast'
-import { PatientRegistrationData } from '../../types'
+import { PatientRegistrationData } from '../../types/types'
 
 interface RegistrationResponse {
   status: boolean
@@ -10,7 +10,7 @@ interface RegistrationResponse {
   response?: {
     id: number
     rin: string
-    [key: string]: any 
+    [key: string]: any
   }
 }
 

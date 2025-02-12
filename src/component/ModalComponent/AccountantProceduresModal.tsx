@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useAddBill } from '../../api/hooks/useAddBill'
 
 type Props = {}
 
@@ -9,13 +10,25 @@ const AccountantProceduresModal = (props: Props) => {
     description: '',
   })
 
+  const { mutate, isLoading, isError, error, isSuccess } = useAddBill()
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    })
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const billData = {
+      name: formData.procedureName,
+      purchase_price: formData.price,
+      selling_price: formData.price,
+    }
+    mutate(billData)
   }
 
   return (
@@ -24,7 +37,7 @@ const AccountantProceduresModal = (props: Props) => {
         New Procedure
       </h3>
 
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <label
@@ -41,6 +54,7 @@ const AccountantProceduresModal = (props: Props) => {
               onChange={handleChange}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-[#0061FF] focus:ring-2 focus:ring-[#0061FF]/20 outline-none transition duration-200 text-gray-800 bg-white"
               placeholder="Enter procedure name"
+              required
             />
           </div>
 
@@ -65,6 +79,7 @@ const AccountantProceduresModal = (props: Props) => {
                 placeholder="0.00"
                 min="0"
                 step="0.01"
+                required
               />
             </div>
           </div>
@@ -85,6 +100,7 @@ const AccountantProceduresModal = (props: Props) => {
             rows={4}
             className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-[#0061FF] focus:ring-2 focus:ring-[#0061FF]/20 outline-none transition duration-200 text-gray-800 bg-white resize-none"
             placeholder="Enter procedure description"
+            required
           />
         </div>
 
@@ -97,9 +113,10 @@ const AccountantProceduresModal = (props: Props) => {
           </button>
           <button
             type="submit"
-            className="w-1/2 py-2.5 px-6 rounded-lg bg-[#0061FF] text-white font-semibold hover:bg-[#0061FF]/90 transition duration-200"
+            className="w-1/2 py-2.5 px-6 rounded-lg bg-[#0061FF] text-white font-semibold hover:bg-[#0061FF]/90 transition duration-200 disabled:opacity-50"
+            disabled={isLoading}
           >
-            SAVE
+            {isLoading ? 'Submitting...' : 'Submit'}
           </button>
         </div>
       </form>

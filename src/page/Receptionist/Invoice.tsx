@@ -1,12 +1,5 @@
 import React, { useState } from 'react'
-import {
-  Table,
-  Pagination,
-  Button,
-  Modal as AntdModal,
-  Dropdown,
-  Menu,
-} from 'antd'
+import { Table, Pagination, Button, Modal as AntdModal } from 'antd'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPatientViewFormModal'
@@ -15,6 +8,8 @@ import InvoiceDetailsModal from '../../component/ModalComponent/InvoiceDetailsMo
 import BillFormModal from '../../component/ModalComponent/BillFormModal'
 import { getAuthCookie } from '../../api/axiosInstance'
 import ScheduleModal from '../../component/ModalComponent/ScheduleModal'
+import useInvoices from '../../api/hooks/useInvoices'
+import type { IInvoice } from '../../types/types'
 
 interface InvoiceItem {
   key: string
@@ -27,26 +22,24 @@ interface InvoiceItem {
 }
 
 const Invoice = () => {
-  const [data, setData] = useState<InvoiceItem[]>([
-    {
-      key: '1',
-      invoiceID: 'INV001',
-      invoiceDate: '2023-10-01',
-      patientName: 'John Doe',
-      procedure: 'Check-up',
-      amount: '$200',
-      status: 'Paid',
-    },
-    {
-      key: '2',
-      invoiceID: 'INV002',
-      invoiceDate: '2023-10-02',
-      patientName: 'Jane Roe',
-      procedure: 'Consultation',
-      amount: '$150',
-      status: 'Pending',
-    },
-  ])
+  const { data: invoiceData, isLoading } = useInvoices(1)
+
+  // Transform API response to match table data structure
+  const transformedData: InvoiceItem[] =
+    invoiceData?.response?.data?.map((invoice: IInvoice) => ({
+      key: invoice.id.toString(),
+      invoiceID: invoice.invoice_number,
+      invoiceDate: invoice.invoice_date,
+      patientName: invoice.patient_name,
+      procedure: invoice.description,
+      amount: `₦${invoice.total.toLocaleString()}`,
+      status:
+        invoice.payment_status === 1
+          ? 'Paid'
+          : invoice.amount_due > 0
+          ? 'Pending'
+          : 'Unpaid',
+    })) || []
 
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -55,148 +48,112 @@ const Invoice = () => {
     string | null
   >(null)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false) // New state
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
 
   const authState = getAuthCookie()
   const role = authState?.role?.name
 
-  const handleCancel = () => {
-    setIsModalVisible(false)
-  }
-
+  const handleCancel = () => setIsModalVisible(false)
   const handlePayClick = (invoice: InvoiceItem) => {
-    setSelectedTransactionID(invoice.invoiceID) // Only pass the invoiceID as the transaction
+    setSelectedTransactionID(invoice.invoiceID)
     setIsModalOpen(true)
   }
-
-  const handleViewClick = () => {
-    setIsBillModalOpen(true) // Open the BillFormModal
-  }
-
-  const handleEdit = (invoiceID: string) => {
-    console.log('Edit invoice:', invoiceID)
-    // Add your edit logic here
-  }
-
-  const handleDelete = (invoiceID: string) => {
-    console.log('Delete invoice:', invoiceID)
-    // Add your delete logic here
-  }
-
-  const handleScheduleClick = () => {
-    setIsScheduleModalOpen(true) // Open Schedule Modal
-  }
-
-  const handleScheduleCancel = () => {
-    setIsScheduleModalOpen(false) // Close Schedule Modal
-  }
-
-  const onSelectChange = (selectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(selectedRowKeys)
-  }
-
-  const columns = [
-    {
-      title: 'Bill',
-      dataIndex: 'invoiceDate',
-      key: 'invoiceDate',
-    },
-    {
-      title: 'Patient Name',
-      dataIndex: 'patientName',
-      key: 'patientName',
-    },
-    {
-      title: 'Procedure',
-      dataIndex: 'procedure',
-      key: 'procedure',
-    },
-    {
-      title: 'Amount',
-      dataIndex: 'amount',
-      key: 'amount',
-    },
-    {
-      title: 'Status',
-      key: 'status',
-      render: (_text: any, item: InvoiceItem) => (
-        <span
-          className={`px-3 py-1 rounded-full text-sm ${
-            item.status === 'Paid'
-              ? 'bg-green-100 text-green-600'
-              : item.status === 'Pending'
-              ? 'bg-yellow-100 text-yellow-600'
-              : 'bg-red-100 text-red-600'
-          }`}
-        >
-          {item.status}
-        </span>
-      ),
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_text: any, item: InvoiceItem) => (
-        <div className="flex gap-2">
-          {role === 'RECEPTIONIST FACILITY' ? (
-            item.status === 'Pending' ? (
-              <Button
-                className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-                onClick={handleScheduleClick}
-              >
-                Schedule
-              </Button>
-            ) : (
-              <Button
-                className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-                disabled
-              >
-                Schedule
-              </Button>
-            )
-          ) : item.status === 'Pending' ? (
-            <Button
-              className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-              onClick={handleViewClick}
-            >
-              Schedule
-            </Button>
-          ) : (
-            <Button
-              className="rounded-full bg-[#0061FFA1] text-white"
-              onClick={() => handlePayClick(item)}
-            >
-              Schedule
-            </Button>
-          )}
-        </div>
-      ),
-    },
-  ]
+  const handleViewClick = () => setIsBillModalOpen(true)
+  const handleScheduleClick = () => setIsScheduleModalOpen(true)
+  const handleScheduleCancel = () => setIsScheduleModalOpen(false)
+  const onSelectChange = (keys: React.Key[]) => setSelectedRowKeys(keys)
 
   return (
     <Layout>
       <HeaderSection title="Invoice" />
-
       <Table
         rowSelection={{
           type: 'checkbox',
           selectedRowKeys,
           onChange: onSelectChange,
         }}
-        columns={columns}
-        dataSource={data}
+        columns={[
+          { title: 'Bill', dataIndex: 'invoiceDate', key: 'invoiceDate' },
+          {
+            title: 'Patient Name',
+            dataIndex: 'patientName',
+            key: 'patientName',
+          },
+          { title: 'Procedure', dataIndex: 'procedure', key: 'procedure' },
+          { title: 'Amount', dataIndex: 'amount', key: 'amount' },
+          {
+            title: 'Status',
+            key: 'status',
+            render: (_text, item: InvoiceItem) => (
+              <span
+                className={`px-3 py-1 rounded-full text-sm ${
+                  item.status === 'Paid'
+                    ? 'bg-green-100 text-green-600'
+                    : item.status === 'Pending'
+                    ? 'bg-yellow-100 text-yellow-600'
+                    : 'bg-red-100 text-red-600'
+                }`}
+              >
+                {item.status}
+              </span>
+            ),
+          },
+          {
+            title: 'Action',
+            key: 'action',
+            render: (_text, item: InvoiceItem) => (
+              <div className="flex gap-2">
+                {role === 'RECEPTIONIST FACILITY' ? (
+                  item.status === 'Pending' ? (
+                    <Button
+                      className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
+                      onClick={handleScheduleClick}
+                    >
+                      Schedule
+                    </Button>
+                  ) : (
+                    <Button
+                      className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
+                      disabled
+                    >
+                      Schedule
+                    </Button>
+                  )
+                ) : item.status === 'Pending' ? (
+                  <Button
+                    className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
+                    onClick={handleViewClick}
+                  >
+                    Schedule
+                  </Button>
+                ) : (
+                  <Button
+                    className="rounded-full bg-[#0061FFA1] text-white"
+                    onClick={() => handlePayClick(item)}
+                  >
+                    Pay
+                  </Button>
+                )}
+              </div>
+            ),
+          },
+        ]}
+        dataSource={transformedData}
+        loading={isLoading}
         pagination={false}
       />
 
       <div className="flex justify-between items-center mt-4">
         <div>
           <span className="border-[#0061FF] border-b text-[#69686A]">
-            {data.length}{' '}
+            {transformedData.length}{' '}
           </span>
           <span className="text-[#69686A]"> Shown on page</span>
         </div>
-        <Pagination defaultCurrent={1} total={50} />
+        <Pagination
+          defaultCurrent={invoiceData?.response?.current_page || 1}
+          total={invoiceData?.response?.total || 1}
+        />
       </div>
 
       <Modal
@@ -214,7 +171,7 @@ const Invoice = () => {
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <InvoiceDetailsModal selectedTransaction={selectedTransactionID} />{' '}
+        <InvoiceDetailsModal selectedTransaction={selectedTransactionID} />
       </AntdModal>
 
       <AntdModal
@@ -224,10 +181,9 @@ const Invoice = () => {
         centered
       >
         {/* <ScheduleModal /> */}
-        hell
+        test
       </AntdModal>
 
-      {/* BillFormModal */}
       <AntdModal
         visible={isBillModalOpen}
         onCancel={() => setIsBillModalOpen(false)}
