@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useBookAppointment } from '../../api/hooks/useBookAppointment'
 import toast from 'react-hot-toast'
 import useDoctors from '../../api/hooks/useDoctors'
-import { Doctor, Gender } from '../../types'
+import { Doctor, Gender } from '../../types/types'
 import useFetchGender from '../../api/hooks/useFetchGender'
 import useFetchTitles from '../../api/hooks/useFetchTitles'
 

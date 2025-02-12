@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import Cookies from 'js-cookie'
-import { AuthState, User } from '../types'
+import { AuthState, User } from '../types/types'
 
 interface AuthContextType extends AuthState {
   login: (authData: any) => void

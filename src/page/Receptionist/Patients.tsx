@@ -8,7 +8,7 @@ import Modal from '../../component/common/Modal'
 import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
 import useFetchGender from '../../api/hooks/useFetchGender'
 import useFetchPatientsList from '../../api/hooks/useFetchPatientsList'
-import { Gender } from '../../types'
+import { Gender } from '../../types/types'
 import { formatDate } from '../../utils/utils'
 import ScheduleModal from '../../component/ModalComponent/ScheduleModal'
 
@@ -27,9 +27,7 @@ const Patients = () => {
     error: patientError,
   } = useFetchPatientsList(perPage, page)
   const { data: genderData, isLoading: isGenderLoading } = useFetchGender()
-  const [selectedPatientData, setSelectedPatientData] = useState<any>(
-    null
-  )
+  const [selectedPatientData, setSelectedPatientData] = useState<any>(null)
 
   // Mapping the gender ID to gender name
   const getGenderName = (genderId: number | null) => {

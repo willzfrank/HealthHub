@@ -14,12 +14,12 @@ import { getAuthCookie } from './api/axiosInstance'
 import NurseDashboard from './page/Nurse/NurseDashboard'
 import DoctorDashboard from './page/Doctor/DoctorDashboard'
 import Transaction from './page/Receptionist/Transaction'
-import Invoice from './page/Receptionist/Invoice'
 import AccountantDashboard from './page/accountant/AccountantDashboard'
 import AccountantProcedures from './page/accountant/AccountantProcedures'
 import DoctorAppointment from './page/Doctor/DoctorAppointment'
 import NurseAppointment from './page/Nurse/NurseAppointment'
 import Staffs from './page/admin/Staffs'
+import Invoice from './page/Receptionist/Invoice'
 
 const queryClient = new QueryClient()
 

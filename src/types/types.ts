@@ -72,3 +72,26 @@ export interface PatientRegistrationData {
   nok_phone: string
   nok_address: string
 }
+
+export interface IInvoice {
+  id: number
+  invoice_number: string
+  invoice_date: string
+  patient_name: string
+  description: string
+  total: number
+  amount_due: number
+  amount_paid: number
+  payment_status: number
+  request_reference: string
+  year: number
+  payment_url: string
+  email: string
+  phone: string
+}
+
+export interface IBillData {
+  name: string
+  purchase_price: string
+  selling_price: string
+}
