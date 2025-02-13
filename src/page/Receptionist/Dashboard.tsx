@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '@iconify/react'
+import { useNavigate } from 'react-router-dom'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import DashboardCardSection from '../../component/HealthHubComponent/DashboardSection/DashboardCardSection'
@@ -9,10 +10,11 @@ import UserRegistrationModal from '../../component/ModalComponent/UserRegistrati
 import DashboardMetricCard from '../../component/HealthHubComponent/DashboardSection/DashboardMetricCard'
 import useAdminStats from '../../api/hooks/useAdminStats'
 import useFetchPatientsList from '../../api/hooks/useFetchPatientsList'
-import { IPatient } from '../../types/types'
+import { IAppointmentItem, IPatient } from '../../types/types'
 
 const ReceptionistDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const navigate = useNavigate()
   const { data: adminData, isLoading, error } = useAdminStats()
   const {
     data: patientData,
@@ -23,6 +25,10 @@ const ReceptionistDashboard = () => {
   const handleNewPatientClick = () => {
     setIsModalOpen(true)
   }
+
+    const handleBookAppointmentClick = () => {
+      navigate('/patients') 
+    }
 
   /** Extract API response */
   const appointments = adminData?.response?.appointments_today ?? []
@@ -47,7 +53,7 @@ const ReceptionistDashboard = () => {
   const eventsHeaders = ['Date', 'Patient', 'Event']
 
   /** Data Population */
-  const appointmentsData = appointments.map((apt) => ({
+  const appointmentsData = appointments.map((apt: IAppointmentItem) => ({
     id: `apt-${apt.id}`,
     cells: [
       new Date(apt.scheduled_date).toLocaleString(),
@@ -134,7 +140,11 @@ const ReceptionistDashboard = () => {
             title: 'New Patient',
             onClick: handleNewPatientClick,
           },
-          { id: 'book-appointment', title: 'Book Appointment' },
+          {
+            id: 'book-appointment',
+            title: 'Book Appointment',
+            onClick: handleBookAppointmentClick, 
+          },
         ].map(({ id, title, onClick }) => (
           <DashboardCardSection key={id} title={title} onClick={onClick} />
         ))}

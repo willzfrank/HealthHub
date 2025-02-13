@@ -99,7 +99,7 @@ const Patients = () => {
       render: (text: string) => text || 'N/A',
     },
     {
-      title: <span className="text-[#3A3A49]">Reg. Date </span>,
+      title: <span className="text-[#3A3A49]">Reg. Date</span>,
       dataIndex: 'created_at',
       key: 'regDate',
       render: (text: string) => formatDate(text),
@@ -117,37 +117,37 @@ const Patients = () => {
       render: (text: string) => text || 'N/A',
     },
     {
-      title: <span className="text-[#3A3A49]">Last Appointment</span>,
+      title: <span className="text-[#3A3A49]">Next Appointment</span>,
       dataIndex: 'last_visited',
       key: 'lastAppointment',
       render: (text: string) => formatDate(text) || 'N/A',
     },
+    // {
+    //   title: <span className="text-[#3A3A49]">Next Visit</span>,
+    //   dataIndex: 'last_visited',
+    //   key: 'lastVisit',
+    //   render: (text: string) => formatDate(text) || 'N/A',
+    // },
     {
-      title: <span className="text-[#3A3A49]">Last Visit</span>,
-      dataIndex: 'last_visited',
-      key: 'lastVisit',
-      render: (text: string) => formatDate(text) || 'N/A',
-    },
-    {
-      title: <span className="text-[#3A3A49]">Next Appointment</span>,
+      title: <span className="text-[#3A3A49]">Schedule </span>,
       dataIndex: 'next_scheduled_date',
       key: 'nextAppointment',
       render: (text: string, record: any) =>
         getAppointmentMessage(text, record),
     },
-    {
-      title: <span className="text-[#3A3A49]">Actions </span>,
-      key: 'actions',
-      render: () => (
-        <Icon
-          icon="mdi:eye-outline"
-          width="20"
-          height="20"
-          className="text-[#0061FF] cursor-pointer"
-          onClick={() => setIsOpen(true)}
-        />
-      ),
-    },
+    // {
+    //   title: <span className="text-[#3A3A49]">Actions </span>,
+    //   key: 'actions',
+    //   render: () => (
+    //     <Icon
+    //       icon="mdi:eye-outline"
+    //       width="20"
+    //       height="20"
+    //       className="text-[#0061FF] cursor-pointer"
+    //       onClick={() => setIsOpen(true)}
+    //     />
+    //   ),
+    // },
   ]
 
   return (

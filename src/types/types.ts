@@ -131,6 +131,14 @@ export interface ICounts {
   seen_this_year: number
 }
 
+export interface IVitalsCount {
+  total_patients: number
+  today_count: number
+  week_count: number
+  month_count: number
+  year_count: number
+}
+
 export interface IPatient {
   id: number
   hospital_id: number

@@ -1,5 +1,6 @@
 import { Select, DatePicker } from 'antd'
 import dayjs from 'dayjs'
+import { usePatientRegistration } from '../../api/hooks/useUpdatePatient'
 
 type Props = {}
 
@@ -10,6 +11,12 @@ const genderOptions = [
 ]
 
 const ReceptionistPatientFormModal = (props: Props) => {
+  const registration = usePatientRegistration()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+  }
+  
   return (
     <form>
       <div className="grid grid-cols-2 gap-5">
@@ -185,7 +192,7 @@ const ReceptionistPatientFormModal = (props: Props) => {
           CANCEL
         </button>
         <button className="text-white bg-[#0061FF] rounded px-20 py-2.5">
-          SUBMIT
+          UPDATE
         </button>
       </div>
     </form>
