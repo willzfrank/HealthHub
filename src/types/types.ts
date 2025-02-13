@@ -95,3 +95,68 @@ export interface IBillData {
   purchase_price: string
   selling_price: string
 }
+
+export interface IAppointmentStats {
+  id: number
+  file_number: string
+  patient_name: string
+  patient_phone: string
+  doctor: string
+  consultation_name: string
+  consultation_status: number
+  treatment: string | null
+  scheduled_date: string
+  rescheduled_date: string | null
+  vitals_status: string
+}
+
+export interface IAppointmentItem extends IAppointmentStats {
+  vitals_height: string
+  vitals_weight: string
+  vitals_blood_pressure: string
+  vitals_temperature: string
+  vitals_oxygen_level: string
+  vitals_pulse_rate: string
+  doctor_comment: string
+  receptionist_comment: string
+  doctor_diagnosis: string | null
+  rescheduled_date: string | null
+}
+
+export interface ICounts {
+  total_patients: number
+  waiting_today: number
+  seen_today: number
+  scheduled_tomorrow: number
+  seen_this_year: number
+}
+
+export interface IPatient {
+  id: number
+  hospital_id: number
+  branch_id: number | null
+  title_id: number
+  marital_status_id: number
+  country_id: number
+  state_id: number
+  lga_id: number
+  city_id: number | null
+  gender_id: number
+  file_number: string
+  nin: string | null
+  first_name: string
+  middle_name: string
+  last_name: string
+  date_of_birth: string
+  email: string
+  phone: string
+  address: string
+  created_at: string
+  updated_at: string
+  last_visited: string | null
+  next_scheduled_date: string | null
+  doctor_id: number | null
+  name: string
+}
+
+

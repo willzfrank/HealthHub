@@ -27,15 +27,26 @@ const DashboardTable = ({ title, headers, data }: DashboardTableProps) => (
           </tr>
         </thead>
         <tbody>
-          {data.map((row) => (
-            <tr key={row.id} className="hover:bg-[#F9FAFB]">
-              {row.cells.map((cell, i) => (
-                <td key={`${row.id}-cell-${i}`} className="p-2 text-[14px]">
-                  {cell}
-                </td>
-              ))}
+          {data && data.length > 0 ? (
+            data.map((row) => (
+              <tr key={row.id} className="hover:bg-[#F9FAFB]">
+                {row.cells.map((cell, i) => (
+                  <td key={`${row.id}-cell-${i}`} className="p-2 text-[14px]">
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={headers.length}
+                className="p-4 text-center text-gray-500"
+              >
+                No data available
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
@@ -43,3 +54,4 @@ const DashboardTable = ({ title, headers, data }: DashboardTableProps) => (
 )
 
 export default DashboardTable
+

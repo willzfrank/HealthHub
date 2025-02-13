@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Table, Pagination, Modal as AntdModal } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
@@ -6,53 +6,42 @@ import HeaderSection from '../../component/common/HeaderSection'
 import Modal from '../../component/common/Modal'
 import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
 import DoctorPatientVitalsModal from '../../component/ModalComponent/DoctorPatientVitalsModal'
+import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
+import { IAppointmentItem } from '../../types/types'
 
 interface AppointmentItem {
-  key: string
-  patientID: string
-  patientName: string
-  purpose: string
+  id: number
+  file_number: string
+  patient_name: string
+  consultation_name: string
   doctor: string
-  payment: string
-  date: string
-  vitals: 'Done' | 'Pending'
+  scheduled_date: string
+  vitals_status: string
 }
 
 const DoctorAppointment = () => {
-  const [data, setData] = useState<AppointmentItem[]>([
-    {
-      key: '1',
-      patientID: 'P001',
-      patientName: 'John Doe',
-      purpose: 'Check-up',
-      doctor: 'Dr. Smith',
-      payment: 'Paid',
-      date: '2023-10-01 10:00 AM',
-      vitals: 'Done' as const,
-    },
-    {
-      key: '2',
-      patientID: 'P002',
-      patientName: 'Jane Roe',
-      purpose: 'Consultation',
-      doctor: 'Dr. Brown',
-      payment: 'Pending',
-      date: '2023-10-02 11:00 AM',
-      vitals: 'Pending' as const,
-    },
-  ])
+  const {
+    data: appointmentData,
+    error: isAppointmentError,
+    isLoading: isAppointmentLoading,
+  } = useFetchAppointmentsList()
 
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('Details')
+    const [selectedAppointment, setSelectedAppointment] =
+      useState<IAppointmentItem | null>(null)
 
-  const showModal = () => {
-    setIsModalVisible(true)
-  }
+   const showModal = (record: IAppointmentItem) => {
+     setSelectedAppointment(record)
+     setIsModalVisible(true)
+   }
 
-  const handleCancel = () => {
-    setIsModalVisible(false)
-  }
+ const handleCancel = () => {
+   setIsModalVisible(false)
+   setSelectedAppointment(null)
+ }
+
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab)
@@ -61,23 +50,24 @@ const DoctorAppointment = () => {
   const columns = [
     {
       title: <span className="text-[#69686A]">Date/Time </span>,
-      dataIndex: 'date',
-      key: 'date',
+      dataIndex: 'scheduled_date',
+      key: 'scheduled_date',
+      render: (date: string) => new Date(date).toLocaleString(),
     },
     {
       title: <span className="text-[#69686A]">Patient ID </span>,
-      dataIndex: 'patientID',
-      key: 'patientID',
+      dataIndex: 'file_number',
+      key: 'file_number',
     },
     {
       title: <span className="text-[#69686A]">Patient Name </span>,
-      dataIndex: 'patientName',
-      key: 'patientName',
+      dataIndex: 'patient_name',
+      key: 'patient_name',
     },
     {
       title: <span className="text-[#69686A]">Purpose </span>,
-      dataIndex: 'purpose',
-      key: 'purpose',
+      dataIndex: 'consultation_name',
+      key: 'consultation_name',
     },
     {
       title: <span className="text-[#69686A]">Doctor </span>,
@@ -86,40 +76,41 @@ const DoctorAppointment = () => {
     },
     {
       title: <span className="text-[#69686A]">Status </span>,
-      key: 'vitals',
-      render: (_text: any, item: AppointmentItem) => (
+      dataIndex: 'vitals_status',
+      key: 'vitals_status',
+      render: (status: string) => (
         <span
           className={`px-3 py-1 rounded-full text-sm ${
-            item.vitals === 'Done'
+            status.toLowerCase() === 'done'
               ? 'bg-[#ccf0eb] text-[#70d5c7]'
               : 'bg-[#f0edcc] text-[#bbae15]'
           }`}
         >
-          {item.vitals}
+          {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
       ),
     },
     {
       title: <span className="text-[#69686A]">Action </span>,
-      key: 'view',
+      key: 'action',
       render: () => (
         <Icon
           icon="system-uicons:enter"
           width="21"
           height="21"
-          className="cursor-pointer "
+          className="cursor-pointer"
         />
       ),
     },
     {
       title: <span className="text-[#69686A]">View </span>,
       key: 'view',
-      render: () => (
+      render: (_: any, record: IAppointmentItem) => (
         <Icon
           icon="mdi:eye"
           width="20"
           height="20"
-          onClick={showModal}
+          onClick={() => showModal(record)}
           className="cursor-pointer text-[#0061FF]"
         />
       ),
@@ -131,19 +122,29 @@ const DoctorAppointment = () => {
       <HeaderSection title="Appointments" />
 
       {/* Table */}
-      <Table columns={columns} dataSource={data} pagination={false} />
+      <Table
+        columns={columns}
+        dataSource={appointmentData?.response?.data}
+        pagination={false}
+        loading={isAppointmentLoading}
+        rowKey="id"
+      />
 
       {/* Footer */}
       <div className="flex justify-between items-center mt-4">
         <div>
           <span className="border-[#0061FF] border-b text-[#69686A]">
-            {data.length}{' '}
+            {appointmentData?.response?.data?.length ?? 0}{' '}
           </span>
           <span className="text-[#69686A]">Shown on page</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-[#69686A]">Page</span>
-          <Pagination defaultCurrent={1} total={50} />
+          <Pagination
+            current={appointmentData?.response?.current_page}
+            total={appointmentData?.response?.total}
+            pageSize={appointmentData?.response?.per_page}
+          />
         </div>
       </div>
 
@@ -153,7 +154,7 @@ const DoctorAppointment = () => {
         footer={null}
         centered
       >
-        <DoctorPatientVitalsModal />
+        <DoctorPatientVitalsModal appointmentData={selectedAppointment} />
       </AntdModal>
 
       <Modal
