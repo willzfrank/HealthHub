@@ -1,7 +1,15 @@
 import { Select, DatePicker } from 'antd'
 import dayjs from 'dayjs'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
+import axiosInstance from '../../api/axiosInstance'
+import { useMutation } from 'react-query'
+import { IAppointmentItem, IBillData } from '../../types/types'
 
-type Props = {}
+type Props = {
+  appointmentData: IAppointmentItem | null
+
+}
 
 const genderOptions = [
   { value: 'male', label: 'Male' },
@@ -9,13 +17,54 @@ const genderOptions = [
   { value: 'other', label: 'Other' },
 ]
 
-const DoctorPatientVitalsModal = (props: Props) => {
+const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
+  const [newProcedure, setNewProcedure] = useState({
+    name: '',
+    purchase_price: '',
+    selling_price: '',
+  })
+
+   const addProcedureMutation = useMutation(
+     async (data: IBillData) => {
+       const response = await axiosInstance.post('admin/bills/add', data)
+       if (!response.data.status) {
+         throw new Error(response.data.message || 'An unknown error occurred')
+       }
+       return response.data
+     },
+     {
+       onSuccess: () => {
+         toast.success('Procedure added successfully!')
+         setNewProcedure({
+           name: '',
+           purchase_price: '',
+           selling_price: '',
+         })
+       },
+       onError: (error: any) => {
+         toast.error(error.message || 'Failed to add procedure')
+       },
+     }
+   )
+
+   const handleAddProcedure = () => {
+     if (
+       !newProcedure.name ||
+       !newProcedure.purchase_price ||
+       !newProcedure.selling_price
+     ) {
+       toast.error('Please fill all procedure fields')
+       return
+     }
+     addProcedureMutation.mutate(newProcedure)
+   }
+
   return (
     <div>
       <h3 className="text-[#030229] text-2xl font-semibold text-center mb-8">
         Vitals
       </h3>
-      <form>
+      <form onSubmit={(e) => e.preventDefault()}>
         <div className="grid grid-cols-2 gap-5">
           <div>
             <label
@@ -282,6 +331,13 @@ const DoctorPatientVitalsModal = (props: Props) => {
                     id="procedureDate"
                     className="w-full p-1.5 bg-[#F5F6FA] border border-[#CCCCCC] rounded-[8px]"
                     type="text"
+                    value={newProcedure.purchase_price}
+                    onChange={(e) =>
+                      setNewProcedure((prev) => ({
+                        ...prev,
+                        purchase_price: e.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>

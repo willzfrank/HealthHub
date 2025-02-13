@@ -7,29 +7,35 @@ import DashboardTable from '../../component/HealthHubComponent/DashboardSection/
 import Modal from '../../component/common/Modal'
 import UserRegistrationModal from '../../component/ModalComponent/UserRegistrationModal'
 import DashboardMetricCard from '../../component/HealthHubComponent/DashboardSection/DashboardMetricCard'
+import useAdminStats from '../../api/hooks/useAdminStats'
+import useFetchPatientsList from '../../api/hooks/useFetchPatientsList'
+import { IPatient } from '../../types/types'
 
-// Main Dashboard Component
 const ReceptionistDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const { data: adminData, isLoading, error } = useAdminStats()
+  const {
+    data: patientData,
+    isLoading: isPatientLoading,
+    error: patientError,
+  } = useFetchPatientsList(1, 10)
 
   const handleNewPatientClick = () => {
     setIsModalOpen(true)
   }
 
-  const appointmentsHeaders = ['Time', 'Patient', 'Purpose', 'Doctor', 'View']
-  const appointmentsData = [
-    {
-      id: 'apt-1',
-      cells: [
-        '10 Nov 2024',
-        'John Doe',
-        'Consultation',
-        'Dr. Smith',
-        <Icon icon="mdi:eye-outline" width="20" height="20" />,
-      ],
-    },
-  ]
+  /** Extract API response */
+  const appointments = adminData?.response?.appointments_today ?? []
+  const counts = adminData?.response?.counts ?? {
+    total_patients: 0,
+    waiting_today: 0,
+    seen_today: 0,
+    scheduled_tomorrow: 0,
+    seen_this_year: 0,
+  }
 
+  /** Headers */
+  const appointmentsHeaders = ['Time', 'Patient', 'Purpose', 'Doctor', 'View']
   const patientsHeaders = [
     'Patient ID',
     'Patient Name',
@@ -38,27 +44,74 @@ const ReceptionistDashboard = () => {
     'Date',
     'View',
   ]
-  const patientsData = [
-    {
-      id: 'pat-1',
-      cells: [
-        '1001',
-        'John Doe',
-        '10 Nov 2004',
-        'Consultation',
-        '10 Nov 2024',
-        <Icon icon="bitcoin-icons:exit-outline" width="20" height="20" />,
-      ],
-    },
-  ]
-
   const eventsHeaders = ['Date', 'Patient', 'Event']
-  const eventsData = [
-    {
-      id: 'evt-1',
-      cells: ['10 Nov 2024', 'John Doe', 'Birthday'],
-    },
-  ]
+
+  /** Data Population */
+  const appointmentsData = appointments.map((apt) => ({
+    id: `apt-${apt.id}`,
+    cells: [
+      new Date(apt.scheduled_date).toLocaleString(),
+      apt.patient_name,
+      apt.consultation_name,
+      apt.doctor,
+      <Icon icon="mdi:eye-outline" width="20" height="20" />,
+    ],
+  }))
+
+  const patientsData =
+    patientData?.response?.data?.length > 0
+      ? patientData.response.data.map((patient: IPatient) => ({
+          id: `pat-${patient.id}`,
+          cells: [
+            patient.file_number || 'N/A',
+            patient.name || 'N/A',
+            new Date(patient.created_at).toLocaleDateString(),
+            patient.last_visited
+              ? new Date(patient.last_visited).toLocaleDateString()
+              : 'N/A',
+            patient.next_scheduled_date
+              ? new Date(patient.next_scheduled_date).toLocaleDateString()
+              : 'N/A',
+            <Icon icon="mdi:eye-outline" width="20" height="20" />,
+          ],
+        }))
+      : []
+
+  const getUpcomingBirthdays = (
+    patients: IPatient[]
+  ): Array<{ id: string; cells: React.ReactNode[] }> => {
+    const currentYear = new Date().getFullYear()
+
+    return patients
+      .map((patient) => {
+        const dob = new Date(patient.date_of_birth)
+        if (isNaN(dob.getTime())) return null
+
+        const birthdayThisYear = new Date(
+          currentYear,
+          dob.getMonth(),
+          dob.getDate()
+        )
+
+        if (birthdayThisYear >= new Date()) {
+          return {
+            id: `evt-${patient.id}`,
+            cells: [
+              birthdayThisYear.toLocaleDateString(),
+              patient.name,
+              'Birthday',
+            ],
+          }
+        }
+
+        return null
+      })
+      .filter(Boolean) as Array<{ id: string; cells: React.ReactNode[] }>
+  }
+
+  const eventsData = patientData?.response?.data
+    ? getUpcomingBirthdays(patientData.response.data)
+    : []
 
   return (
     <Layout>
@@ -69,7 +122,9 @@ const ReceptionistDashboard = () => {
         <div className="rounded-lg h-[95px] bg-white p-3.5 shadow-sm">
           <div className="space-y-4 flex items-start flex-col">
             <span className="text-gray-600">Patients Queue</span>
-            <span className="text-3xl font-bold text-gray-900">20</span>
+            <span className="text-3xl font-bold text-gray-900">
+              {counts?.waiting_today ?? 0}
+            </span>
           </div>
         </div>
 
@@ -84,6 +139,7 @@ const ReceptionistDashboard = () => {
           <DashboardCardSection key={id} title={title} onClick={onClick} />
         ))}
       </div>
+
       <div className="my-5">
         <DashboardTable
           title="Today’s Appointments"
@@ -91,6 +147,7 @@ const ReceptionistDashboard = () => {
           data={appointmentsData}
         />
       </div>
+
       <div className="mt-4 flex items-center gap-4">
         <div className="w-[70%]">
           <DashboardTable
