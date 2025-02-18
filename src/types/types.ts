@@ -172,3 +172,15 @@ export interface IAddPatientBillItemRequest {
   bill_item_id: string
   quantity: number
 }
+
+export interface IAppointmentNurseUpdateData {
+  id: number
+  doctor_id: number
+  vitals_blood_pressure: string
+  vitals_temperature?: string
+  vitals_height?: string
+  vitals_weight?: string
+  vitals_oxygen_level?: string
+  vitals_pulse_rate: string
+  is_nurse: boolean
+}

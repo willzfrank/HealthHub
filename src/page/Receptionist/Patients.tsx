@@ -11,6 +11,7 @@ import useFetchPatientsList from '../../api/hooks/useFetchPatientsList'
 import { Gender } from '../../types/types'
 import { formatDate } from '../../utils/utils'
 import ScheduleModal from '../../component/ModalComponent/ScheduleModal'
+import { getAuthCookie } from '../../api/axiosInstance'
 
 const Patients = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
@@ -21,11 +22,11 @@ const Patients = () => {
   const [perPage, setPerPage] = useState(10)
   const [page, setPage] = useState(1)
 
-  const {
-    data: patientData,
-    isLoading: isPatientLoading,
-    error: patientError,
-  } = useFetchPatientsList(perPage, page)
+  const authState = getAuthCookie()
+  const role = authState?.role?.name
+
+  const { data: patientData, isLoading: isPatientLoading } =
+    useFetchPatientsList(perPage, page)
   const { data: genderData, isLoading: isGenderLoading } = useFetchGender()
   const [selectedPatientData, setSelectedPatientData] = useState<any>(null)
 
@@ -150,6 +151,16 @@ const Patients = () => {
     // },
   ]
 
+const filteredColumns = columns.filter((column) => {
+  if (
+    column.key === 'nextAppointment' &&
+    role?.toLowerCase().includes('nurse')
+  ) {
+    return false 
+  }
+  return true
+})
+
   return (
     <Layout>
       <HeaderSection title="Patients" />
@@ -189,7 +200,7 @@ const Patients = () => {
           selectedRowKeys,
           onChange: onSelectChange,
         }}
-        columns={columns}
+        columns={filteredColumns}
         dataSource={patientData?.response?.data || []}
         pagination={false}
         loading={isPatientLoading || isGenderLoading}

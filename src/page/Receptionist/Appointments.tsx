@@ -6,7 +6,7 @@ import HeaderSection from '../../component/common/HeaderSection'
 import Modal from '../../component/common/Modal'
 import ReceptionistPatientFormModal from '../../component/ModalComponent/ReceptionistPatientFormModal'
 import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
-import { IAppointmentStats } from '../../types/types'
+import { IAppointmentItem, IAppointmentStats } from '../../types/types'
 
 const AppointmentsTable = () => {
   const {
@@ -97,7 +97,7 @@ const AppointmentsTable = () => {
   ]
 
   const dataSource =
-    appointmentData?.response?.data.map((appointment) => ({
+    appointmentData?.response?.data.map((appointment:IAppointmentItem) => ({
       key: appointment.id,
       scheduled_date: appointment.scheduled_date,
       file_number: appointment.file_number,
