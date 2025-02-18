@@ -6,6 +6,7 @@ import HeaderSection from '../../component/common/HeaderSection'
 import Modal from '../../component/common/Modal'
 import ReceptionistPatientFormModal from '../../component/ModalComponent/ReceptionistPatientFormModal'
 import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
+import { IAppointmentItem, IAppointmentStats } from '../../types/types'
 
 const AppointmentsTable = () => {
   const {
@@ -17,6 +18,8 @@ const AppointmentsTable = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [filter, setFilter] = useState('')
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectedPatient, setSelectedPatient] =
+    useState<IAppointmentStats | null>(null)
 
   // Handle row selection
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
@@ -29,12 +32,14 @@ const AppointmentsTable = () => {
     // Apply filtering logic here if needed
   }
 
-  const showModal = () => {
+  const showModal = (record: IAppointmentStats) => {
+    setSelectedPatient(record)
     setIsModalVisible(true)
   }
 
   const handleCancel = () => {
     setIsModalVisible(false)
+    setSelectedPatient(null)
   }
 
   const filterMenu = (
@@ -79,27 +84,27 @@ const AppointmentsTable = () => {
     {
       title: <span className="text-[#3A3A49]">Actions </span>,
       key: 'actions',
-      render: () => (
+      render: (_: any, record: IAppointmentStats) => (
         <Icon
           icon="mdi:eye-outline"
           width="20"
           height="20"
           className="text-[#0061FF] cursor-pointer"
-          onClick={showModal}
+          onClick={() => showModal(record)}
         />
       ),
     },
   ]
 
-  // Prepare data for the table
   const dataSource =
-    appointmentData?.response?.data.map((appointment) => ({
+    appointmentData?.response?.data.map((appointment:IAppointmentItem) => ({
       key: appointment.id,
       scheduled_date: appointment.scheduled_date,
       file_number: appointment.file_number,
       patient_name: appointment.patient_name,
       consultation_name: appointment.consultation_name,
       doctor: appointment.doctor,
+      receptionist_comment: appointment.receptionist_comment,
     })) || []
 
   return (
@@ -172,14 +177,14 @@ const AppointmentsTable = () => {
         </div>
       </div>
 
-      <Modal
+      {/* <Modal
         isOpen={isModalVisible}
         onClose={handleCancel}
         title="Schedule Appointment"
         centerTitle={true}
       >
-        <ReceptionistPatientFormModal />
-      </Modal>
+        <ReceptionistPatientFormModal selectedPatient={selectedPatient} />
+      </Modal> */}
     </Layout>
   )
 }

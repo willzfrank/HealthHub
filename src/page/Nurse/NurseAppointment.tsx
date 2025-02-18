@@ -1,105 +1,61 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Dropdown, Modal as AntdModal } from 'antd'
-
+import { Table, Pagination, Modal as AntdModal } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
-import Modal from '../../component/common/Modal'
-import NursePatientDetailsFormModal from '../../component/ModalComponent/NursePatientDetailsFormModal'
 import NursePatientVitalsModal from '../../component/ModalComponent/NursePatientVitalsModal'
-
-interface AppointmentItem {
-  key: string
-  patientID: string
-  patientName: string
-  purpose: string
-  doctor: string
-  payment: string
-  date: string
-  vitals: 'Done' | 'Pending'
-}
+import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
+import { IAppointmentItem } from '../../types/types'
 
 const NurseAppointment = () => {
-  // Sample Data
-  const [data, setData] = useState<AppointmentItem[]>([
-    {
-      key: '1',
-      patientID: 'P001',
-      patientName: 'John Doe',
-      purpose: 'Check-up',
-      doctor: 'Dr. Smith',
-      payment: 'Paid',
-      date: '2023-10-01 10:00 AM',
-      vitals: 'Done' as const,
-    },
-    {
-      key: '2',
-      patientID: 'P002',
-      patientName: 'Jane Roe',
-      purpose: 'Consultation',
-      doctor: 'Dr. Brown',
-      payment: 'Pending',
-      date: '2023-10-02 11:00 AM',
-      vitals: 'Pending' as const,
-    },
-    // Add more rows as needed
-  ])
-
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const [filter, setFilter] = useState('')
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<IAppointmentItem | null>(null)
 
-  // Handle row selection
-  const onSelectChange = (selectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(selectedRowKeys)
-  }
-
-  // Handle filtering
-  const handleFilterChange = (value: string) => {
-    setFilter(value)
-  }
-
-  // Function to handle modal visibility
-  const showModal = () => {
+  const showModal = (record: IAppointmentItem) => {
+    setSelectedAppointment(record)
     setIsModalVisible(true)
   }
 
   const handleCancel = () => {
+    setSelectedAppointment(null)
     setIsModalVisible(false)
   }
 
-  // Columns definition
-  const columns = [
-    {
-      title: <span className="text-[#69686A]">Date/Time </span>,
-      dataIndex: 'date',
-      key: 'date',
-    },
-    {
-      title: <span className="text-[#69686A]">Patient ID </span>,
-      dataIndex: 'patientID',
-      key: 'patientID',
-    },
-    {
-      title: <span className="text-[#69686A]">Patient Name </span>,
+  const {
+    data: appointmentData,
+    error: isAppointmentError,
+    isLoading: isAppointmentLoading,
+  } = useFetchAppointmentsList()
 
-      dataIndex: 'patientName',
-      key: 'patientName',
-    },
+  const formattedData = appointmentData?.response?.data.map(
+    (item: IAppointmentItem) => ({
+      key: item.id,
+      patientID: item.file_number,
+      patientName: item.patient_name,
+      purpose: item.consultation_name,
+      doctor: item.doctor,
+      date: item.scheduled_date
+        ? new Date(item.scheduled_date).toLocaleString()
+        : '',
+      vitals: item.vitals_status === 'pending' ? 'Pending' : 'Done',
+      receptionist_comment: item.receptionist_comment,
+      vitals_blood_pressure: item.vitals_blood_pressure,
+      rescheduled_date: item.rescheduled_date,
+      vitals_pulse_rate: item.vitals_pulse_rate,
+    })
+  )
+
+  const columns = [
+    { title: 'Date/Time', dataIndex: 'date', key: 'date' },
+    { title: 'Patient ID', dataIndex: 'patientID', key: 'patientID' },
+    { title: 'Patient Name', dataIndex: 'patientName', key: 'patientName' },
+    { title: 'Purpose', dataIndex: 'purpose', key: 'purpose' },
+    { title: 'Doctor', dataIndex: 'doctor', key: 'doctor' },
     {
-      title: <span className="text-[#69686A]">Purpose </span>,
-      dataIndex: 'purpose',
-      key: 'purpose',
-    },
-    {
-      title: <span className="text-[#69686A]">Doctor </span>,
-      dataIndex: 'doctor',
-      key: 'doctor',
-    },
-    {
-      title: <span className="text-[#69686A]">Vitals </span>,
+      title: 'Vitals',
       key: 'vitals',
-      render: (_text: any, item: AppointmentItem) => (
+      render: (_: any, item: any) => (
         <span
           className={`px-3 py-1 rounded-full text-sm ${
             item.vitals === 'Done'
@@ -111,16 +67,15 @@ const NurseAppointment = () => {
         </span>
       ),
     },
-
     {
-      title: <span className="text-[#69686A]">Actions </span>,
+      title: 'Actions',
       key: 'actions',
-      render: () => (
+      render: (_: any, record: IAppointmentItem) => (
         <Icon
           icon="bitcoin-icons:exit-outline"
           width="20"
           height="20"
-          onClick={showModal}
+          onClick={() => showModal(record)}
           className="cursor-pointer"
         />
       ),
@@ -130,119 +85,29 @@ const NurseAppointment = () => {
   return (
     <Layout>
       <HeaderSection title="Appointments" />
-
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div className="rounded bg-white p-2 flex items-center">
-          <span className="text-[#202224] text-[14px]">
-            Showing results for{' '}
-          </span>
-          <div className="mx-2 border-l border-[#979797] h-4"></div>
-          <Dropdown
-            menu={{
-              items: [
-                { key: 'all-doctors', label: 'All Doctors' },
-                // Add more doctor options here
-              ],
-            }}
-            trigger={['click']}
-          >
-            <button className="text-[#202224] text-[11px] outline-none flex items-center">
-              All Doctors
-              <Icon
-                icon="mdi:chevron-down"
-                width="16"
-                height="16"
-                className="ml-1"
-              />
-            </button>
-          </Dropdown>
-          <div className="mx-2 border-l border-[#979797] h-4"></div>
-          <Dropdown
-            menu={{
-              items: [
-                { key: 'all-vitals', label: 'All Vitals' },
-                // Add more vitals options here
-              ],
-            }}
-            trigger={['click']}
-          >
-            <button className="text-[#202224] text-[11px] outline-none flex items-center">
-              All Vitals
-              <Icon
-                icon="mdi:chevron-down"
-                width="16"
-                height="16"
-                className="ml-1"
-              />
-            </button>
-          </Dropdown>
-        </div>
-
-        <div className="flex justify-end gap-1.5 items-center mb-4">
-          <Dropdown
-            menu={{
-              items: [
-                { key: '', label: 'All' },
-                { key: 'Paid', label: 'Paid' },
-                { key: 'Pending', label: 'Pending' },
-              ],
-              onClick: (e) => handleFilterChange(e.key),
-            }}
-            trigger={['click']}
-          >
-            <button className="flex items-center gap-0.5 p-1.5 bg-[#0061FF] rounded">
-              <Icon
-                icon="line-md:filter"
-                width="20"
-                height="20"
-                className="text-white"
-              />
-              <span className="text-white text-[16px]">Filter</span>
-            </button>
-          </Dropdown>
-          <button className="flex items-center gap-0.5 p-1.5 bg-[#0061FF] rounded">
-            <Icon
-              icon="material-symbols:print-rounded"
-              width="20"
-              height="20"
-              className="text-white"
-            />
-            <span className="text-white text-[16px]">Export</span>
-            <Icon
-              icon="bi:three-dots-vertical"
-              width="16"
-              height="16"
-              className="text-white"
-            />
-          </button>
-        </div>
-      </div>
-
-      {/* Table */}
-      <Table columns={columns} dataSource={data} pagination={false} />
-
+      <Table
+        columns={columns}
+        dataSource={formattedData}
+        pagination={false}
+        loading={isAppointmentLoading}
+      />
       <AntdModal
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
         centered
       >
-        <NursePatientVitalsModal />
+        <NursePatientVitalsModal
+          appointment={selectedAppointment}
+          closeModal={()=> setIsModalVisible(false)}
+        />
       </AntdModal>
-
-      {/* Footer */}
       <div className="flex justify-between items-center mt-4">
-        <div>
-          <span className="border-[#0061FF] border-b text-[#69686A]">
-            {data.length}{' '}
-          </span>
-          <span className="text-[#69686A]">Shown on page</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[#69686A]">Page</span>
-          <Pagination defaultCurrent={1} total={50} />
-        </div>
+        <span>{formattedData?.length ?? 0} Shown on page</span>
+        <Pagination
+          defaultCurrent={1}
+          total={appointmentData?.response?.total}
+        />
       </div>
     </Layout>
   )

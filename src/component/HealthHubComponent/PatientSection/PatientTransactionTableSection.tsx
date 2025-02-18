@@ -108,7 +108,7 @@ const TransactionsTable = () => {
       {/* Transaction Details Modal */}
       <AntdModal
         title={`Transaction Details - ${selectedTransaction?.invoiceID}`}
-        visible={isModalOpen}
+        open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >

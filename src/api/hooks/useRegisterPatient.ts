@@ -4,23 +4,26 @@ import axiosInstance from '../axiosInstance'
 import { toast } from 'react-hot-toast'
 import { PatientRegistrationData } from '../../types/types'
 
-interface RegistrationResponse {
+interface PatientRegistrationResponse {
   status: boolean
-  message: string
-  response?: {
+  response: {
     id: number
-    rin: string
-    [key: string]: any
-  }
+    hospital: string
+    patient_number: string
+    name: string
+    phone: string
+  } | null
+  message: string
 }
 
 const registerPatient = async (
   data: PatientRegistrationData
-): Promise<RegistrationResponse> => {
-  const { data: response } = await axiosInstance.post<RegistrationResponse>(
-    'admin/patient/register',
-    data
-  )
+): Promise<PatientRegistrationResponse> => {
+  const { data: response } =
+    await axiosInstance.post<PatientRegistrationResponse>(
+      'admin/patient/register',
+      data
+    )
   return response
 }
 

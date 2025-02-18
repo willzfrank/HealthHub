@@ -1,124 +1,47 @@
 import { Select, DatePicker } from 'antd'
 import dayjs from 'dayjs'
-import { usePatientRegistration } from '../../api/hooks/useUpdatePatient'
+import { useUpdatePatientRegistration } from '../../api/hooks/useUpdatePatient'
+import useDoctors from '../../api/hooks/useDoctors'
+import { IAppointmentStats } from '../../types/types'
+import toast from 'react-hot-toast'
 
-type Props = {}
+type Props = {
+  selectedPatient: IAppointmentStats | null
+}
 
-const genderOptions = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
-]
+const ReceptionistPatientFormModal = ({ selectedPatient }: Props) => {
+  const registration = useUpdatePatientRegistration()
 
-const ReceptionistPatientFormModal = (props: Props) => {
-  const registration = usePatientRegistration()
+  const { data: doctors, isLoading: doctorsLoading } = useDoctors(1)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // if (!selectedPatient) {
+    //   toast.error('No patient selected')
+    //   return
+    // }
+
+    // const payload = {
+    //   procedure: selectedPatient.consultation_name,
+    //   doctor: selectedPatient.doctor,
+    //   date: selectedPatient.scheduled_date,
+    // }
+
+    // try {
+    //   await registration.mutateAsync(payload)
+    //   toast.success('Patient details updated successfully')
+    // } catch (error) {
+    //   toast.error('Failed to update patient details')
+    // }
   }
-  
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className="grid grid-cols-2 gap-5">
-        <div>
-          <label
-            htmlFor="title"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Title
-          </label>
-          <input
-            id="title"
-            type="text"
-            defaultValue="Dr."
-            readOnly
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="surname"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Surname
-          </label>
-          <input
-            id="surname"
-            type="text"
-            defaultValue="Doe"
-            readOnly
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="firstName"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            First Name
-          </label>
-          <input
-            id="firstName"
-            type="text"
-            defaultValue="John"
-            readOnly
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="middleName"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Middle Name
-          </label>
-          <input
-            id="middleName"
-            type="text"
-            defaultValue="A."
-            readOnly
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="gender"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Gender
-          </label>
-          <Select
-            id="gender"
-            className="w-full bg-[#F5F6FA] border  rounded-[8px]  border-[#CCCCCC]"
-            options={genderOptions}
-            defaultValue="male"
-            disabled
-            placeholder="Select Gender"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="dob"
-            className="text-[#0061FF] text-[15px] mb-2 font-medium"
-          >
-            Date of birth
-          </label>
-          <DatePicker
-            id="dob"
-            className="w-full p-1.5 bg-[#F5F6FA] border border-[#CCCCCC] rounded-[8px]"
-            defaultValue={dayjs(new Date(1990, 0, 1))}
-            disabled
-            placeholder="Select Date of Birth"
-          />
-        </div>
         <div className="w-full col-span-2">
           <span className="text-[#0061FF]">Procedure</span>
-          <div className=" border-[#0061FF] border rounded-lg p-3.5 w-full">
+          <div className="border-[#0061FF] border rounded-lg p-3.5 w-full">
             <div>
               <label
                 htmlFor="procedure"
@@ -129,7 +52,7 @@ const ReceptionistPatientFormModal = (props: Props) => {
               <input
                 id="procedure"
                 type="text"
-                defaultValue="Check-up"
+                defaultValue={selectedPatient?.consultation_name ?? 'N/A'}
                 readOnly
                 className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
               />
@@ -144,12 +67,17 @@ const ReceptionistPatientFormModal = (props: Props) => {
                 </label>
                 <Select
                   id="doctor"
-                  className="w-full bg-[#F5F6FA] border  rounded-[8px]  border-[#CCCCCC]"
-                  options={genderOptions}
-                  defaultValue="male"
-                  disabled
-                  placeholder="Select Gender"
-                />
+                  className="w-full"
+                  placeholder="Select a doctor"
+                  loading={doctorsLoading}
+                  defaultValue={selectedPatient?.doctor ?? undefined}
+                >
+                  {doctors?.map((doctor: { id: number; name: string }) => (
+                    <Select.Option key={doctor.id} value={doctor.name}>
+                      {doctor.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </div>
               <div className="w-[30%]">
                 <label
@@ -161,7 +89,11 @@ const ReceptionistPatientFormModal = (props: Props) => {
                 <DatePicker
                   id="procedureDate"
                   className="w-full p-1.5 bg-[#F5F6FA] border border-[#CCCCCC] rounded-[8px]"
-                  defaultValue={dayjs(new Date(2023, 9, 1))}
+                  value={
+                    selectedPatient?.scheduled_date
+                      ? dayjs(selectedPatient.scheduled_date)
+                      : undefined
+                  }
                   disabled
                   placeholder="Select Date"
                 />
@@ -179,7 +111,7 @@ const ReceptionistPatientFormModal = (props: Props) => {
           </label>
           <textarea
             id="caseNote"
-            defaultValue="Patient is in good health."
+            defaultValue={selectedPatient?.receptionist_comment ?? 'N/A'}
             readOnly
             className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
             rows={4}
@@ -188,10 +120,16 @@ const ReceptionistPatientFormModal = (props: Props) => {
       </div>
 
       <div className="flex items-center justify-between my-5">
-        <button className="border text-[#0061FF] border-[#0061FF] rounded px-20 py-2.5">
+        <button
+          type="button"
+          className="border text-[#0061FF] border-[#0061FF] rounded px-20 py-2.5"
+        >
           CANCEL
         </button>
-        <button className="text-white bg-[#0061FF] rounded px-20 py-2.5">
+        <button
+          type="submit"
+          className="text-white bg-[#0061FF] rounded px-20 py-2.5"
+        >
           UPDATE
         </button>
       </div>

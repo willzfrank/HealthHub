@@ -3,8 +3,8 @@ import axiosInstance from "../axiosInstance"
 import { useMutation } from "react-query"
 
 interface PatientRegistration {
-  title_id: number
-  marital_status_id: number
+  title_id?: number
+  marital_status_id?: number
   gender_id: number
   state_id: string
   lga_id: string
@@ -28,7 +28,7 @@ interface RegistrationResponse {
   message: string
 }
 
-export const usePatientRegistration = () => {
+export const useUpdatePatientRegistration = () => {
   return useMutation<RegistrationResponse, Error, PatientRegistration>({
     mutationFn: async (data) => {
       const response = await axiosInstance.post('/admin/patient/register', data)
