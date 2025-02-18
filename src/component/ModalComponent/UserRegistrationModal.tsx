@@ -7,8 +7,16 @@ import { useRegisterPatient } from '../../api/hooks/useRegisterPatient'
 import { useFetchLGAs } from '../../api/hooks/useFetchLGAs'
 import { useFetchStates } from '../../api/hooks/useFetchStates'
 import { useFetchMaritalStatus } from '../../api/hooks/useFetchMaritalStatus'
+import { IAddPatientBillItemRequest } from '../../types/types'
+import { useAddPatientSingleBillItem } from '../../api/hooks/useAddPatientSingleBill'
 
-const UserRegistrationModal = () => {
+interface UserRegistrationModalProps {
+  onClose: () => void
+}
+
+const UserRegistrationModal: React.FC<UserRegistrationModalProps> = ({
+  onClose,
+}) => {
   const [formData, setFormData] = useState({
     facility_id: '2',
     marital_status_id: '',
@@ -80,7 +88,11 @@ const UserRegistrationModal = () => {
     isError: lgasError,
   } = useFetchLGAs(formData.state_id)
 
-  const { mutate, isLoading } = useRegisterPatient()
+  const { mutate: registerPatient, isLoading: isRegistering } =
+    useRegisterPatient()
+  const { mutate: addPatientSingleBill, isLoading: isAddingBill } =
+    useAddPatientSingleBillItem()
+
   const {
     titleData,
     loading: titleLoading,
@@ -117,7 +129,81 @@ const UserRegistrationModal = () => {
     e.preventDefault()
 
     if (validate()) {
-      mutate(formData)
+      registerPatient(formData, {
+        onSuccess: (response) => {
+          const patientId = response?.response?.id
+          if (patientId) {
+            const billData: IAddPatientBillItemRequest = {
+              patient_id: patientId,
+              bill_item_id: '1',
+              quantity: 1,
+            }
+
+            addPatientSingleBill(billData, {
+              onSuccess: () => {
+                toast.success('Patient registered and bill added successfully!')
+
+                // Reset form data
+                setFormData({
+                  facility_id: '2',
+                  marital_status_id: '',
+                  title_id: '10',
+                  gender_id: '',
+                  occupation_id: '1',
+                  religion_id: '2',
+                  educational_level_id: '2',
+                  language_id: '1',
+                  citizenship_id: '2',
+                  country_id: '1',
+                  state_id: '',
+                  lga_id: '',
+                  city_id: '3948',
+                  nok_country_id: '1',
+                  nok_state_id: '1',
+                  nok_lga_id: '1',
+                  nok_relationship_id: '18',
+                  first_name: '',
+                  middle_name: '',
+                  last_name: '',
+                  date_of_birth: '',
+                  email: '',
+                  phone: '',
+                  address: '',
+                  nearest_bus_stop: '',
+                  nok_first_name: '',
+                  nok_middle_name: '',
+                  nok_last_name: '',
+                  nok_phone: '',
+                  nok_address: '',
+                })
+                // Clear validation errors
+                setErrors({
+                  email: '',
+                  phone: '',
+                  first_name: '',
+                  last_name: '',
+                  middle_name: '',
+                  date_of_birth: '',
+                  address: '',
+                  gender_id: '',
+                  marital_status_id: '',
+                  state_id: '',
+                  lga_id: '',
+                })
+
+                // Close modal
+                onClose()
+              },
+              onError: (error) => {
+                toast.error(error.message || 'Failed to add bill')
+              },
+            })
+          }
+        },
+        onError: (error) => {
+          toast.error(error.message || 'Failed to register patient')
+        },
+      })
     } else {
       toast.error('Please fill in all required fields correctly')
     }
@@ -228,12 +314,16 @@ const UserRegistrationModal = () => {
             onChange={handleChange}
             className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
           >
+            <option value="">Select a gender</option>
             {genderData.map((gender: { id: number; name: string }) => (
               <option key={gender.id} value={gender.id}>
                 {gender.name}
               </option>
             ))}
           </select>
+          {errors.gender_id && (
+            <p className="text-red-500 text-sm">{errors.gender_id}</p>
+          )}
         </div>
         {/* Marital Status Field */}
         <div>
@@ -383,14 +473,20 @@ const UserRegistrationModal = () => {
             value={formData.lga_id}
             onChange={handleChange}
             className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-            disabled={!formData.state_id}
+            disabled={!formData.state_id || statesLoading}
           >
             <option value="">Select LGA</option>
-            {lgasData?.map((lga: { id: number; name: string }) => (
-              <option key={lga.id} value={lga.id}>
-                {lga.name}
+            {statesLoading ? (
+              <option value="" disabled>
+                Loading LGAs...
               </option>
-            ))}
+            ) : (
+              lgasData?.map((lga: { id: number; name: string }) => (
+                <option key={lga.id} value={lga.id}>
+                  {lga.name}
+                </option>
+              ))
+            )}
           </select>
           {errors.lga_id && (
             <p className="text-red-500 text-sm">{errors.lga_id}</p>
@@ -403,10 +499,10 @@ const UserRegistrationModal = () => {
         <button
           type="submit"
           className="rounded-[3px] bg-[#0061FF] opacity-90 py-2.5 px-10"
-          disabled={isLoading}
+          disabled={isRegistering}
         >
           <span className="text-[14px] text-white">
-            {isLoading ? 'Registering...' : 'REGISTER'}
+            {isRegistering ? 'Registering...' : 'REGISTER'}
           </span>
         </button>
       </div>

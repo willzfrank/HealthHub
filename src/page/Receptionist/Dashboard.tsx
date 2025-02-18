@@ -5,12 +5,13 @@ import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import DashboardCardSection from '../../component/HealthHubComponent/DashboardSection/DashboardCardSection'
 import DashboardTable from '../../component/HealthHubComponent/DashboardSection/DashboardTable'
-import Modal from '../../component/common/Modal'
 import UserRegistrationModal from '../../component/ModalComponent/UserRegistrationModal'
 import DashboardMetricCard from '../../component/HealthHubComponent/DashboardSection/DashboardMetricCard'
 import useAdminStats from '../../api/hooks/useAdminStats'
 import useFetchPatientsList from '../../api/hooks/useFetchPatientsList'
 import { IAppointmentItem, IPatient } from '../../types/types'
+import { formatDate } from '../../utils/utils'
+import { Modal } from 'antd'
 
 const ReceptionistDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -26,9 +27,9 @@ const ReceptionistDashboard = () => {
     setIsModalOpen(true)
   }
 
-    const handleBookAppointmentClick = () => {
-      navigate('/patients') 
-    }
+  const handleBookAppointmentClick = () => {
+    navigate('/patients')
+  }
 
   /** Extract API response */
   const appointments = adminData?.response?.appointments_today ?? []
@@ -56,7 +57,7 @@ const ReceptionistDashboard = () => {
   const appointmentsData = appointments.map((apt: IAppointmentItem) => ({
     id: `apt-${apt.id}`,
     cells: [
-      new Date(apt.scheduled_date).toLocaleString(),
+      formatDate(apt.scheduled_date ?? ''),
       apt.patient_name,
       apt.consultation_name,
       apt.doctor,
@@ -143,7 +144,7 @@ const ReceptionistDashboard = () => {
           {
             id: 'book-appointment',
             title: 'Book Appointment',
-            onClick: handleBookAppointmentClick, 
+            onClick: handleBookAppointmentClick,
           },
         ].map(({ id, title, onClick }) => (
           <DashboardCardSection key={id} title={title} onClick={onClick} />
@@ -177,11 +178,13 @@ const ReceptionistDashboard = () => {
 
       {/* MODAL */}
       <Modal
-        isOpen={isModalOpen}
+        open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Register New Patient"
+        centered
+        footer={null}
       >
-        <UserRegistrationModal />
+        <UserRegistrationModal onClose={() => setIsModalOpen(false)} />
       </Modal>
     </Layout>
   )

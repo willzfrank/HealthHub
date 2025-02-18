@@ -97,17 +97,18 @@ export interface IBillData {
 }
 
 export interface IAppointmentStats {
-  id: number
+  id?: number
   file_number: string
   patient_name: string
-  patient_phone: string
+  patient_phone?: string
   doctor: string
   consultation_name: string
-  consultation_status: number
-  treatment: string | null
-  scheduled_date: string
-  rescheduled_date: string | null
-  vitals_status: string
+  consultation_status?: number
+  treatment?: string | null
+  scheduled_date?: string
+  rescheduled_date?: string | null
+  vitals_status?: string
+  receptionist_comment?: string
 }
 
 export interface IAppointmentItem extends IAppointmentStats {
@@ -118,7 +119,6 @@ export interface IAppointmentItem extends IAppointmentStats {
   vitals_oxygen_level: string
   vitals_pulse_rate: string
   doctor_comment: string
-  receptionist_comment: string
   doctor_diagnosis: string | null
   rescheduled_date: string | null
 }
@@ -167,4 +167,8 @@ export interface IPatient {
   name: string
 }
 
-
+export interface IAddPatientBillItemRequest {
+  patient_id: number
+  bill_item_id: string
+  quantity: number
+}

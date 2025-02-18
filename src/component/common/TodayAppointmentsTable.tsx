@@ -1,6 +1,7 @@
 import { Icon } from '@iconify/react'
 import useAdminStats from '../../api/hooks/useAdminStats'
 import { IAppointmentItem } from '../../types/types'
+import { formatDate } from '../../utils/utils'
 
 const TodayAppointmentsTable = () => {
   const { data: adminData, isLoading, error } = useAdminStats()
@@ -11,7 +12,7 @@ const TodayAppointmentsTable = () => {
   // Map API response to match the expected tableData structure
   const tableData = appointments.map((appointment: IAppointmentItem) => ({
     id: appointment.id,
-    dateTime: new Date(appointment.scheduled_date).toLocaleString(), // Convert date to readable format
+    dateTime: formatDate(appointment.scheduled_date ?? ''),
     patientId: appointment.file_number,
     patientName: appointment.patient_name,
     purpose: appointment.consultation_name,
