@@ -86,7 +86,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       'Patients',
       'Bills',
       'Transactions',
-      'Procedures',
+      // 'Procedures',
       'Settings',
     ],
     admin: [

@@ -193,28 +193,28 @@ const AccountantDashboard = (props: Props) => {
         <div className="space-y-2 flex flex-col items-start rounded-[10px] bg-white p-5">
           <span className="text-[#030229] text-[14px]">Revenue</span>
           <span className="text-[#000000] opacity-70 text-[28px] font-[800]">
-            ₦{adminData.response.total_revenue}
+            ₦{adminData?.response?.total_revenue}
           </span>
         </div>
 
         <div className="space-y-2 flex flex-col items-start rounded-[10px] bg-white p-5">
           <span className="text-[#030229] text-[14px]">Unpaid Invoice</span>
           <span className="text-[#000000] opacity-70 text-[28px] font-[800]">
-            ₦{adminData.response.unpaid_invoice}
+            ₦{adminData?.response?.unpaid_invoice}
           </span>
         </div>
 
         <div className="space-y-2 flex flex-col items-start rounded-[10px] bg-white p-5">
           <span className="text-[#030229] text-[14px]">Patients</span>
           <span className="text-[#000000] opacity-70 text-[28px] font-[800]">
-            {adminData.response.patients}
+            {adminData?.response?.patients}
           </span>
         </div>
 
         <div className="space-y-2 flex flex-col items-start rounded-[10px] bg-white p-5">
           <span className="text-[#030229] text-[14px]">Invoice Created</span>
           <span className="text-[#000000] opacity-70 text-[28px] font-[800]">
-            ₦{adminData.response.invoice_created}
+            ₦{adminData?.response?.invoice_created}
           </span>
         </div>
       </div>
@@ -284,7 +284,7 @@ const AccountantDashboard = (props: Props) => {
               </ResponsiveContainer>
             </div>
             <div className="flex flex-col gap-4 justify-center mt-4">
-              {paymentChannelsData.map((entry, index) => (
+              {paymentChannelsData?.map((entry, index) => (
                 <div key={entry.name} className="flex items-center gap-5">
                   <div className="flex items-center">
                     <div
