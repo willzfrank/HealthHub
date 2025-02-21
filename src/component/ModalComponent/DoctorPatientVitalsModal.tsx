@@ -5,10 +5,11 @@ import toast from 'react-hot-toast'
 import axiosInstance from '../../api/axiosInstance'
 import { useMutation } from 'react-query'
 import { IAppointmentItem, IBillData } from '../../types/types'
+import useDoctors from '../../api/hooks/useDoctors'
+import { useFetchBills } from '../../api/hooks/useFetchBills'
 
 type Props = {
   appointmentData: IAppointmentItem | null
-
 }
 
 const genderOptions = [
@@ -18,46 +19,31 @@ const genderOptions = [
 ]
 
 const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
+  const [selectedDoctor, setSelectedDoctor] = useState<string>(
+    appointmentData?.doctor ?? ''
+  )
   const [newProcedure, setNewProcedure] = useState({
     name: '',
     purchase_price: '',
     selling_price: '',
   })
 
-   const addProcedureMutation = useMutation(
-     async (data: IBillData) => {
-       const response = await axiosInstance.post('admin/bills/add', data)
-       if (!response.data.status) {
-         throw new Error(response.data.message || 'An unknown error occurred')
-       }
-       return response.data
-     },
-     {
-       onSuccess: () => {
-         toast.success('Procedure added successfully!')
-         setNewProcedure({
-           name: '',
-           purchase_price: '',
-           selling_price: '',
-         })
-       },
-       onError: (error: any) => {
-         toast.error(error.message || 'Failed to add procedure')
-       },
-     }
-   )
+  console.log('appointmentData', appointmentData)
 
-   const handleAddProcedure = () => {
-     if (
-       !newProcedure.name ||
-       !newProcedure.purchase_price ||
-       !newProcedure.selling_price
-     ) {
-       toast.error('Please fill all procedure fields')
-       return
-     }
-     addProcedureMutation.mutate(newProcedure)
-   }
+  const fullName = appointmentData?.patient_name ?? ''
+  const nameParts = fullName.split(' ')
+
+  const firstName = nameParts[0]
+  const middleName =
+    nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : ''
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
+
+  const {
+    data: doctors,
+    isLoading: isDoctorsLoading,
+    error: doctorsError,
+  } = useDoctors(1)
+  const { data: billsData, isLoading: isBillsLoading } = useFetchBills(1, 10)
 
   return (
     <div>
@@ -68,22 +54,6 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
         <div className="grid grid-cols-2 gap-5">
           <div>
             <label
-              htmlFor="title"
-              className="text-[#0061FF] text-[15px] mb-2 font-medium"
-            >
-              Title
-            </label>
-            <input
-              id="title"
-              type="text"
-              defaultValue="Dr."
-              readOnly
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-            />
-          </div>
-
-          <div>
-            <label
               htmlFor="surname"
               className="text-[#0061FF] text-[15px] mb-2 font-medium"
             >
@@ -92,9 +62,9 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
             <input
               id="surname"
               type="text"
-              defaultValue="Doe"
+              defaultValue={lastName}
               readOnly
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              className="p-1.5 border cursor-not-allowed border-[#CCCCCC] rounded-[8px] focus:outline-none bg-[#F5F6FA] w-full"
             />
           </div>
 
@@ -108,60 +78,30 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
             <input
               id="firstName"
               type="text"
-              defaultValue="John"
+              defaultValue={firstName}
               readOnly
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none cursor-not-allowed bg-[#F5F6FA] w-full"
             />
           </div>
 
-          <div>
-            <label
-              htmlFor="middleName"
-              className="text-[#0061FF] text-[15px] mb-2 font-medium"
-            >
-              Middle Name
-            </label>
-            <input
-              id="middleName"
-              type="text"
-              defaultValue="A."
-              readOnly
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-            />
-          </div>
+          {middleName && (
+            <div>
+              <label
+                htmlFor="middleName"
+                className="text-[#0061FF] text-[15px] mb-2 font-medium"
+              >
+                Middle Name
+              </label>
+              <input
+                id="middleName"
+                type="text"
+                defaultValue={middleName}
+                readOnly
+                className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none cursor-not-allowed bg-[#F5F6FA] w-full"
+              />
+            </div>
+          )}
 
-          <div>
-            <label
-              htmlFor="gender"
-              className="text-[#0061FF] text-[15px] mb-2 font-medium"
-            >
-              Gender
-            </label>
-            <Select
-              id="gender"
-              className="w-full bg-[#F5F6FA] border  rounded-[8px]  border-[#CCCCCC]"
-              options={genderOptions}
-              defaultValue="male"
-              disabled
-              placeholder="Select Gender"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="dob"
-              className="text-[#0061FF] text-[15px] mb-2 font-medium"
-            >
-              Date of birth
-            </label>
-            <DatePicker
-              id="dob"
-              className="w-full p-1.5 bg-[#F5F6FA] border border-[#CCCCCC] rounded-[8px]"
-              defaultValue={dayjs(new Date(1990, 0, 1))}
-              disabled
-              placeholder="Select Date of Birth"
-            />
-          </div>
           <div className="w-full col-span-2">
             <span className="text-[#0061FF]">Procedure</span>
             <div className=" border-[#0061FF] border rounded-lg p-3.5 w-full">
@@ -175,7 +115,7 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
                 <input
                   id="procedure"
                   type="text"
-                  defaultValue="Check-up"
+                  defaultValue={appointmentData?.consultation_name ?? 'N/A'}
                   readOnly
                   className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
                 />
@@ -190,12 +130,20 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
                   </label>
                   <Select
                     id="doctor"
-                    className="w-full bg-[#F5F6FA] border  rounded-[8px]  border-[#CCCCCC]"
-                    options={genderOptions}
-                    defaultValue="male"
-                    disabled
-                    placeholder="Select Gender"
-                  />
+                    className="w-full"
+                    placeholder="Select a doctor"
+                    loading={isDoctorsLoading}
+                    value={
+                      selectedDoctor ?? appointmentData?.doctor ?? undefined
+                    }
+                    onChange={(value) => setSelectedDoctor(value)}
+                  >
+                    {doctors?.map((doctor: { id: number; name: string }) => (
+                      <Select.Option key={doctor.id} value={doctor.name}>
+                        {doctor.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 </div>
                 <div className="w-[30%]">
                   <label
@@ -225,7 +173,7 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
             </label>
             <textarea
               id="caseNote"
-              defaultValue="Patient is in good health."
+              defaultValue={appointmentData?.receptionist_comment ?? 'N/A'}
               readOnly
               className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
               rows={4}
@@ -247,7 +195,10 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
                     id="bloodPressure"
                     type="text"
                     readOnly
-                    className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+                    defaultValue={
+                      appointmentData?.vitals_blood_pressure ?? 'N/A'
+                    }
+                    className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none cursor-not-allowed bg-[#F5F6FA] w-full"
                   />
                 </div>
                 <div>
@@ -313,12 +264,20 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
                   </label>
                   <Select
                     id="procedure"
-                    className="w-full bg-[#F5F6FA] border  rounded-[8px]  border-[#CCCCCC]"
-                    options={genderOptions}
-                    defaultValue="checkup"
-                    disabled
-                    placeholder="Select Gender"
-                  />
+                    className="w-full bg-[#F5F6FA] border rounded-[8px] border-[#CCCCCC]"
+                    placeholder="Select a procedure"
+                    loading={isBillsLoading}
+                    value={newProcedure.name}
+                    onChange={(value) =>
+                      setNewProcedure((prev) => ({ ...prev, name: value }))
+                    }
+                  >
+                    {billsData?.response.data.map((bill) => (
+                      <Select.Option key={bill.id} value={bill.name}>
+                        {bill.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 </div>
                 <div className="w-[30%]">
                   <label
@@ -356,7 +315,7 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
             </label>
             <textarea
               id="caseNote"
-              defaultValue="Patient is in good health."
+              defaultValue={appointmentData?.doctor_comment ?? 'N/A'}
               readOnly
               className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
               rows={4}

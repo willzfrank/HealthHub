@@ -16,6 +16,7 @@ import {
   Sector,
 } from 'recharts'
 import DashboardTable from '../../component/HealthHubComponent/DashboardSection/DashboardTable'
+import useAdminStats from '../../api/hooks/useAdminStats'
 
 type Props = {}
 
@@ -79,6 +80,10 @@ const renderActiveShape = (props: any) => {
 const AccountantDashboard = (props: Props) => {
   const [filter, setFilter] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
+
+  const { data: adminData, isLoading, error } = useAdminStats()
+
+  console.log('adminData', adminData)
 
   const handleFilterChange = (value: string) => {
     setFilter(value)
@@ -188,28 +193,28 @@ const AccountantDashboard = (props: Props) => {
         <div className="space-y-2 flex flex-col items-start rounded-[10px] bg-white p-5">
           <span className="text-[#030229] text-[14px]">Revenue</span>
           <span className="text-[#000000] opacity-70 text-[28px] font-[800]">
-            ₦198,000,000
+            ₦{adminData.response.total_revenue}
           </span>
         </div>
 
         <div className="space-y-2 flex flex-col items-start rounded-[10px] bg-white p-5">
           <span className="text-[#030229] text-[14px]">Unpaid Invoice</span>
           <span className="text-[#000000] opacity-70 text-[28px] font-[800]">
-            ₦9,000,000
+            ₦{adminData.response.unpaid_invoice}
           </span>
         </div>
 
         <div className="space-y-2 flex flex-col items-start rounded-[10px] bg-white p-5">
           <span className="text-[#030229] text-[14px]">Patients</span>
           <span className="text-[#000000] opacity-70 text-[28px] font-[800]">
-            6000000
+            {adminData.response.patients}
           </span>
         </div>
 
         <div className="space-y-2 flex flex-col items-start rounded-[10px] bg-white p-5">
           <span className="text-[#030229] text-[14px]">Invoice Created</span>
           <span className="text-[#000000] opacity-70 text-[28px] font-[800]">
-            310,000
+            ₦{adminData.response.invoice_created}
           </span>
         </div>
       </div>

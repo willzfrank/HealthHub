@@ -155,7 +155,8 @@ const Patients = () => {
     if (
       column.key === 'nextAppointment' &&
       (role?.toLowerCase().includes('nurse') ||
-        role?.toLowerCase().includes('doctor'))
+        role?.toLowerCase().includes('doctor') ||
+        role?.toLowerCase().includes('accountant'))
     ) {
       return false
     }
