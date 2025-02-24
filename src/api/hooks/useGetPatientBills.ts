@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query'
 import axiosInstance from '../axiosInstance'
 
-type PatientBillResponse = {
+export type PatientBillResponse = {
   status: boolean
   response: {
     patient: {
@@ -52,7 +52,7 @@ export const useFetchPatientBills = (patientId: number) => {
     () => fetchPatientBills(patientId),
     {
       keepPreviousData: true,
-      enabled: !!patientId, 
+      enabled: !!patientId,
     }
   )
 }

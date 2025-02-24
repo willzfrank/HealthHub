@@ -1,76 +1,34 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Dropdown } from 'antd'
+import { Table, Pagination, Spin, message } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
 import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPatientViewFormModal'
 import Modal from '../../component/common/Modal'
-
-interface TransactionItem {
-  key: string
-  invoiceID: string
-  transactionDate: string
-  invoiceDate: string
-  patientName: string
-  procedure: string
-  amount: string
-  channel: string
-}
+import useInvoices from '../../api/hooks/useInvoices'
+import { IInvoice } from '../../types/types'
 
 const Transaction = () => {
-  const [data, setData] = useState<TransactionItem[]>([
-    {
-      key: '1',
-      invoiceID: 'INV001',
-      transactionDate: '2023-10-01 10:00 AM',
-      invoiceDate: '2023-10-01',
-      patientName: 'John Doe',
-      procedure: 'Check-up',
-      amount: '$200',
-      channel: 'Online',
-    },
-    {
-      key: '2',
-      invoiceID: 'INV002',
-      transactionDate: '2023-10-02 11:00 AM',
-      invoiceDate: '2023-10-02',
-      patientName: 'Jane Roe',
-      procedure: 'Consultation',
-      amount: '$150',
-      channel: 'In-Person',
-    },
-  ])
+  const [currentPage, setCurrentPage] = useState(1)
+  const { data: invoiceData, isLoading, error } = useInvoices(currentPage)
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const [isModalVisible, setIsModalVisible] = useState(false)
-
-  const onSelectChange = (selectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(selectedRowKeys)
+  if (error) {
+    message.error('Failed to load invoices.')
   }
 
-  const showModal = () => {
-    setIsModalVisible(true)
-  }
-
-  const handleCancel = () => {
-    setIsModalVisible(false)
-  }
+  const invoices = invoiceData?.data || []
+  const totalInvoices = invoiceData?.total || 0
 
   const columns = [
     {
       title: 'Trnx Date',
-      dataIndex: 'transactionDate',
-      key: 'transactionDate',
+      dataIndex: 'invoiceDate',
+      key: 'invoiceDate',
     },
     {
       title: 'Invoice ID',
       dataIndex: 'invoiceID',
       key: 'invoiceID',
-    },
-    {
-      title: 'Invoice Date',
-      dataIndex: 'invoiceDate',
-      key: 'invoiceDate',
     },
     {
       title: 'Patient Name',
@@ -86,60 +44,81 @@ const Transaction = () => {
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-    },
-    {
-      title: 'Channel',
-      dataIndex: 'channel',
-      key: 'channel',
+      render: (amount: number) => `$${amount.toFixed(2)}`,
     },
     {
       title: 'Actions',
       key: 'actions',
-      render: () => (
+      render: (_: any, record: IInvoice) => (
         <Icon
           icon="mdi:eye"
           width="20"
           height="20"
-          onClick={showModal}
+          onClick={() => showModal(record)}
           className="cursor-pointer text-[#0061FF]"
         />
       ),
     },
   ]
 
+  const dataSource = invoices.map((invoice: IInvoice) => ({
+    key: invoice.id,
+    invoiceID: invoice.invoice_number,
+    invoiceDate: new Date(invoice.invoice_date).toLocaleDateString(),
+    patientName: invoice.patient_name,
+    procedure: invoice.description,
+    amount: invoice.total,
+  }))
+
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectedInvoice, setSelectedInvoice] = useState(null)
+
+  const showModal = (invoice: any) => {
+    setSelectedInvoice(invoice)
+    setIsModalVisible(true)
+  }
+
+  const handleCancel = () => {
+    setIsModalVisible(false)
+  }
+
   return (
     <Layout>
       <HeaderSection title="Transactions" />
-
-      <Table
-        rowSelection={{
-          type: 'checkbox',
-          selectedRowKeys,
-          onChange: onSelectChange,
-        }}
-        columns={columns}
-        dataSource={data}
-        pagination={false}
-      />
-
-      <div className="flex justify-between items-center mt-4">
-        <div>
-          <span className="border-[#0061FF] border-b text-[#69686A]">
-            {data.length}{' '}
-          </span>
-          <span className="text-[#69686A]"> Shown on page</span>
+      {isLoading ? (
+        <div className="flex justify-center my-10">
+          <Spin size="large" />
         </div>
-        <Pagination defaultCurrent={1} total={50} />
-      </div>
+      ) : (
+        <>
+          <Table
+            columns={columns}
+            dataSource={dataSource}
+            pagination={false}
+            locale={{ emptyText: 'No transactions found' }}
+          />
 
-      <Modal
-        isOpen={isModalVisible}
-        onClose={handleCancel}
-        title="Health Information"
-        centerTitle
-      >
-        <DoctorPatientViewFormModal />
-      </Modal>
+          <div className="flex justify-between items-center mt-4">
+            <span className="text-[#69686A]">
+              {invoices.length} shown on page
+            </span>
+            <Pagination
+              current={currentPage}
+              total={totalInvoices}
+              pageSize={10}
+              onChange={setCurrentPage}
+            />
+          </div>
+
+          {/* <Modal
+            isOpen={isModalVisible}
+            onClose={handleCancel}
+            title="Invoice Details"
+          >
+            <DoctorPatientViewFormModal invoice={selectedInvoice} />
+          </Modal> */}
+        </>
+      )}
     </Layout>
   )
 }

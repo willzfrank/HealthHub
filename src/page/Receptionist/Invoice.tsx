@@ -189,7 +189,7 @@ const Invoice = () => {
         onCancel={() => setIsBillModalOpen(false)}
         footer={null}
       >
-        <BillFormModal onClose={() => setIsBillModalOpen(false)} />
+        {/* <BillFormModal onClose={() => setIsBillModalOpen(false)} /> */}
       </AntdModal>
     </Layout>
   )

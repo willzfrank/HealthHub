@@ -29,7 +29,7 @@ const menuItems: MenuItem[] = [
   {
     label: 'Bills',
     icon: <Icon icon="hugeicons:invoice-03" width="24" height="24" />,
-    path: '/invoice',
+    path: '/accountant-bills',
   },
   {
     label: 'Transactions',
@@ -98,7 +98,13 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       'Staffs',
       'Settings',
     ],
-    receptionist: ['Dashboard', 'Appointments', 'Patients', 'Bills', 'Settings'],
+    receptionist: [
+      'Dashboard',
+      'Appointments',
+      'Patients',
+      'Bills',
+      'Settings',
+    ],
   }
 
   const filteredMenuItems = menuItems

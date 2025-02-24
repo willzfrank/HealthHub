@@ -8,37 +8,34 @@ import InvoiceDetailsModal from '../../component/ModalComponent/InvoiceDetailsMo
 import BillFormModal from '../../component/ModalComponent/BillFormModal'
 import { getAuthCookie } from '../../api/axiosInstance'
 import ScheduleModal from '../../component/ModalComponent/ScheduleModal'
-import useInvoices from '../../api/hooks/useInvoices'
-import type { IInvoice } from '../../types/types'
+import type { IPatient } from '../../types/types'
+import { useFetchPatientBills } from '../../api/hooks/useGetPatientBills'
+import useFetchPatientsList from '../../api/hooks/useFetchPatientsList'
 
-interface InvoiceItem {
+interface TablePatientData {
   key: string
-  invoiceID: string
-  invoiceDate: string
+  id: number
   patientName: string
-  procedure: string
-  amount: string
-  status: 'Paid' | 'Unpaid' | 'Pending'
 }
 
 const AccountantBill = () => {
-  const { data: invoiceData, isLoading } = useInvoices(1)
+  const [selectedPatientId, setSelectedPatientId] = useState<number | null>(
+    null
+  )
+  const [page, setPage] = useState(1)
+  const perPage = 10
+
+  const { data: patientData, isLoading: isPatientLoading } =
+    useFetchPatientsList(perPage, page)
+  const { data: patientBillData, isLoading: isBillLoading } =
+    useFetchPatientBills(selectedPatientId ?? 0)
 
   // Transform API response to match table data structure
-  const transformedData: InvoiceItem[] =
-    invoiceData?.response?.data?.map((invoice: IInvoice) => ({
-      key: invoice.id.toString(),
-      invoiceID: invoice.invoice_number,
-      invoiceDate: invoice.invoice_date,
-      patientName: invoice.patient_name,
-      procedure: invoice.description,
-      amount: `₦${invoice.total.toLocaleString()}`,
-      status:
-        invoice.payment_status === 1
-          ? 'Paid'
-          : invoice.amount_due > 0
-          ? 'Pending'
-          : 'Unpaid',
+  const transformedData: TablePatientData[] =
+    patientData?.response?.data?.map((patient: IPatient) => ({
+      key: patient.file_number,
+      file_number: patient.file_number,
+      patientName: patient.name,
     })) || []
 
   const [isModalVisible, setIsModalVisible] = useState(false)
@@ -48,19 +45,14 @@ const AccountantBill = () => {
     string | null
   >(null)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
-
-  const authState = getAuthCookie()
-  const role = authState?.role?.name
 
   const handleCancel = () => setIsModalVisible(false)
-  const handlePayClick = (invoice: InvoiceItem) => {
-    setSelectedTransactionID(invoice.invoiceID)
-    setIsModalOpen(true)
+
+  const handleViewClick = (patientId: number) => {
+    setSelectedPatientId(patientId)
+    setIsBillModalOpen(true)
   }
-  const handleViewClick = () => setIsBillModalOpen(true)
-  const handleScheduleClick = () => setIsScheduleModalOpen(true)
-  const handleScheduleCancel = () => setIsScheduleModalOpen(false)
+
   const onSelectChange = (keys: React.Key[]) => setSelectedRowKeys(keys)
 
   return (
@@ -73,73 +65,28 @@ const AccountantBill = () => {
           onChange: onSelectChange,
         }}
         columns={[
-          { title: 'Bill', dataIndex: 'invoiceDate', key: 'invoiceDate' },
+          { title: 'Patient Id', dataIndex: 'file_number', key: 'file_number' },
           {
             title: 'Patient Name',
             dataIndex: 'patientName',
             key: 'patientName',
           },
-          { title: 'Procedure', dataIndex: 'procedure', key: 'procedure' },
-          { title: 'Amount', dataIndex: 'amount', key: 'amount' },
-          {
-            title: 'Status',
-            key: 'status',
-            render: (_text, item: InvoiceItem) => (
-              <span
-                className={`px-3 py-1 rounded-full text-sm ${
-                  item.status === 'Paid'
-                    ? 'bg-green-100 text-green-600'
-                    : item.status === 'Pending'
-                    ? 'bg-yellow-100 text-yellow-600'
-                    : 'bg-red-100 text-red-600'
-                }`}
-              >
-                {item.status}
-              </span>
-            ),
-          },
+
           {
             title: 'Action',
             key: 'action',
-            render: (_text, item: InvoiceItem) => (
-              <div className="flex gap-2">
-                {role === 'RECEPTIONIST FACILITY' ? (
-                  item.status === 'Pending' ? (
-                    <Button
-                      className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-                      onClick={handleScheduleClick}
-                    >
-                      Schedule
-                    </Button>
-                  ) : (
-                    <Button
-                      className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-                      disabled
-                    >
-                      Schedule
-                    </Button>
-                  )
-                ) : item.status === 'Pending' ? (
-                  <Button
-                    className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-                    onClick={handleViewClick}
-                  >
-                    Schedule
-                  </Button>
-                ) : (
-                  <Button
-                    className="rounded-full bg-[#0061FFA1] text-white"
-                    onClick={() => handlePayClick(item)}
-                  >
-                    Pay
-                  </Button>
-                )}
-              </div>
+            render: (_text, record: TablePatientData) => (
+              <Button
+                className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
+                onClick={() => handleViewClick(record.id)}
+              >
+                View
+              </Button>
             ),
           },
         ]}
         dataSource={transformedData}
-        loading={isLoading}
+        loading={isPatientLoading}
         pagination={false}
       />
 
@@ -151,8 +98,10 @@ const AccountantBill = () => {
           <span className="text-[#69686A]"> Shown on page</span>
         </div>
         <Pagination
-          defaultCurrent={invoiceData?.response?.current_page || 1}
-          total={invoiceData?.response?.total || 1}
+          current={patientData?.response?.current_page || 1}
+          total={patientData?.response?.total || 1}
+          pageSize={perPage}
+          onChange={(page) => setPage(page)}
         />
       </div>
 
@@ -167,7 +116,7 @@ const AccountantBill = () => {
 
       <AntdModal
         title={`Transaction Details - ${selectedTransactionID}`}
-        visible={isModalOpen}
+        open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
@@ -175,21 +124,15 @@ const AccountantBill = () => {
       </AntdModal>
 
       <AntdModal
-        visible={isScheduleModalOpen}
-        onCancel={handleScheduleCancel}
-        footer={null}
-        centered
-      >
-        {/* <ScheduleModal /> */}
-        test
-      </AntdModal>
-
-      <AntdModal
-        visible={isBillModalOpen}
+        open={isBillModalOpen}
         onCancel={() => setIsBillModalOpen(false)}
         footer={null}
       >
-        <BillFormModal onClose={() => setIsBillModalOpen(false)} />
+        <BillFormModal
+          onClose={() => setIsBillModalOpen(false)}
+          patientBillData={patientBillData}
+          isLoading={isBillLoading}
+        />
       </AntdModal>
     </Layout>
   )
