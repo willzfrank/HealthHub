@@ -59,8 +59,6 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
       ...vitals,
       is_nurse: true,
     }
-
-    console.log(data)
     updateAppointment(data)
   }
 
@@ -153,16 +151,14 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                     loading={isDoctorsLoading}
                     value={
                       selectedDoctorId ? selectedDoctorId.toString() : undefined
-                    } // Ensure value is a string
-                    onChange={(value) => setSelectedDoctorId(Number(value))} // Convert value to number
+                    }
+                    onChange={(value) => setSelectedDoctorId(Number(value))}
                   >
                     {doctors?.map((doctor: { id: number; name: string }) => (
                       <Select.Option
                         key={doctor.id}
                         value={doctor.id.toString()}
                       >
-                        {' '}
-                        {/* Ensure value is a string */}
                         {doctor.name}
                       </Select.Option>
                     ))}

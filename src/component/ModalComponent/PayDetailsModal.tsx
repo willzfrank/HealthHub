@@ -1,146 +1,80 @@
 import { Icon } from '@iconify/react'
 import { Table } from 'antd'
-import React from 'react'
-import { ITransaction } from '../../types/globaltype'
 
 type PayDetailsModalProps = {
-  selectedTransaction: any
+  invoice: {
+    invoice_number: string
+    email: string
+    phone: string
+    description: string
+    amount_due: number
+    total: number
+    patient_id: number
+    created_at: string
+  } | null
 }
 
-// Sample services data for the modal table
-const modalTableData = [
-  {
-    key: '1',
-    service: 'Tooth Removal',
-    quantity: 1,
-    transactionAmount: 'NGN 20,000',
-  },
-  {
-    key: '2',
-    service: 'Consultation',
-    quantity: 1,
-    transactionAmount: 'NGN 5,000',
-  },
-  {
-    key: '3',
-    service: 'Teeth Cleaning',
-    quantity: 1,
-    transactionAmount: 'NGN 25,000',
-  },
-]
+const PayDetailsModal = ({ invoice }: PayDetailsModalProps) => {
+  if (!invoice) return <p>Loading...</p>
 
-// Modal table columns
-const modalTableColumns = [
-  {
-    title: 'Serial No',
-    dataIndex: 'key',
-    key: 'key',
-  },
-  {
-    title: 'Service',
-    dataIndex: 'service',
-    key: 'service',
-  },
-  {
-    title: 'Quantity',
-    dataIndex: 'quantity',
-    key: 'quantity',
-  },
-  {
-    title: 'Transaction Amount',
-    dataIndex: 'transactionAmount',
-    key: 'transactionAmount',
-  },
-]
+  console.log('invoice', invoice)
 
-const PayDetailsModal = ({
-  selectedTransaction,
-}: PayDetailsModalProps) => {
   return (
     <div>
-      {selectedTransaction && (
+      <div className="flex justify-between">
+        <img src="/images/shalom-logo.svg" alt="logo" />
+        <span>Invoice ID: {invoice.invoice_number}</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {/* Invoice From */}
         <div>
-          <div className="flex items-start justify-between gap-2">
-            <img src="/images/shalom-logo.svg" alt="logo" />
-            <span>Invoice ID: {selectedTransaction}</span>
-          </div>
-
-          <div className="grid grid-cols-2 ">
-            {/* Invoice From */}
-            <div className="flex flex-col items-start">
-              <span className="text-[#404040] text-[14px]">Invoice From:</span>
-              <span className="text-[#404040] font-bold text-[16px]">
-                Shalom Dental Clinic{' '}
-              </span>
-              <span className="text-[#565656] text-[14px]">
-                Salem House, State House.
-              </span>
-
-              <span className="text-[#404040] text-[14px] mt-1.5">
-                Invoice Date : 12 Nov 2019
-              </span>
-            </div>
-
-            {/* Invoice To */}
-            <div className="flex flex-col items-start">
-              <span className="text-[#404040] text-[14px]">Invoice To:</span>
-              <span className="text-[#404040] font-bold text-[16px]">
-                Joe Biden - CPD-5002
-              </span>
-              <span className="text-[#565656] text-[14px]">
-                My Address, Benin, Edo State.
-              </span>
-
-              <span className="text-[#404040] text-[14px] mt-1.5">
-                Due Date : 25 Dec 2019
-              </span>
-            </div>
-          </div>
-
-          {/* Table Here */}
-          <Table
-            columns={modalTableColumns}
-            dataSource={modalTableData}
-            pagination={false}
-          />
-
-          <div className="flex my-2.5 items-center justify-end">
-            <span className="font-bold text-black text-[14px]">
-              Total = ₦400,000
-            </span>
-          </div>
-
-          <div className="flex my-2.5 items-center justify-between">
-            <button className="border border-[#4880FF] rounded text-[#4880FF] px-5 py-1">
-              Close{' '}
-            </button>
-
-            <div className="flex items-center gap-2">
-              <button className="border-[0.5px] border-[#D5D5D5] rounded text-black px-2.5 py-1.5 flex items-center gap-2">
-                <Icon
-                  icon="material-symbols:print-rounded"
-                  width="14"
-                  height="14"
-                  className="text-black"
-                />
-                <span className="text-black text-[14px]">Export</span>
-                <Icon icon="bi:three-dots-vertical" width="16" height="16" />
-              </button>
-              <button className="flex items-center gap-2 border border-[#4880FF] rounded-[8px] text-white bg-[#4880FF] px-2.5 py-1.5">
-                Pay{' '}
-                <div className="bg-[#6e9aff] rounded-[5px] flex items-center justify-center p-1">
-                  <Icon
-                    icon="mingcute:send-fill"
-                    width="16"
-                    height="16"
-                    className="text-white"
-                  />
-                </div>
-              </button>
-            </div>
-          </div>
+          <p className="text-gray-600">Invoice From:</p>
+          <p className="font-bold">Shalom Dental Clinic</p>
+          <p className="text-gray-500">Salem House, State House</p>
+          <p className="text-gray-600 mt-1.5">
+            Invoice Date: {invoice.created_at}
+          </p>
         </div>
-      )}
+
+        {/* Invoice To */}
+        <div>
+          <p className="text-gray-600">Invoice To:</p>
+          <p className="font-bold">{invoice.email}</p>
+          <p className="text-gray-500">{invoice.phone}</p>
+          <p className="text-gray-600 mt-1.5">Due Date: TBA</p>
+        </div>
+      </div>
+
+      {/* Table for Transaction */}
+      <Table
+        columns={[
+          { title: 'Description', dataIndex: 'service', key: 'service' },
+          { title: 'Transaction Amount', dataIndex: 'amount', key: 'amount' },
+        ]}
+        dataSource={[
+          {
+            key: '1',
+            service: invoice.description,
+            amount: `₦${invoice.total}`,
+          },
+        ]}
+        pagination={false}
+      />
+
+      <div className="flex justify-end mt-4">
+        <span className="font-bold">Total = ₦{invoice.total}</span>
+      </div>
+
+      <div className="flex justify-between mt-4">
+        <button className="border border-blue-500 text-blue-500 px-5 py-2 rounded">
+          Close
+        </button>
+        <button className="bg-blue-500 text-white px-5 py-2 rounded flex items-center gap-2">
+          Pay
+          <Icon icon="mingcute:send-fill" width="16" height="16" />
+        </button>
+      </div>
     </div>
   )
 }

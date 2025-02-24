@@ -151,15 +151,17 @@ const Patients = () => {
     // },
   ]
 
-const filteredColumns = columns.filter((column) => {
-  if (
-    column.key === 'nextAppointment' &&
-    role?.toLowerCase().includes('nurse')
-  ) {
-    return false 
-  }
-  return true
-})
+  const filteredColumns = columns.filter((column) => {
+    if (
+      column.key === 'nextAppointment' &&
+      (role?.toLowerCase().includes('nurse') ||
+        role?.toLowerCase().includes('doctor') ||
+        role?.toLowerCase().includes('accountant'))
+    ) {
+      return false
+    }
+    return true
+  })
 
   return (
     <Layout>
