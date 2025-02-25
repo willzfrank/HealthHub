@@ -1,12 +1,13 @@
 import { Table, Modal as AntdModal } from 'antd'
 import { useState, useEffect } from 'react'
 import PayDetailsModal from './PayDetailsModal'
-import { PatientBillResponse } from '../../api/hooks/useGetPatientBills'
 import { useGenerateInvoice } from '../../api/hooks/generateInvoice'
+import { IPatientBill } from '../../types/types'
+import toast from 'react-hot-toast'
 
 type BillFormModalProps = {
   onClose: (value: React.SetStateAction<boolean>) => void
-  patientBillData: PatientBillResponse | undefined
+  patientBillData: any | undefined
   isLoading?: boolean
 }
 
@@ -17,6 +18,7 @@ interface BillItem {
   amount: number
   addedBy?: string
   id: number
+  bill_item_id: number
 }
 
 const BillFormModal = ({
@@ -36,21 +38,33 @@ const BillFormModal = ({
   const handlePay = () => {
     if (selectedRowKeys.length === 0) return
 
-    const billItemIds = selectedRowKeys.map((key) => Number(key))
+    const billItemIds = selectedRowKeys
+      .map((key) => {
+        const selectedItem = billItems.find((item) => item.key === key)
+        return selectedItem?.bill_item_id
+      })
+      .filter((id) => id !== undefined) as number[]
 
     generateInvoice(
       {
-        billItemIds,
         patientId: patientBillData?.response?.patient?.id.toString() ?? '',
+        bill_items: billItemIds,
       },
       {
         onSuccess: (data) => {
-          setInvoiceDetails(data?.response.response)
-          setIsModalOpen(true)
-          onClose(false)
+          if (data?.status) {
+            setInvoiceDetails(data.response)
+            toast.success('Invoice Generated')
+            setIsModalOpen(true)
+            onClose(false)
+          } else {
+            console.error('Invoice Generation Failed:', data.message)
+            toast.error(data.message)
+          }
         },
         onError: (error) => {
-          console.error('Error generating invoice:', error)
+          console.error('Error generating invoice:', error.message)
+          toast.error(error.message)
         },
       }
     )
@@ -58,18 +72,23 @@ const BillFormModal = ({
 
   useEffect(() => {
     if (patientBillData?.status && patientBillData.response) {
-      const transformedBills: BillItem[] = patientBillData.response.items.map(
-        (item) => ({
-          key: item.id.toString(),
-          id: item.id,
-          service: item.name,
-          qty: 1,
-          amount: item.selling_price,
-          // addedBy: item.added_by,
-        })
+      const transformedBills: any[] = patientBillData.response.items.map(
+        (item: any) => {
+          console.log('item', item)
+          return {
+            key: item.id.toString(),
+            id: item.id,
+            bill_item_id: item.bill_item_id,
+            service: item.bill_item.name,
+            qty: item?.quantity,
+            amount: item.bill_item.selling_price,
+            // addedBy: item.added_by,
+          }
+        }
       )
 
       setBillItems(transformedBills)
+
       // Calculate initial total from all items
       const initialTotal = transformedBills.reduce(
         (sum, item) => sum + item.amount * (item.qty ?? 1),
@@ -77,7 +96,6 @@ const BillFormModal = ({
       )
       setTotalAmount(initialTotal)
     } else {
-      // Fallback to empty array if no data
       setBillItems([])
       setTotalAmount(0)
     }
@@ -122,7 +140,7 @@ const BillFormModal = ({
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      render: (amount: number) => `$${amount.toFixed(2)}`,
+      render: (amount: number) => `$${amount?.toFixed(2)}`,
     },
     // {
     //   title: 'Added by',

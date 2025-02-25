@@ -83,12 +83,13 @@ export interface IInvoice {
   amount_due: number
   amount_paid: number
   payment_status: number
-  request_reference: string
+  request_reference?: string | null
   year: number
-  payment_url: string
-  email: string
-  phone: string
+  payment_url?: string | null
+  email?: string | null
+  phone?: string | null
 }
+
 
 export interface IBillData {
   name: string
@@ -183,4 +184,57 @@ export interface IAppointmentNurseUpdateData {
   vitals_oxygen_level?: string
   vitals_pulse_rate: string
   is_nurse: boolean
+}
+
+export interface IPatientBillItem {
+  id: number
+  hospital_id: number
+  branch_id: number | null
+  name: string
+  purchase_price: number
+  selling_price: number
+  status: number
+  last_edit: string | null
+  last_edit_by_id: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface IPatientBillItemPivot {
+  id: number
+  patient_id: number
+  bill_item_id: number
+  quantity: number
+  invoice_generated: number
+  payment_status: number
+  created_at: string
+  updated_at: string
+  bill_item: IPatientBillItem
+}
+
+export interface IPatientBill {
+  id: number
+  hospital_id: number
+  branch_id: number | null
+  title_id: number
+  marital_status_id: number
+  country_id: number
+  state_id: number
+  lga_id: number
+  city_id: number | null
+  gender_id: number
+  file_number: string
+  nin: string | null
+  first_name: string
+  middle_name: string
+  last_name: string
+  date_of_birth: string
+  email: string
+  phone: string
+  address: string
+  created_at: string
+  updated_at: string
+  unbilled_total: number
+  name: string
+  bill_items_pivot: IPatientBillItemPivot[]
 }
