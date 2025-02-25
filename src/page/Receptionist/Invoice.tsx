@@ -10,36 +10,51 @@ import { getAuthCookie } from '../../api/axiosInstance'
 import ScheduleModal from '../../component/ModalComponent/ScheduleModal'
 import useInvoices from '../../api/hooks/useInvoices'
 import type { IInvoice } from '../../types/types'
+import useFetchPaymentStatuses from '../../api/hooks/useFetchPaymentStatuses'
 
 interface InvoiceItem {
+  payment_status(payment_status: any): React.ReactNode
+  paymentUrl(paymentUrl: any): void
   key: string
   invoiceID: string
   invoiceDate: string
   patientName: string
   procedure: string
   amount: string
-  status: 'Paid' | 'Unpaid' | 'Pending'
+  status: 'Awaiting Payment' | 'Paid' | 'Partial'
 }
 
 const Invoice = () => {
   const { data: invoiceData, isLoading } = useInvoices(1)
+  const { data: paymentStatuses, isLoading: isPaymentStatusesLoading } =
+    useFetchPaymentStatuses()
+
+  console.log('paymentStatuses', paymentStatuses)
 
   // Transform API response to match table data structure
-  const transformedData: InvoiceItem[] =
-    invoiceData?.response?.data?.map((invoice: IInvoice) => ({
-      key: invoice.id.toString(),
-      invoiceID: invoice.invoice_number,
-      invoiceDate: invoice.invoice_date,
-      patientName: invoice.patient_name,
-      procedure: invoice.description,
-      amount: `₦${invoice.total.toLocaleString()}`,
-      status:
-        invoice.payment_status === 1
-          ? 'Paid'
-          : invoice.amount_due > 0
-          ? 'Pending'
-          : 'Unpaid',
-    })) || []
+  const transformedData: IInvoice[] =
+    invoiceData?.response?.data?.map((invoice: IInvoice) => {
+      const matchedStatus = paymentStatuses?.find(
+        (status: { id: number }) => status.id === invoice.payment_status
+      )?.name
+
+      return {
+        key: invoice.id.toString(),
+        invoiceID: invoice.invoice_number,
+        invoiceDate: invoice.invoice_date,
+        patientName: invoice.patient_name,
+        procedure: invoice.description,
+        amount: `₦${invoice.total.toLocaleString()}`,
+        status: matchedStatus || 'Unknown',
+        paymentUrl: invoice.payment_url, // Store payment URL for later use
+      }
+    }) || []
+
+  const handlePayClick = (paymentUrl: string | null) => {
+    if (paymentUrl) {
+      window.open(paymentUrl, '_blank') // Open payment page in new tab
+    }
+  }
 
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -50,18 +65,37 @@ const Invoice = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
 
-  const authState = getAuthCookie()
-  const role = authState?.role?.name
-
   const handleCancel = () => setIsModalVisible(false)
-  const handlePayClick = (invoice: InvoiceItem) => {
-    setSelectedTransactionID(invoice.invoiceID)
-    setIsModalOpen(true)
-  }
-  const handleViewClick = () => setIsBillModalOpen(true)
-  const handleScheduleClick = () => setIsScheduleModalOpen(true)
+  // const handlePayClick = (invoice: InvoiceItem) => {
+  //   setSelectedTransactionID(invoice.invoiceID)
+  //   setIsModalOpen(true)
+  // }
   const handleScheduleCancel = () => setIsScheduleModalOpen(false)
   const onSelectChange = (keys: React.Key[]) => setSelectedRowKeys(keys)
+
+  const getStatus = (
+    status: number
+  ): 'Awaiting Payment' | 'Paid' | 'Partial' => {
+    switch (status) {
+      case 2:
+        return 'Paid'
+      case 3:
+        return 'Partial'
+      default:
+        return 'Awaiting Payment'
+    }
+  }
+
+  const getStatusClass = (status: 'Awaiting Payment' | 'Paid' | 'Partial') => {
+    switch (status) {
+      case 'Paid':
+        return 'bg-green-100 text-green-600'
+      case 'Partial':
+        return 'bg-yellow-100 text-yellow-600'
+      default:
+        return 'bg-red-100 text-red-600'
+    }
+  }
 
   return (
     <Layout>
@@ -84,58 +118,36 @@ const Invoice = () => {
           {
             title: 'Status',
             key: 'status',
-            render: (_text, item: InvoiceItem) => (
+            render: (_text, item: IInvoice) => (
               <span
-                className={`px-3 py-1 rounded-full text-sm ${
-                  item.status === 'Paid'
-                    ? 'bg-green-100 text-green-600'
-                    : item.status === 'Pending'
-                    ? 'bg-yellow-100 text-yellow-600'
-                    : 'bg-red-100 text-red-600'
-                }`}
+                className={`px-3 py-1 rounded-full text-sm ${getStatusClass(
+                  getStatus(item.payment_status)
+                )}`}
               >
-                {item.status}
+                {getStatus(item.payment_status)}
               </span>
             ),
           },
           {
             title: 'Action',
             key: 'action',
-            render: (_text, item: InvoiceItem) => (
-              <div className="flex gap-2">
-                {role === 'RECEPTIONIST FACILITY' ? (
-                  item.status === 'Pending' ? (
+            render: (_text, item: IInvoice) => {
+              const computedStatus = getStatus(item.payment_status) // Compute status
+              return (
+                <div className="flex gap-2">
+                  {computedStatus === 'Awaiting Payment' ||
+                  computedStatus === 'Partial' ? (
                     <Button
-                      className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-                      onClick={handleScheduleClick}
+                      className="rounded-full bg-[#0061FFA1] text-white"
+                      onClick={() => handlePayClick(item.payment_url || null)}
+                      disabled={!item.payment_url}
                     >
-                      Schedule
+                      Pay
                     </Button>
-                  ) : (
-                    <Button
-                      className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-                      disabled
-                    >
-                      Schedule
-                    </Button>
-                  )
-                ) : item.status === 'Pending' ? (
-                  <Button
-                    className="rounded-full border border-[#0061FFA1] text-[#0061FFA1]"
-                    onClick={handleViewClick}
-                  >
-                    Schedule
-                  </Button>
-                ) : (
-                  <Button
-                    className="rounded-full bg-[#0061FFA1] text-white"
-                    onClick={() => handlePayClick(item)}
-                  >
-                    Pay
-                  </Button>
-                )}
-              </div>
-            ),
+                  ) : null}
+                </div>
+              )
+            },
           },
         ]}
         dataSource={transformedData}

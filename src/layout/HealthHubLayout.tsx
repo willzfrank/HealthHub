@@ -37,6 +37,11 @@ const menuItems: MenuItem[] = [
     path: '/transactions',
   },
   {
+    label: 'Invoice',
+    icon: <Icon icon="ph:invoice-fill" width="24" height="24" />,
+    path: '/invoice',
+  },
+  {
     label: 'Procedures',
     icon: <Icon icon="mdi:medical-bag" width="24" height="24" />,
     path: '/accountant-procedures',
@@ -86,6 +91,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       'Patients',
       'Bills',
       'Transactions',
+      'Invoice',
       // 'Procedures',
       'Settings',
     ],
