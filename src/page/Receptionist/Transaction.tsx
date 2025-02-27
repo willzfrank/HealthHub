@@ -71,7 +71,7 @@ const Transaction = () => {
     },
   ]
 
-  const dataSource = invoices.map((invoice: IInvoice) => ({
+  const dataSource = filteredInvoices.map((invoice: IInvoice) => ({
     key: invoice.id,
     invoiceID: invoice.invoice_number,
     invoiceDate: new Date(invoice.invoice_date).toLocaleDateString(),
