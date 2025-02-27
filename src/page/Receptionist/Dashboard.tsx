@@ -12,17 +12,14 @@ import useFetchPatientsList from '../../api/hooks/useFetchPatientsList'
 import { IAppointmentItem, IPatient } from '../../types/types'
 import { formatDate } from '../../utils/utils'
 import { Modal } from 'antd'
+import { getUpcomingBirthdays } from '../../hooks/getUpcomingBirthdays'
 
 const ReceptionistDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const navigate = useNavigate()
   const { data: adminData, isLoading, error } = useAdminStats()
-  const {
-    data: patientData,
-    isLoading: isPatientLoading,
-    error: patientError,
-  } = useFetchPatientsList(1, 10)
-
+  const { data: patientData, isLoading: isPatientLoading } =
+    useFetchPatientsList(100, 1)
   const handleNewPatientClick = () => {
     setIsModalOpen(true)
   }
@@ -32,24 +29,17 @@ const ReceptionistDashboard = () => {
   }
 
   /** Extract API response */
-  const appointments = adminData?.response?.appointments_today ?? []
-  const counts = adminData?.response?.counts ?? {
-    total_patients: 0,
-    waiting_today: 0,
-    seen_today: 0,
-    scheduled_tomorrow: 0,
-    seen_this_year: 0,
-  }
+  const appointments = adminData?.response?.new_appointments ?? []
 
   /** Headers */
-  const appointmentsHeaders = ['Time', 'Patient', 'Purpose', 'Doctor', 'View']
+  const appointmentsHeaders = ['Time', 'Patient', 'Purpose', 'Doctor']
   const patientsHeaders = [
     'Patient ID',
     'Patient Name',
     'Reg. Date',
     'Last Visit',
     'Date',
-    'View',
+    // 'View',
   ]
   const eventsHeaders = ['Date', 'Patient', 'Event']
 
@@ -61,13 +51,13 @@ const ReceptionistDashboard = () => {
       apt.patient_name,
       apt.consultation_name,
       apt.doctor,
-      <Icon icon="mdi:eye-outline" width="20" height="20" />,
+      // <Icon icon="mdi:eye-outline" width="20" height="20" />,
     ],
   }))
 
   const patientsData =
-    patientData?.response?.data?.length > 0
-      ? patientData.response.data.map((patient: IPatient) => ({
+    adminData?.response?.new_patients?.length > 0
+      ? adminData?.response?.new_patients.map((patient: IPatient) => ({
           id: `pat-${patient.id}`,
           cells: [
             patient.file_number || 'N/A',
@@ -84,53 +74,23 @@ const ReceptionistDashboard = () => {
         }))
       : []
 
-  const getUpcomingBirthdays = (
-    patients: IPatient[]
-  ): Array<{ id: string; cells: React.ReactNode[] }> => {
-    const currentYear = new Date().getFullYear()
-
-    return patients
-      .map((patient) => {
-        const dob = new Date(patient.date_of_birth)
-        if (isNaN(dob.getTime())) return null
-
-        const birthdayThisYear = new Date(
-          currentYear,
-          dob.getMonth(),
-          dob.getDate()
-        )
-
-        if (birthdayThisYear >= new Date()) {
-          return {
-            id: `evt-${patient.id}`,
-            cells: [
-              birthdayThisYear.toLocaleDateString(),
-              patient.name,
-              'Birthday',
-            ],
-          }
-        }
-
-        return null
-      })
-      .filter(Boolean) as Array<{ id: string; cells: React.ReactNode[] }>
-  }
-
   const eventsData = patientData?.response?.data
     ? getUpcomingBirthdays(patientData.response.data)
     : []
+
+  const new_patients_count = adminData?.response?.new_patients_count
 
   return (
     <Layout>
       <HeaderSection />
 
       <div className="grid grid-cols-4 gap-4">
-        <DashboardMetricCard />
+        <DashboardMetricCard new_patients_count={new_patients_count} />
         <div className="rounded-lg h-[95px] bg-white p-3.5 shadow-sm">
           <div className="space-y-4 flex items-start flex-col">
             <span className="text-gray-600">Patients Queue</span>
             <span className="text-3xl font-bold text-gray-900">
-              {counts?.waiting_today ?? 0}
+              {adminData?.response?.new_appointments?.length}
             </span>
           </div>
         </div>
@@ -159,7 +119,7 @@ const ReceptionistDashboard = () => {
         />
       </div>
 
-      <div className="mt-4 flex items-center gap-4">
+      <div className="mt-4 flex items-start gap-4">
         <div className="w-[70%]">
           <DashboardTable
             title="Recent Patients"

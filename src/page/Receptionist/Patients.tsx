@@ -100,6 +100,12 @@ const Patients = () => {
       render: (text: string) => text || 'N/A',
     },
     {
+      title: <span className="text-[#3A3A49]">Date of Birth</span>,
+      dataIndex: 'date_of_birth',
+      key: 'dob',
+      render: (text: string) => formatDate(text) || 'N/A',
+    },
+    {
       title: <span className="text-[#3A3A49]">Reg. Date</span>,
       dataIndex: 'created_at',
       key: 'regDate',
@@ -225,7 +231,7 @@ const Patients = () => {
         />
       </footer>
 
-      <Modal
+      {/* <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         title="Joe Biden - CPD-5002"
@@ -234,7 +240,7 @@ const Patients = () => {
           handleTabClick={handleTabClick}
           activeTab={activeTab}
         />
-      </Modal>
+      </Modal> */}
 
       <AntdModal
         visible={isScheduleModalOpen}

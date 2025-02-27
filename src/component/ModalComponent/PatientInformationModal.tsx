@@ -1,3 +1,4 @@
+import React from 'react'
 import PatientDetailsFormSection from '../HealthHubComponent/PatientSection/PatientDetailsFormSection'
 import PatientHistoryFormSection from '../HealthHubComponent/PatientSection/PatientHistoryFormSection'
 import TransactionsTable from '../HealthHubComponent/PatientSection/PatientTransactionTableSection'
@@ -5,11 +6,13 @@ import TransactionsTable from '../HealthHubComponent/PatientSection/PatientTrans
 type PatientInformationModalProps = {
   handleTabClick: (tab: string) => void
   activeTab: string
+  invoice: any
 }
 
 const PatientInformationModal = ({
   handleTabClick,
   activeTab,
+  invoice,
 }: PatientInformationModalProps) => {
   return (
     <div>
@@ -35,16 +38,18 @@ const PatientInformationModal = ({
         </div>
         <span className="text-[#030229] text-xs">
           {activeTab === 'Details'
-            ? 'Registration Date : 15 Dec 2004'
+            ? `Invoice Date : ${invoice?.invoice_date}`
             : activeTab !== 'Transactions'
-            ? 'Next Appointment : 15 Dec 2024'
+            ? `Next Payment Due : ${invoice?.next_payment_date}`
             : ''}
         </span>
       </div>
 
       {/* Conditional Content */}
       <div className="mt-4">
-        {activeTab === 'Details' && <PatientDetailsFormSection />}
+        {activeTab === 'Details' && (
+          <PatientDetailsFormSection invoice={invoice} />
+        )}
         {activeTab === 'History' && <PatientHistoryFormSection />}
         {activeTab === 'Transactions' && <TransactionsTable />}
       </div>

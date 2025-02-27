@@ -2,14 +2,22 @@ import { Icon } from '@iconify/react'
 import useAdminStats from '../../api/hooks/useAdminStats'
 import { IAppointmentItem } from '../../types/types'
 import { formatDate } from '../../utils/utils'
+import {
+  Key,
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+} from 'react'
 
-const TodayAppointmentsTable = () => {
+interface TodayAppointmentsTableProps {
+  showModal?: (record: IAppointmentItem) => void
+}
+
+const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
   const { data: adminData, isLoading, error } = useAdminStats()
-
-  // Extract appointments with a fallback
   const appointments = adminData?.response?.appointments_today ?? []
 
-  // Map API response to match the expected tableData structure
   const tableData = appointments.map((appointment: IAppointmentItem) => ({
     id: appointment.id,
     dateTime: formatDate(appointment.scheduled_date ?? ''),
@@ -18,6 +26,7 @@ const TodayAppointmentsTable = () => {
     purpose: appointment.consultation_name,
     doctor: appointment.doctor,
     vitals: appointment.vitals_status === 'done' ? 'Done' : 'Pending',
+    record: appointment,
   }))
 
   return (
@@ -53,45 +62,103 @@ const TodayAppointmentsTable = () => {
         </thead>
         <tbody>
           {tableData.length > 0 ? (
-            tableData.map((item: any) => (
-              <tr key={item.id} className="hover:bg-gray-50">
-                <td className="px-4 py-2 text-[#030229] text-[15px]">
-                  {item.dateTime}
-                </td>
-                <td className="px-4 py-2 text-[#030229] text-[15px]">
-                  {item.patientId}
-                </td>
-                <td className="px-4 py-2 text-[#030229] text-[15px]">
-                  {item.patientName}
-                </td>
-                <td className="px-4 py-2 text-[#030229] text-[15px]">
-                  {item.purpose}
-                </td>
-                <td className="px-4 py-2 text-[#030229] text-[15px]">
-                  {item.doctor}
-                </td>
-                <td className="px-4 py-2 text-[#030229] text-[15px]">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm ${
-                      item.vitals === 'Done'
-                        ? 'bg-[#ccf0eb] text-[#70d5c7]'
-                        : 'bg-[#f0edcc] text-[#bbae15]'
-                    }`}
-                  >
-                    {item.vitals}
-                  </span>
-                </td>
-                <td className="text-center px-4 py-2">
-                  <button>
+            tableData.map(
+              (item: {
+                id: Key | null | undefined
+                dateTime:
+                  | string
+                  | number
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | Iterable<ReactNode>
+                  | ReactPortal
+                  | null
+                  | undefined
+                patientId:
+                  | string
+                  | number
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | Iterable<ReactNode>
+                  | ReactPortal
+                  | null
+                  | undefined
+                patientName:
+                  | string
+                  | number
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | Iterable<ReactNode>
+                  | ReactPortal
+                  | null
+                  | undefined
+                purpose:
+                  | string
+                  | number
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | Iterable<ReactNode>
+                  | ReactPortal
+                  | null
+                  | undefined
+                doctor:
+                  | string
+                  | number
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | Iterable<ReactNode>
+                  | ReactPortal
+                  | null
+                  | undefined
+                vitals:
+                  | string
+                  | number
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | Iterable<ReactNode>
+                  | null
+                  | undefined
+                record: IAppointmentItem
+              }) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-2 text-[#030229] text-[15px]">
+                    {item.dateTime}
+                  </td>
+                  <td className="px-4 py-2 text-[#030229] text-[15px]">
+                    {item.patientId}
+                  </td>
+                  <td className="px-4 py-2 text-[#030229] text-[15px]">
+                    {item.patientName}
+                  </td>
+                  <td className="px-4 py-2 text-[#030229] text-[15px]">
+                    {item.purpose}
+                  </td>
+                  <td className="px-4 py-2 text-[#030229] text-[15px]">
+                    {item.doctor}
+                  </td>
+                  <td className="px-4 py-2 text-[#030229] text-[15px]">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        item.vitals === 'Done'
+                          ? 'bg-[#ccf0eb] text-[#70d5c7]'
+                          : 'bg-[#f0edcc] text-[#bbae15]'
+                      }`}
+                    >
+                      {item.vitals}
+                    </span>
+                  </td>
+                  <td className="text-center px-4 py-2">
                     <Icon
                       icon="bitcoin-icons:exit-outline"
                       width="20"
                       height="20"
+                      onClick={() => showModal?.(item.record)}
+                      className="cursor-pointer"
                     />
-                  </button>
-                </td>
-              </tr>
-            ))
+                  </td>
+                </tr>
+              )
+            )
           ) : (
             <tr>
               <td colSpan={7} className="text-center py-4 text-gray-500">

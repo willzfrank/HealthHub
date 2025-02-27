@@ -1,8 +1,11 @@
 import React from 'react'
 
-type Props = {}
+type Props = {
+  invoice: any
+}
 
-const PatientDetailsFormSection = (props: Props) => {
+const PatientDetailsFormSection = ({ invoice }: Props) => {
+  console.log('invoice', invoice)
   return (
     <div>
       <form>

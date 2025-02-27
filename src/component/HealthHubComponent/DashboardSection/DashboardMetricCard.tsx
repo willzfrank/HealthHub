@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
-const DashboardMetricCard = () => {
+const DashboardMetricCard = ({ new_patients_count }: any) => {
   const [isOpen, setIsOpen] = useState(false)
   const [selected, setSelected] = useState('Today')
   const options = ['Today', 'Yesterday', 'Last Week', 'Last Month']
@@ -42,7 +42,9 @@ const DashboardMetricCard = () => {
             )}
           </div>
         </div>
-        <div className="text-3xl font-bold text-gray-900">20</div>
+        <div className="text-3xl font-bold text-gray-900">
+          {new_patients_count}
+        </div>
       </div>
     </div>
   )

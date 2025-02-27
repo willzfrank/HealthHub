@@ -46,7 +46,7 @@ const Invoice = () => {
         procedure: invoice.description,
         amount: `₦${invoice.total.toLocaleString()}`,
         status: matchedStatus || 'Unknown',
-        paymentUrl: invoice.payment_url, // Store payment URL for later use
+        paymentUrl: invoice.payment_url,
       }
     }) || []
 
@@ -66,10 +66,12 @@ const Invoice = () => {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
 
   const handleCancel = () => setIsModalVisible(false)
-  // const handlePayClick = (invoice: InvoiceItem) => {
-  //   setSelectedTransactionID(invoice.invoiceID)
-  //   setIsModalOpen(true)
-  // }
+
+  const handleViewDetails = (patientID: string) => {
+    setSelectedTransactionID(patientID)
+    setIsModalOpen(true)
+  }
+
   const handleScheduleCancel = () => setIsScheduleModalOpen(false)
   const onSelectChange = (keys: React.Key[]) => setSelectedRowKeys(keys)
 
@@ -132,15 +134,14 @@ const Invoice = () => {
             title: 'Action',
             key: 'action',
             render: (_text, item: IInvoice) => {
-              const computedStatus = getStatus(item.payment_status) // Compute status
+              const computedStatus = getStatus(item.payment_status)
               return (
                 <div className="flex gap-2">
                   {computedStatus === 'Awaiting Payment' ||
                   computedStatus === 'Partial' ? (
                     <Button
                       className="rounded-full bg-[#0061FFA1] text-white"
-                      onClick={() => handlePayClick(item.payment_url || null)}
-                      disabled={!item.payment_url}
+                      onClick={() => handleViewDetails('1234')}
                     >
                       Pay
                     </Button>
@@ -179,7 +180,7 @@ const Invoice = () => {
 
       <AntdModal
         title={`Transaction Details - ${selectedTransactionID}`}
-        visible={isModalOpen}
+        open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
@@ -187,7 +188,7 @@ const Invoice = () => {
       </AntdModal>
 
       <AntdModal
-        visible={isScheduleModalOpen}
+        open={isScheduleModalOpen}
         onCancel={handleScheduleCancel}
         footer={null}
         centered
@@ -197,7 +198,7 @@ const Invoice = () => {
       </AntdModal>
 
       <AntdModal
-        visible={isBillModalOpen}
+        open={isBillModalOpen}
         onCancel={() => setIsBillModalOpen(false)}
         footer={null}
       >

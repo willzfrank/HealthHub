@@ -3,21 +3,31 @@ import { Table, Pagination, Spin, message } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
-import DoctorPatientViewFormModal from '../../component/ModalComponent/DoctorPatientViewFormModal'
 import Modal from '../../component/common/Modal'
 import useInvoices from '../../api/hooks/useInvoices'
 import { IInvoice } from '../../types/types'
+import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
 
 const Transaction = () => {
   const [currentPage, setCurrentPage] = useState(1)
+  const [isOpen, setIsOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('Details')
   const { data: invoiceData, isLoading, error } = useInvoices(currentPage)
 
   if (error) {
     message.error('Failed to load invoices.')
   }
 
-  const invoices = invoiceData?.data || []
-  const totalInvoices = invoiceData?.total || 0
+  const invoices = invoiceData?.response?.data || []
+  const totalInvoices = invoiceData?.response?.total || 0
+
+  const filteredInvoices = invoices.filter(
+    (invoice: IInvoice) => invoice.payment_status === 3
+  )
+
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab)
+  }
 
   const columns = [
     {
@@ -71,9 +81,9 @@ const Transaction = () => {
   }))
 
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [selectedInvoice, setSelectedInvoice] = useState(null)
+  const [selectedInvoice, setSelectedInvoice] = useState<IInvoice | null>(null)
 
-  const showModal = (invoice: any) => {
+  const showModal = (invoice: IInvoice) => {
     setSelectedInvoice(invoice)
     setIsModalVisible(true)
   }
@@ -100,7 +110,7 @@ const Transaction = () => {
 
           <div className="flex justify-between items-center mt-4">
             <span className="text-[#69686A]">
-              {invoices.length} shown on page
+              {filteredInvoices.length} shown on page
             </span>
             <Pagination
               current={currentPage}
@@ -110,13 +120,17 @@ const Transaction = () => {
             />
           </div>
 
-          {/* <Modal
+          <Modal
             isOpen={isModalVisible}
             onClose={handleCancel}
-            title="Invoice Details"
+            title={`${selectedInvoice?.patient_name} - ${selectedInvoice?.invoice_number}`}
           >
-            <DoctorPatientViewFormModal invoice={selectedInvoice} />
-          </Modal> */}
+            <PatientInformationModal
+              handleTabClick={handleTabClick}
+              activeTab={activeTab}
+              invoice={selectedInvoice}
+            />
+          </Modal>
         </>
       )}
     </Layout>

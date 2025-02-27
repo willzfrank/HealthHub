@@ -171,7 +171,7 @@ const BillFormModal = ({
 
       <div className="flex items-end justify-end my-5">
         <span className="text-[21px] text-[#202224] font-[800]">
-          Total = ${totalAmount.toFixed(2)}
+          Total = ₦{totalAmount.toFixed(2)}
         </span>
       </div>
 
@@ -187,7 +187,7 @@ const BillFormModal = ({
           onClick={handlePay}
           disabled={selectedRowKeys.length === 0 || isGenerating}
         >
-          {isGenerating ? 'Processing...' : 'PAY'}
+          {isGenerating ? 'Processing...' : 'Proceed'}
         </button>
       </div>
 

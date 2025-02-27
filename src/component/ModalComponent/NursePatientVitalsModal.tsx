@@ -239,7 +239,7 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                 </div>
               </div>
               <div className="flex items-center w-full gap-5 mt-0.5">
-                <div className="w-[70%]">
+                <div className="w-full">
                   <label
                     htmlFor="nurse"
                     className="text-[#0061FF] text-[15px] mb-2 font-medium"
@@ -254,7 +254,7 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                     className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none cursor-not-allowed bg-[#F5F6FA] w-full"
                   />
                 </div>
-                <div className="w-[30%]">
+                {/* <div className="w-[30%]">
                   <label
                     htmlFor="procedureDate"
                     className="text-[#0061FF] text-[15px] mb-2 font-medium"
@@ -266,7 +266,7 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                     className="w-full p-1.5 bg-[#F5F6FA] border border-[#CCCCCC] rounded-[8px]"
                     placeholder="Select Date"
                   />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

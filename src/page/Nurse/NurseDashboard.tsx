@@ -1,13 +1,22 @@
+import { useState } from 'react'
+import { Icon } from '@iconify/react'
 import useAdminStats from '../../api/hooks/useAdminStats'
 import HeaderSection from '../../component/common/HeaderSection'
 import TodayAppointmentsTable from '../../component/common/TodayAppointmentsTable'
 import VitalsSummaryGrid from '../../component/HealthHubComponent/DashboardSection/NurseVitalsSummaryGrid'
 import Layout from '../../layout/HealthHubLayout'
+import { Modal as AntdModal } from 'antd'
+import { IAppointmentItem } from '../../types/types'
+import NursePatientVitalsModal from '../../component/ModalComponent/NursePatientVitalsModal'
 
 type Props = {}
 
 const NurseDashboard = (props: Props) => {
   const { data: adminData, isLoading, error } = useAdminStats()
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<IAppointmentItem | null>(null)
+
   const vitalsCounts = adminData?.response?.vitals_counts ?? {
     today_count: 0,
     week_count: 0,
@@ -15,7 +24,16 @@ const NurseDashboard = (props: Props) => {
     year_count: 0,
   }
 
-  // Mapping vitalsCounts to match statsData format
+  const showModal = (record: IAppointmentItem) => {
+    setSelectedAppointment(record)
+    setIsModalVisible(true)
+  }
+
+  const handleCancel = () => {
+    setSelectedAppointment(null)
+    setIsModalVisible(false)
+  }
+
   const statsData = [
     {
       id: 1,
@@ -42,13 +60,27 @@ const NurseDashboard = (props: Props) => {
       label: 'patients',
     },
   ]
+
   return (
     <Layout>
       <HeaderSection />
       <VitalsSummaryGrid statsData={statsData} />
 
-      {/* Table Section */}
-      <TodayAppointmentsTable />
+      <TodayAppointmentsTable showModal={showModal} />
+
+      <AntdModal
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        centered
+      >
+        {selectedAppointment && (
+          <NursePatientVitalsModal
+            appointment={selectedAppointment}
+            closeModal={() => setIsModalVisible(false)}
+          />
+        )}
+      </AntdModal>
     </Layout>
   )
 }
