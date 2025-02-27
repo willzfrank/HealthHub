@@ -29,19 +29,18 @@ const DoctorAppointment = () => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('Details')
-    const [selectedAppointment, setSelectedAppointment] =
-      useState<IAppointmentItem | null>(null)
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<IAppointmentItem | null>(null)
 
-   const showModal = (record: IAppointmentItem) => {
-     setSelectedAppointment(record)
-     setIsModalVisible(true)
-   }
+  const showModal = (record: IAppointmentItem) => {
+    setSelectedAppointment(record)
+    setIsModalVisible(true)
+  }
 
- const handleCancel = () => {
-   setIsModalVisible(false)
-   setSelectedAppointment(null)
- }
-
+  const handleCancel = () => {
+    setIsModalVisible(false)
+    setSelectedAppointment(null)
+  }
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab)
@@ -91,18 +90,6 @@ const DoctorAppointment = () => {
       ),
     },
     {
-      title: <span className="text-[#69686A]">Action </span>,
-      key: 'action',
-      render: () => (
-        <Icon
-          icon="system-uicons:enter"
-          width="21"
-          height="21"
-          className="cursor-pointer"
-        />
-      ),
-    },
-    {
       title: <span className="text-[#69686A]">View </span>,
       key: 'view',
       render: (_: any, record: IAppointmentItem) => (
@@ -112,6 +99,18 @@ const DoctorAppointment = () => {
           height="20"
           onClick={() => showModal(record)}
           className="cursor-pointer text-[#0061FF]"
+        />
+      ),
+    },
+    {
+      title: <span className="text-[#69686A]">Action </span>,
+      key: 'action',
+      render: () => (
+        <Icon
+          icon="system-uicons:enter"
+          width="21"
+          height="21"
+          className="cursor-pointer"
         />
       ),
     },
@@ -157,7 +156,7 @@ const DoctorAppointment = () => {
         <DoctorPatientVitalsModal appointmentData={selectedAppointment} />
       </AntdModal>
 
-      <Modal
+      {/* <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         title="Joe Biden - CPD-5002"
@@ -166,7 +165,7 @@ const DoctorAppointment = () => {
           handleTabClick={handleTabClick}
           activeTab={activeTab}
         />
-      </Modal>
+      </Modal> */}
     </Layout>
   )
 }

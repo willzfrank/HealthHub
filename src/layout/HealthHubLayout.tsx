@@ -32,14 +32,14 @@ const menuItems: MenuItem[] = [
     path: '/accountant-bills',
   },
   {
-    label: 'Transactions',
-    icon: <Icon icon="tdesign:undertake-transaction" width="24" height="24" />,
-    path: '/transactions',
-  },
-  {
     label: 'Invoice',
     icon: <Icon icon="ph:invoice-fill" width="24" height="24" />,
     path: '/invoice',
+  },
+  {
+    label: 'Transactions',
+    icon: <Icon icon="tdesign:undertake-transaction" width="24" height="24" />,
+    path: '/transactions',
   },
   {
     label: 'Procedures',
