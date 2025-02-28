@@ -165,7 +165,10 @@ const Invoice = () => {
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <InvoiceDetailsModal selectedPatientID={selectedPatientID} />
+        <InvoiceDetailsModal
+          selectedPatientID={selectedPatientID}
+          onClose={() => setIsModalOpen(false)}
+        />
       </AntdModal>
 
       <AntdModal
