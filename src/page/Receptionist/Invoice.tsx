@@ -42,16 +42,18 @@ const Invoice = () => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isBillModalOpen, setIsBillModalOpen] = useState(false)
-  const [selectedPatientID, setSelectedPatientID] = useState<number | null>(
+  const [selectedInvoiceID, setSelectedInvoiceID] = useState<number | null>(
     null
   )
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
+  const [selectedKey, setSelectedKey] = useState<string | null>(null)
 
   const handleCancel = () => setIsModalVisible(false)
 
-  const handleViewDetails = (patientID: number) => {
-    setSelectedPatientID(patientID)
+  const handleViewDetails = (invoiceID: number, key: string) => {
+    setSelectedInvoiceID(invoiceID)
+    setSelectedKey(key)
     setIsModalOpen(true)
   }
 
@@ -127,7 +129,9 @@ const Invoice = () => {
                   statusName === 'Partial' ? (
                     <Button
                       className="rounded-full bg-[#0061FFA1] text-white"
-                      onClick={() => handleViewDetails(record.patient_id)}
+                      onClick={() =>
+                        handleViewDetails(record.invoiceID, record.key)
+                      }
                     >
                       Pay
                     </Button>
@@ -165,14 +169,17 @@ const Invoice = () => {
       </Modal>
 
       <AntdModal
-        title={`Transaction Details - ${selectedPatientID}`}
+        title={`Transaction Details - ${selectedInvoiceID}`}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
+        width="max"
+        className="w-max"
       >
         <InvoiceDetailsModal
-          selectedPatientID={selectedPatientID}
+          selectedInvoiceID={selectedInvoiceID}
           onClose={() => setIsModalOpen(false)}
+          selectedKey={selectedKey}
         />
       </AntdModal>
 

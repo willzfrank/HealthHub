@@ -1,10 +1,12 @@
 import { Icon } from '@iconify/react'
 import { Table } from 'antd'
-import useGetPatientInvoices from '../../api/hooks/useGetPatientInvoice'
+import useGetInvoiceDetails from '../../api/hooks/useGetInvoiceData'
 import usePayInvoice from '../../api/hooks/usePayInvoice'
+import { formatDate } from '../../utils/utils'
 
 type InvoiceDetailsModalProps = {
-  selectedPatientID: number | null
+  selectedInvoiceID: number | null
+  selectedKey: string | null
   onClose: () => void
 }
 
@@ -17,20 +19,25 @@ const modalTableColumns = [
   },
   {
     title: 'Service',
-    dataIndex: 'description',
-    key: 'description',
+    dataIndex: 'bill_item',
+    key: 'bill_item',
+  },
+  {
+    title: 'Quantity',
+    dataIndex: 'quantity',
+    key: 'quantity',
   },
   {
     title: 'Amount',
-    dataIndex: 'total_amount',
-    key: 'total_amount',
-    render: (amount: number) => `₦${amount.toLocaleString()}`,
+    dataIndex: 'amount',
+    key: 'amount',
+    render: (amount: number) => `₦${amount?.toLocaleString()}`,
   },
   {
-    title: 'Balance',
-    dataIndex: 'balance',
-    key: 'balance',
-    render: (balance: number) => `₦${balance.toLocaleString()}`,
+    title: 'Amount Paid',
+    dataIndex: 'amount_paid',
+    key: 'amount_paid',
+    render: (amount: number) => `₦${amount?.toLocaleString()}`,
   },
   {
     title: 'Status',
@@ -52,26 +59,34 @@ const modalTableColumns = [
 ]
 
 const InvoiceDetailsModal = ({
-  selectedPatientID,
+  selectedInvoiceID,
   onClose,
+  selectedKey,
 }: InvoiceDetailsModalProps) => {
-  const { data, isLoading, error } = useGetPatientInvoices(selectedPatientID)
+  const {
+    data: invoiceData,
+    isLoading,
+    error,
+  } = useGetInvoiceDetails(selectedInvoiceID?.toString() || '')
   const payInvoice = usePayInvoice()
 
-  // Extract patient details and invoices
-  const patientDetails = data?.patient_details
-  const invoices = data?.invoices || []
+  // Extract data from the API response
+  const currentInvoice = invoiceData?.response || {}
+  console.log('currentInvoice', currentInvoice)
 
   const handlePay = async () => {
-    if (!selectedPatientID || invoices.length === 0) return
+    if (!selectedInvoiceID || !currentInvoice || !currentInvoice.items) return
+
+    // Map the items array to the expected payload structure
+    const itemsPayload = currentInvoice.items.map((item: any) => ({
+      item_id: item.bill_id.toString(),
+      amount: item.amount.toString(),
+    }))
 
     const paymentData = {
-      patient_id: selectedPatientID,
-      invoice_id: invoices[0].id,
-      items: invoices.map((invoice: any) => ({
-        item_id: invoice.id,
-        amount: invoice.total_amount,
-      })),
+      patient_id: currentInvoice.patient_id.toString(),
+      invoice_id: selectedKey || '',
+      items: itemsPayload,
     }
 
     try {
@@ -82,21 +97,24 @@ const InvoiceDetailsModal = ({
     }
   }
 
-  // Transform invoices for AntD Table
-  const modalTableData = invoices.map((invoice: any, index: number) => ({
-    key: index + 1,
-    description: invoice.description,
-    total_amount: invoice.total_amount,
-    balance: invoice.balance,
-    payment_status: invoice.payment_status,
-  }))
+  // Transform invoice items for AntD Table
+  const modalTableData = currentInvoice.items
+    ? currentInvoice.items.map((item: any, index: number) => ({
+        key: index + 1,
+        bill_item: item.bill_item,
+        quantity: item.quantity,
+        amount: item.amount,
+        amount_paid: item.amount_paid,
+        payment_status: item.payment_status,
+      }))
+    : []
 
   return (
     <div>
       <div>
         <div className="flex items-start justify-between gap-2">
           <img src="/images/shalom-logo.svg" alt="logo" />
-          <span>Patient ID: {selectedPatientID}</span>
+          <span>Invoice ID: {selectedInvoiceID}</span>
         </div>
 
         <div className="flex items-start justify-between">
@@ -110,28 +128,34 @@ const InvoiceDetailsModal = ({
               Salem House, State House.
             </span>
             <span className="text-[#404040] text-[14px] mt-1.5">
-              Invoice Date : 12 Nov 2019
+              Invoice Date:{' '}
+              {currentInvoice.created_at
+                ? formatDate(currentInvoice.created_at)
+                : 'N/A'}
+            </span>
+            <span className="text-[#404040] text-[14px]">
+              Invoice Number: {currentInvoice.invoice_number || 'N/A'}
+            </span>
+            <span className="text-[#404040] text-[14px]">
+              Year: {currentInvoice.year || 'N/A'}
             </span>
           </div>
 
           {/* Invoice To - Dynamically Rendered */}
-          {patientDetails ? (
+          {currentInvoice.patient_name ? (
             <div className="flex flex-col items-end">
               <span className="text-[#404040] text-[14px]">Invoice To:</span>
               <span className="text-[#404040] font-bold text-[16px]">
-                {patientDetails.name} - {patientDetails.file_number}
-              </span>
-              <span className="text-[#565656] text-[14px]">
-                {patientDetails.address}
+                {currentInvoice.patient_name} - {currentInvoice.file_number}
               </span>
               <span className="text-[#404040] text-[14px] mt-1.5">
-                Age: {patientDetails.age}
+                Patient ID: {currentInvoice.patient_id}
               </span>
               <span className="text-[#404040] text-[14px]">
-                Gender: {patientDetails.gender}
+                Phone: {currentInvoice.phone || 'N/A'}
               </span>
               <span className="text-[#404040] text-[14px]">
-                Phone: {patientDetails.phone}
+                Email: {currentInvoice.email || 'N/A'}
               </span>
             </div>
           ) : (
@@ -141,38 +165,36 @@ const InvoiceDetailsModal = ({
 
         {/* Table */}
         {isLoading ? (
-          <p className="text-gray-500">Loading invoices...</p>
+          <p className="text-gray-500">Loading invoice details...</p>
         ) : error ? (
-          <p className="text-red-500">Failed to fetch invoices</p>
-        ) : invoices.length > 0 ? (
+          <p className="text-red-500">Failed to fetch invoice details</p>
+        ) : modalTableData.length > 0 ? (
           <Table
             columns={modalTableColumns}
             dataSource={modalTableData}
             pagination={false}
+            className="mt-4"
           />
         ) : (
-          <p className="text-gray-500 mt-3">
-            No invoices available for this patient.
-          </p>
+          <p className="text-gray-500 mt-3">No invoice details available.</p>
         )}
 
         {/* Invoice Total */}
         <div className="flex my-2.5 items-center justify-end">
           <span className="font-bold text-black text-[14px]">
             Total = ₦
-            {invoices
-              .reduce(
-                (acc: any, curr: { total_amount: any }) =>
-                  acc + curr.total_amount,
-                0
-              )
-              .toLocaleString()}
+            {currentInvoice.total
+              ? currentInvoice?.total?.toLocaleString()
+              : '0'}
           </span>
         </div>
 
         {/* Buttons */}
         <div className="flex my-2.5 items-center justify-between">
-          <button className="border border-[#4880FF] rounded text-[#4880FF] px-5 py-1">
+          <button
+            className="border border-[#4880FF] rounded text-[#4880FF] px-5 py-1"
+            onClick={onClose}
+          >
             Close
           </button>
 
@@ -188,15 +210,13 @@ const InvoiceDetailsModal = ({
               <Icon icon="bi:three-dots-vertical" width="16" height="16" />
             </button>
 
-            <div className="flex my-2.5 items-center justify-between">
-              <button
-                className="border border-[#4880FF] rounded text-[#4880FF] px-5 py-1"
-                onClick={handlePay}
-                disabled={payInvoice.isLoading}
-              >
-                {payInvoice.isLoading ? 'Processing...' : 'Pay'}
-              </button>
-            </div>
+            <button
+              className="border border-[#4880FF] rounded text-[#4880FF] px-5 py-1"
+              onClick={handlePay}
+              disabled={payInvoice.isLoading || !currentInvoice.id}
+            >
+              {payInvoice.isLoading ? 'Processing...' : 'Pay'}
+            </button>
           </div>
         </div>
       </div>
