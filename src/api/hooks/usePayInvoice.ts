@@ -4,9 +4,9 @@ import axiosInstance from '../axiosInstance'
 const usePayInvoice = () => {
   return useMutation({
     mutationFn: async (paymentData: {
-      patient_id: number
-      invoice_id: number
-      items: { item_id: number; amount: number }[]
+      patient_id: string
+      invoice_id: string
+      items: { item_id: string; amount: number }[]
     }) => {
       const response = await axiosInstance.post(
         'admin/patient/invoice/pay',
