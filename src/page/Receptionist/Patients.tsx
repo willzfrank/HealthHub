@@ -124,7 +124,7 @@ const Patients = () => {
       render: (text: string) => text || 'N/A',
     },
     {
-      title: <span className="text-[#3A3A49]">Next Appointment</span>,
+      title: <span className="text-[#3A3A49]">Appointment</span>,
       dataIndex: 'last_visited',
       key: 'lastAppointment',
       render: (text: string) => formatDate(text) || 'N/A',

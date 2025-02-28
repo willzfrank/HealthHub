@@ -177,14 +177,14 @@ const AppointmentsTable = () => {
         </div>
       </div>
 
-      {/* <Modal
+      <Modal
         isOpen={isModalVisible}
         onClose={handleCancel}
         title="Schedule Appointment"
         centerTitle={true}
       >
         <ReceptionistPatientFormModal selectedPatient={selectedPatient} />
-      </Modal> */}
+      </Modal>
     </Layout>
   )
 }

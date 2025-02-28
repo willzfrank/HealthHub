@@ -34,12 +34,10 @@ const ReceptionistDashboard = () => {
   /** Headers */
   const appointmentsHeaders = ['Time', 'Patient', 'Purpose', 'Doctor']
   const patientsHeaders = [
-    'Patient ID',
+    'Patient Number',
     'Patient Name',
     'Reg. Date',
-    'Last Visit',
-    'Date',
-    // 'View',
+    'Appointment',
   ]
   const eventsHeaders = ['Date', 'Patient', 'Event']
 
@@ -51,7 +49,6 @@ const ReceptionistDashboard = () => {
       apt.patient_name,
       apt.consultation_name,
       apt.doctor,
-      // <Icon icon="mdi:eye-outline" width="20" height="20" />,
     ],
   }))
 
@@ -62,14 +59,8 @@ const ReceptionistDashboard = () => {
           cells: [
             patient.file_number || 'N/A',
             patient.name || 'N/A',
-            new Date(patient.created_at).toLocaleDateString(),
-            patient.last_visited
-              ? new Date(patient.last_visited).toLocaleDateString()
-              : 'N/A',
-            patient.next_scheduled_date
-              ? new Date(patient.next_scheduled_date).toLocaleDateString()
-              : 'N/A',
-            <Icon icon="mdi:eye-outline" width="20" height="20" />,
+            formatDate(patient.created_at),
+            patient.last_visited ? formatDate(patient.last_visited) : 'N/A',
           ],
         }))
       : []
@@ -120,14 +111,14 @@ const ReceptionistDashboard = () => {
       </div>
 
       <div className="mt-4 flex items-start gap-4">
-        <div className="w-[70%]">
+        <div className="w-[60%]">
           <DashboardTable
             title="Recent Patients"
             headers={patientsHeaders}
             data={patientsData}
           />
         </div>
-        <div className="w-[30%]">
+        <div className="w-[40%]">
           <DashboardTable
             title="Upcoming Events"
             headers={eventsHeaders}

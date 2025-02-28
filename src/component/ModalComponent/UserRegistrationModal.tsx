@@ -420,6 +420,7 @@ const UserRegistrationModal: React.FC<UserRegistrationModalProps> = ({
           className="text-[#0061FF] text-[15px] font-medium"
         >
           Address
+          <span className="text-red-500">*</span>
         </label>
         <input
           id="address"
