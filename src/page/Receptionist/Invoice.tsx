@@ -12,24 +12,10 @@ import useInvoices from '../../api/hooks/useInvoices'
 import type { IInvoice } from '../../types/types'
 import useFetchPaymentStatuses from '../../api/hooks/useFetchPaymentStatuses'
 
-interface InvoiceItem {
-  payment_status(payment_status: any): React.ReactNode
-  paymentUrl(paymentUrl: any): void
-  key: string
-  invoiceID: string
-  invoiceDate: string
-  patientName: string
-  procedure: string
-  amount: string
-  status: 'Awaiting Payment' | 'Paid' | 'Partial'
-}
-
 const Invoice = () => {
   const { data: invoiceData, isLoading } = useInvoices(1)
   const { data: paymentStatuses, isLoading: isPaymentStatusesLoading } =
     useFetchPaymentStatuses()
-
-  console.log('paymentStatuses', paymentStatuses)
 
   // Transform API response to match table data structure
   const transformedData: IInvoice[] =
@@ -40,6 +26,7 @@ const Invoice = () => {
 
       return {
         key: invoice.id.toString(),
+        patient_id: invoice.patient_id,
         invoiceID: invoice.invoice_number,
         invoiceDate: invoice.invoice_date,
         patientName: invoice.patient_name,
@@ -50,25 +37,19 @@ const Invoice = () => {
       }
     }) || []
 
-  const handlePayClick = (paymentUrl: string | null) => {
-    if (paymentUrl) {
-      window.open(paymentUrl, '_blank') // Open payment page in new tab
-    }
-  }
-
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isBillModalOpen, setIsBillModalOpen] = useState(false)
-  const [selectedTransactionID, setSelectedTransactionID] = useState<
-    string | null
-  >(null)
+  const [selectedPatientID, setSelectedPatientID] = useState<number | null>(
+    null
+  )
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
 
   const handleCancel = () => setIsModalVisible(false)
 
-  const handleViewDetails = (patientID: string) => {
-    setSelectedTransactionID(patientID)
+  const handleViewDetails = (patientID: number) => {
+    setSelectedPatientID(patientID)
     setIsModalOpen(true)
   }
 
@@ -141,7 +122,7 @@ const Invoice = () => {
                   computedStatus === 'Partial' ? (
                     <Button
                       className="rounded-full bg-[#0061FFA1] text-white"
-                      onClick={() => handleViewDetails('1234')}
+                      onClick={() => handleViewDetails(item.patient_id)}
                     >
                       Pay
                     </Button>
@@ -179,12 +160,12 @@ const Invoice = () => {
       </Modal>
 
       <AntdModal
-        title={`Transaction Details - ${selectedTransactionID}`}
+        title={`Transaction Details - ${selectedPatientID}`}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <InvoiceDetailsModal selectedTransaction={selectedTransactionID} />
+        <InvoiceDetailsModal selectedPatientID={selectedPatientID} />
       </AntdModal>
 
       <AntdModal
