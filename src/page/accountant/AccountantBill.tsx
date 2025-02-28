@@ -163,7 +163,8 @@ const AccountantBill = () => {
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <InvoiceDetailsModal selectedTransaction={selectedTransactionID} />
+        {/* <InvoiceDetailsModal selectedTransaction={selectedTransactionID} /> */}
+        INVOICE DETAILS MODAL 
       </AntdModal>
 
       <AntdModal

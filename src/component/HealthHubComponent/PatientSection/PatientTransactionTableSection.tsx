@@ -112,7 +112,8 @@ const TransactionsTable = () => {
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <InvoiceDetailsModal selectedTransaction={selectedTransaction} />
+        {/* <InvoiceDetailsModal selectedTransaction={selectedTransaction} /> */}
+        invocie details modal 
       </AntdModal>
     </div>
   )

@@ -74,6 +74,7 @@ export interface PatientRegistrationData {
 }
 
 export interface IInvoice {
+  patient_id: any
   id: number
   invoice_number: string
   invoice_date: string
