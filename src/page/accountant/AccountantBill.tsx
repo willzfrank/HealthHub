@@ -36,6 +36,8 @@ const AccountantBill = () => {
   const { data: paymentStatuses, isLoading: isPaymentStatusesLoading } =
     useFetchPaymentStatuses()
 
+  console.log('patientBillData', patientBillData)
+
   // Create a mapping of payment_status id to name
   const paymentStatusMap = paymentStatuses?.reduce(
     (acc: { [key: number]: string }, status: { id: number; name: string }) => {
@@ -164,7 +166,7 @@ const AccountantBill = () => {
         footer={null}
       >
         {/* <InvoiceDetailsModal selectedTransaction={selectedTransactionID} /> */}
-        INVOICE DETAILS MODAL 
+        INVOICE DETAILS MODAL
       </AntdModal>
 
       <AntdModal

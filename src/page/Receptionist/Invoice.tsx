@@ -20,6 +20,7 @@ const Invoice = () => {
   // Transform API response to match table data structure
   const transformedData: IInvoice[] =
     invoiceData?.response?.data?.map((invoice: IInvoice) => {
+      // Find the matching payment status by ID
       const matchedStatus = paymentStatuses?.find(
         (status: { id: number }) => status.id === invoice.payment_status
       )?.name
@@ -33,6 +34,7 @@ const Invoice = () => {
         procedure: invoice.description,
         amount: `₦${invoice.total.toLocaleString()}`,
         status: matchedStatus || 'Unknown',
+        payment_status: invoice.payment_status, // Keep the original ID for filtering
         paymentUrl: invoice.payment_url,
       }
     }) || []
@@ -56,28 +58,25 @@ const Invoice = () => {
   const handleScheduleCancel = () => setIsScheduleModalOpen(false)
   const onSelectChange = (keys: React.Key[]) => setSelectedRowKeys(keys)
 
-  const getStatus = (
-    status: number
-  ): 'Awaiting Payment' | 'Paid' | 'Partial' => {
-    switch (status) {
-      case 2:
-        return 'Paid'
-      case 3:
-        return 'Partial'
-      default:
-        return 'Awaiting Payment'
-    }
+  // Get status name from ID
+  const getStatus = (statusId: number): string => {
+    if (!paymentStatuses) return 'Unknown'
+
+    const status = paymentStatuses.find(
+      (status: { id: number }) => status.id === statusId
+    )
+
+    return status ? status.name : 'Unknown'
   }
 
-  const getStatusClass = (status: 'Awaiting Payment' | 'Paid' | 'Partial') => {
-    switch (status) {
-      case 'Paid':
-        return 'bg-green-100 text-green-600'
-      case 'Partial':
-        return 'bg-yellow-100 text-yellow-600'
-      default:
-        return 'bg-red-100 text-red-600'
+  // Get CSS class based on status name
+  const getStatusClass = (status: string) => {
+    const statusColors: Record<string, string> = {
+      'Awaiting Payment': 'bg-red-100 text-red-600',
+      Paid: 'bg-green-100 text-green-600',
+      Partial: 'bg-yellow-100 text-yellow-600',
     }
+    return statusColors[status] || 'bg-gray-100 text-gray-600'
   }
 
   return (
@@ -101,28 +100,34 @@ const Invoice = () => {
           {
             title: 'Status',
             key: 'status',
-            render: (_text, item: IInvoice) => (
-              <span
-                className={`px-3 py-1 rounded-full text-sm ${getStatusClass(
-                  getStatus(item.payment_status)
-                )}`}
-              >
-                {getStatus(item.payment_status)}
-              </span>
-            ),
+            render: (_text, record: any) => {
+              // Use the payment_status ID to get the status name
+              const statusName = getStatus(record.payment_status)
+
+              return (
+                <span
+                  className={`px-3 py-1 rounded-full text-sm ${getStatusClass(
+                    statusName
+                  )}`}
+                >
+                  {statusName}
+                </span>
+              )
+            },
           },
           {
             title: 'Action',
             key: 'action',
-            render: (_text, item: IInvoice) => {
-              const computedStatus = getStatus(item.payment_status)
+            render: (_text, record: any) => {
+              const statusName = getStatus(record.payment_status)
+
               return (
                 <div className="flex gap-2">
-                  {computedStatus === 'Awaiting Payment' ||
-                  computedStatus === 'Partial' ? (
+                  {statusName === 'Awaiting Payment' ||
+                  statusName === 'Partial' ? (
                     <Button
                       className="rounded-full bg-[#0061FFA1] text-white"
-                      onClick={() => handleViewDetails(item.patient_id)}
+                      onClick={() => handleViewDetails(record.patient_id)}
                     >
                       Pay
                     </Button>
@@ -133,7 +138,7 @@ const Invoice = () => {
           },
         ]}
         dataSource={transformedData}
-        loading={isLoading}
+        loading={isLoading || isPaymentStatusesLoading} // Show loading when payment statuses are loading too
         pagination={false}
       />
 
