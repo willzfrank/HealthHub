@@ -41,7 +41,7 @@ const BillFormModal = ({
     const billItemIds = selectedRowKeys
       .map((key) => {
         const selectedItem = billItems.find((item) => item.key === key)
-        return selectedItem?.bill_item_id
+        return selectedItem?.id
       })
       .filter((id) => id !== undefined) as number[]
 
@@ -140,7 +140,7 @@ const BillFormModal = ({
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      render: (amount: number) => `₦${amount?.toFixed(2)}`,
+      render: (amount: number) => `$${amount?.toFixed(2)}`,
     },
     // {
     //   title: 'Added by',

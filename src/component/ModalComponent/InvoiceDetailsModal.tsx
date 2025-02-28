@@ -96,7 +96,7 @@ const InvoiceDetailsModal = ({
       <div>
         <div className="flex items-start justify-between gap-2">
           <img src="/images/shalom-logo.svg" alt="logo" />
-          <span>Invoice ID: {selectedPatientID}</span>
+          <span>Patient ID: {selectedPatientID}</span>
         </div>
 
         <div className="flex items-start justify-between">
