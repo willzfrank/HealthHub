@@ -140,7 +140,7 @@ const BillFormModal = ({
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      render: (amount: number) => `$${amount?.toFixed(2)}`,
+      render: (amount: number) => `₦${amount?.toFixed(2)}`,
     },
     // {
     //   title: 'Added by',

@@ -32,12 +32,12 @@ const ScheduleModal = ({
   const { titleData } = useFetchTitles()
 
   const title =
-    titleData?.find((t) => t.id === selectedPatientData.title_id)?.name || ''
+    titleData?.find((t) => t.id === selectedPatientData.title_id)?.name ?? ''
 
   // Find gender name
   const gender =
     genderData?.find((g: Gender) => g.id === selectedPatientData.gender_id)
-      ?.name || ''
+      ?.name ?? ''
 
   // Convert DOB to DatePicker format
   const dateOfBirth = selectedPatientData.date_of_birth
@@ -64,12 +64,14 @@ const ScheduleModal = ({
       return
     }
 
+    const scheduledDateTime = `${scheduledDate} 23:59:00`
+
     bookAppointment(
       {
         patient_id: patientId,
         doctor_id: doctorId,
         receptionist_comment: receptionistComment,
-        scheduled_date: scheduledDate,
+        scheduled_date: scheduledDateTime,
       },
       {
         onSuccess: () => {
