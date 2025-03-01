@@ -25,7 +25,7 @@ const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
     patientName: appointment.patient_name,
     purpose: appointment.consultation_name,
     doctor: appointment.doctor,
-    vitals: appointment.vitals_status === 'done' ? 'Done' : 'Pending',
+    consultation_status: appointment.consultation_status === 1 ? 'Active' : 'Closed',
     record: appointment,
   }))
 
@@ -53,17 +53,19 @@ const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
               Doctor
             </th>
             <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
-              Vitals
+              Consultation Status
             </th>
-            <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
+            {/* <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
               Action
-            </th>
+            </th> */}
           </tr>
         </thead>
         <tbody>
           {tableData.length > 0 ? (
             tableData.map(
               (item: {
+                consultation_status: number
+                consultationStatus: number
                 id: Key | null | undefined
                 dateTime:
                   | string
@@ -137,17 +139,17 @@ const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
                     {item.doctor}
                   </td>
                   <td className="px-4 py-2 text-[#030229] text-[15px]">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        item.vitals === 'Done'
-                          ? 'bg-[#ccf0eb] text-[#70d5c7]'
-                          : 'bg-[#f0edcc] text-[#bbae15]'
-                      }`}
-                    >
-                      {item.vitals}
-                    </span>
-                  </td>
-                  <td className="text-center px-4 py-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm ${
+                          item.consultation_status === 1
+                            ? 'bg-[#ccf0eb] text-[#70d5c7]'  
+                            : 'bg-[#f0edcc] text-[#bbae15]' 
+                        }`}
+                      >
+                        {item.consultation_status === 1 ? 'Active' : 'Closed'}
+                      </span>
+                    </td>
+                  {/* <td className="text-center px-4 py-2">
                     <Icon
                       icon="bitcoin-icons:exit-outline"
                       width="20"
@@ -155,7 +157,7 @@ const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
                       onClick={() => showModal?.(item.record)}
                       className="cursor-pointer"
                     />
-                  </td>
+                  </td> */}
                 </tr>
               )
             )

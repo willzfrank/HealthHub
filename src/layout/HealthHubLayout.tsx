@@ -108,6 +108,7 @@ const Layout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       'Dashboard',
       'Appointments',
       'Patients',
+      'Invoice',
       'Bills',
       'Settings',
     ],
