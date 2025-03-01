@@ -1,22 +1,13 @@
 import { Select, DatePicker } from 'antd'
 import dayjs from 'dayjs'
 import { useState } from 'react'
-import toast from 'react-hot-toast'
-import axiosInstance from '../../api/axiosInstance'
-import { useMutation } from 'react-query'
-import { IAppointmentItem, IBillData } from '../../types/types'
+import { IAppointmentItem } from '../../types/types'
 import useDoctors from '../../api/hooks/useDoctors'
 import { useFetchBills } from '../../api/hooks/useFetchBills'
 
 type Props = {
   appointmentData: IAppointmentItem | null
 }
-
-const genderOptions = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
-]
 
 const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
   const [selectedDoctor, setSelectedDoctor] = useState<string>(
@@ -28,8 +19,6 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
     selling_price: '',
   })
 
-  console.log('appointmentData', appointmentData)
-
   const fullName = appointmentData?.patient_name ?? ''
   const nameParts = fullName.split(' ')
 
@@ -38,11 +27,7 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
     nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : ''
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
 
-  const {
-    data: doctors,
-    isLoading: isDoctorsLoading,
-    error: doctorsError,
-  } = useDoctors(1)
+  const { data: doctors, isLoading: isDoctorsLoading } = useDoctors(1)
   const { data: billsData, isLoading: isBillsLoading } = useFetchBills(1, 10)
 
   return (

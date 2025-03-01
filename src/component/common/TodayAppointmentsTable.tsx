@@ -15,7 +15,7 @@ interface TodayAppointmentsTableProps {
 }
 
 const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
-  const { data: adminData, isLoading, error } = useAdminStats()
+  const { data: adminData } = useAdminStats()
   const appointments = adminData?.response?.appointments_today ?? []
 
   const tableData = appointments.map((appointment: IAppointmentItem) => ({
@@ -25,6 +25,7 @@ const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
     patientName: appointment.patient_name,
     purpose: appointment.consultation_name,
     doctor: appointment.doctor,
+    receptionist_comment: appointment.receptionist_comment,
     vitals: appointment.vitals_status === 'done' ? 'Done' : 'Pending',
     record: appointment,
   }))
@@ -55,9 +56,9 @@ const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
             <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
               Vitals
             </th>
-            <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
+            {/* <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
               Action
-            </th>
+            </th> */}
           </tr>
         </thead>
         <tbody>
@@ -147,15 +148,18 @@ const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
                       {item.vitals}
                     </span>
                   </td>
-                  <td className="text-center px-4 py-2">
+                  {/* <td className="text-center px-4 py-2">
                     <Icon
                       icon="bitcoin-icons:exit-outline"
                       width="20"
                       height="20"
-                      onClick={() => showModal?.(item.record)}
+                      onClick={() => {
+                        showModal?.(item.record)
+                        console.log('clicked', item.record)
+                      }}
                       className="cursor-pointer"
                     />
-                  </td>
+                  </td> */}
                 </tr>
               )
             )
