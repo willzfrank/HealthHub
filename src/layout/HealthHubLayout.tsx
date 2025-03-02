@@ -49,7 +49,7 @@ const menuItems: MenuItem[] = [
   {
     label: 'Staffs',
     icon: <Icon icon="guidance:care-staff-area" width="24" height="24" />,
-    path: '/staffs',
+    path: '/users-management',
   },
   {
     label: 'Settings',

@@ -3,60 +3,13 @@ import { Table } from 'antd'
 import useGetInvoiceDetails from '../../api/hooks/useGetInvoiceData'
 import usePayInvoice from '../../api/hooks/usePayInvoice'
 import { formatDate } from '../../utils/utils'
+import usePaymentStatus from '../../hooks/usePaymentStatus'
 
 type InvoiceDetailsModalProps = {
   selectedInvoiceID: number | null
   selectedKey: string | null
   onClose: () => void
 }
-
-// Modal table columns
-const modalTableColumns = [
-  {
-    title: 'Serial No',
-    dataIndex: 'key',
-    key: 'key',
-  },
-  {
-    title: 'Service',
-    dataIndex: 'bill_item',
-    key: 'bill_item',
-  },
-  {
-    title: 'Quantity',
-    dataIndex: 'quantity',
-    key: 'quantity',
-  },
-  {
-    title: 'Amount',
-    dataIndex: 'amount',
-    key: 'amount',
-    render: (amount: number) => `₦${amount?.toLocaleString()}`,
-  },
-  {
-    title: 'Amount Paid',
-    dataIndex: 'amount_paid',
-    key: 'amount_paid',
-    render: (amount: number) => `₦${amount?.toLocaleString()}`,
-  },
-  {
-    title: 'Status',
-    dataIndex: 'payment_status',
-    key: 'payment_status',
-    render: (status: number) => {
-      switch (status) {
-        case 1:
-          return <span className="text-red-500">Awaiting Payment</span>
-        case 2:
-          return <span className="text-green-500">Paid</span>
-        case 3:
-          return <span className="text-yellow-500">Partial</span>
-        default:
-          return null
-      }
-    },
-  },
-]
 
 const InvoiceDetailsModal = ({
   selectedInvoiceID,
@@ -67,8 +20,51 @@ const InvoiceDetailsModal = ({
     data: invoiceData,
     isLoading,
     error,
-  } = useGetInvoiceDetails(selectedInvoiceID?.toString() || '')
+  } = useGetInvoiceDetails(selectedInvoiceID?.toString() ?? '')
   const payInvoice = usePayInvoice()
+  const { getStatus, isLoading: isPaymentStatusesLoading } = usePaymentStatus()
+
+  // Modal table columns
+  const modalTableColumns = [
+    {
+      title: 'Serial No',
+      dataIndex: 'key',
+      key: 'key',
+    },
+    {
+      title: 'Service',
+      dataIndex: 'bill_item',
+      key: 'bill_item',
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+      key: 'quantity',
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+      render: (amount: number) => `₦${amount?.toLocaleString()}`,
+    },
+    {
+      title: 'Amount Paid',
+      dataIndex: 'amount_paid',
+      key: 'amount_paid',
+      render: (amount: number) => `₦${amount?.toLocaleString()}`,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'payment_status',
+      key: 'payment_status',
+      render: (status: number) =>
+        isPaymentStatusesLoading ? (
+          'Loading...'
+        ) : (
+          <span>{getStatus(status)}</span>
+        ),
+    },
+  ]
 
   // Extract data from the API response
   const currentInvoice = invoiceData?.response || {}
@@ -210,13 +206,16 @@ const InvoiceDetailsModal = ({
               <Icon icon="bi:three-dots-vertical" width="16" height="16" />
             </button>
 
-            <button
-              className="border border-[#4880FF] rounded text-[#4880FF] px-5 py-1"
-              onClick={handlePay}
-              disabled={payInvoice.isLoading || !currentInvoice.id}
-            >
-              {payInvoice.isLoading ? 'Processing...' : 'Pay'}
-            </button>
+            {getStatus(currentInvoice.payment_status) !== 'Paid' && (
+              <button
+                className="border border-[#4880FF] rounded text-[#4880FF] px-5 py-1"
+                onClick={handlePay}
+                disabled={payInvoice.isLoading || !currentInvoice.id}
+              >
+                <Icon icon="mingcute:send-fill" width="16" height="16" />
+                {payInvoice.isLoading ? 'Processing...' : 'Pay'}
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -21,6 +21,7 @@ import NurseAppointment from './page/Nurse/NurseAppointment'
 import Staffs from './page/admin/Staffs'
 import Invoice from './page/Receptionist/Invoice'
 import AccountantBill from './page/accountant/AccountantBill'
+import AdminUserManagement from './page/admin/AdminUserManagement'
 
 const queryClient = new QueryClient()
 
@@ -159,6 +160,15 @@ function App() {
               element={
                 <ProtectedRoute
                   element={<Staffs />}
+                  isAllowed={isAuthenticated}
+                />
+              }
+            />
+            <Route
+              path="/users-management"
+              element={
+                <ProtectedRoute
+                  element={<AdminUserManagement />}
                   isAllowed={isAuthenticated}
                 />
               }
