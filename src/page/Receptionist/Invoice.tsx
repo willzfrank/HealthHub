@@ -34,7 +34,7 @@ const Invoice = () => {
         procedure: invoice.description,
         amount: `₦${invoice.total.toLocaleString()}`,
         status: matchedStatus || 'Unknown',
-        payment_status: invoice.payment_status, // Keep the original ID for filtering
+        payment_status: invoice.payment_status, 
         paymentUrl: invoice.payment_url,
       }
     }) || []
@@ -135,14 +135,23 @@ const Invoice = () => {
                     >
                       Pay
                     </Button>
-                  ) : null}
+                  ) : (
+                    <Button
+                      className="rounded-full border border-[#0061FFA1] text-[#0061FFA]"
+                      onClick={() =>
+                        handleViewDetails(record.invoiceID, record.key)
+                      }
+                    >
+                      View
+                    </Button>
+                  )}
                 </div>
               )
             },
           },
         ]}
         dataSource={transformedData}
-        loading={isLoading || isPaymentStatusesLoading} // Show loading when payment statuses are loading too
+        loading={isLoading || isPaymentStatusesLoading}
         pagination={false}
       />
 

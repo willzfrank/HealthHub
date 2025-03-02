@@ -36,7 +36,10 @@ const BillFormModal = ({
     useGenerateInvoice()
 
   const handlePay = () => {
-    if (selectedRowKeys.length === 0) return
+    if (selectedRowKeys.length === 0) {
+      toast.error('Please select at least one bill before proceeding.')
+      return
+    }
 
     const billItemIds = selectedRowKeys
       .map((key) => {
@@ -64,7 +67,7 @@ const BillFormModal = ({
         },
         onError: (error) => {
           console.error('Error generating invoice:', error.message)
-          toast.error(error.message)
+          toast.error('An error occurred while generating the invoice.')
         },
       }
     )
@@ -142,11 +145,6 @@ const BillFormModal = ({
       key: 'amount',
       render: (amount: number) => `₦${amount?.toFixed(2)}`,
     },
-    // {
-    //   title: 'Added by',
-    //   dataIndex: 'addedBy',
-    //   key: 'addedBy',
-    // },
   ]
 
   return (
@@ -183,7 +181,7 @@ const BillFormModal = ({
           CANCEL
         </button>
         <button
-          className="text-white bg-[#0061FF] rounded px-20 py-2.5"
+          className="text-white bg-[#0061FF] rounded px-20 py-2.5 cursor-pointer"
           onClick={handlePay}
           disabled={selectedRowKeys.length === 0 || isGenerating}
         >

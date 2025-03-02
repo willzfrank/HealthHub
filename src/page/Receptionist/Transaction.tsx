@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { Table, Pagination, Spin, message } from 'antd'
+import { Table, Pagination, Spin, message, Modal } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
-import Modal from '../../component/common/Modal'
 import useInvoices from '../../api/hooks/useInvoices'
 import { IInvoice } from '../../types/types'
 import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
+import PayDetailsModal from '../../component/ModalComponent/PayDetailsModal'
 
 const Transaction = () => {
   const [currentPage, setCurrentPage] = useState(1)
@@ -120,16 +120,13 @@ const Transaction = () => {
             />
           </div>
 
-          <Modal
-            isOpen={isModalVisible}
-            onClose={handleCancel}
-            title={`${selectedInvoice?.patient_name} - ${selectedInvoice?.invoice_number}`}
+          <Modal  
+            title="Transaction Details"
+            open={isModalVisible}
+            onCancel={() => setIsModalVisible(false)}
+            footer={null}
           >
-            <PatientInformationModal
-              handleTabClick={handleTabClick}
-              activeTab={activeTab}
-              invoice={selectedInvoice}
-            />
+            <PayDetailsModal invoice={selectedInvoice} />
           </Modal>
         </>
       )}

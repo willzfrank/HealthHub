@@ -1,5 +1,6 @@
 import { useMutation } from 'react-query'
 import axiosInstance from '../axiosInstance'
+import toast from 'react-hot-toast'
 
 const generateInvoice = async (params: {
   patientId: string
@@ -17,6 +18,14 @@ const generateInvoice = async (params: {
     if (response.data.status) {
       return response.data
     } else {
+      // Extract validation errors dynamically
+      const errorsArray = response.data?.response
+      if (Array.isArray(errorsArray) && errorsArray.length > 0) {
+        const errorMessages = errorsArray
+          .map((err) => `${err.field}: ${err.message}`)
+          .join(', ')
+        throw new Error(errorMessages)
+      }
       throw new Error(response.data.message || 'Invoice generation failed')
     }
   } catch (error: any) {
@@ -31,6 +40,7 @@ export const useGenerateInvoice = () => {
     mutationFn: generateInvoice,
     onError: (error: any) => {
       console.error('Invoice Generation Error:', error.message)
+      toast.error(error.message)
     },
   })
 }
