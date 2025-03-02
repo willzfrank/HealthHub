@@ -67,9 +67,9 @@ const TodayAppointmentsTable = ({
             <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
               {isDoctor ? 'Consultation Status' : 'Vitals'}
             </th>
-            <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
+            {/* <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
               Action
-            </th>
+            </th> */}
           </tr>
         </thead>
         <tbody>
