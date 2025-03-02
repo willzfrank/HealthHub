@@ -11,10 +11,16 @@ import {
 } from 'react'
 
 interface TodayAppointmentsTableProps {
-  showModal?: (record: IAppointmentItem) => void
+  showModal: (record: IAppointmentItem) => void
 }
 
-const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
+const CONSULTATION_CLOSED = 0
+const CONSULTATION_ACTIVE = 1
+
+const TodayAppointmentsTable = ({
+  showModal,
+  isDoctor,
+}: TodayAppointmentsTableProps & { isDoctor?: boolean }) => {
   const { data: adminData } = useAdminStats()
   const appointments = adminData?.response?.appointments_today ?? []
 
@@ -25,8 +31,13 @@ const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
     patientName: appointment.patient_name,
     purpose: appointment.consultation_name,
     doctor: appointment.doctor,
-    receptionist_comment: appointment.receptionist_comment,
-    vitals: appointment.vitals_status === 'done' ? 'Done' : 'Pending',
+    status: isDoctor
+      ? appointment.consultation_status === CONSULTATION_ACTIVE
+        ? 'Active'
+        : 'Closed'
+      : appointment.vitals_status === 'done'
+      ? 'Done'
+      : 'Pending',
     record: appointment,
   }))
 
@@ -54,115 +65,61 @@ const TodayAppointmentsTable = ({ showModal }: TodayAppointmentsTableProps) => {
               Doctor
             </th>
             <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
-              Vitals
+              {isDoctor ? 'Consultation Status' : 'Vitals'}
             </th>
-            {/* <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
+            <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
               Action
-            </th> */}
+            </th>
           </tr>
         </thead>
         <tbody>
           {tableData.length > 0 ? (
-            tableData.map(
-              (item: {
-                id: Key | null | undefined
-                dateTime:
-                  | string
-                  | number
-                  | boolean
-                  | ReactElement<any, string | JSXElementConstructor<any>>
-                  | Iterable<ReactNode>
-                  | ReactPortal
-                  | null
-                  | undefined
-                patientId:
-                  | string
-                  | number
-                  | boolean
-                  | ReactElement<any, string | JSXElementConstructor<any>>
-                  | Iterable<ReactNode>
-                  | ReactPortal
-                  | null
-                  | undefined
-                patientName:
-                  | string
-                  | number
-                  | boolean
-                  | ReactElement<any, string | JSXElementConstructor<any>>
-                  | Iterable<ReactNode>
-                  | ReactPortal
-                  | null
-                  | undefined
-                purpose:
-                  | string
-                  | number
-                  | boolean
-                  | ReactElement<any, string | JSXElementConstructor<any>>
-                  | Iterable<ReactNode>
-                  | ReactPortal
-                  | null
-                  | undefined
-                doctor:
-                  | string
-                  | number
-                  | boolean
-                  | ReactElement<any, string | JSXElementConstructor<any>>
-                  | Iterable<ReactNode>
-                  | ReactPortal
-                  | null
-                  | undefined
-                vitals:
-                  | string
-                  | number
-                  | boolean
-                  | ReactElement<any, string | JSXElementConstructor<any>>
-                  | Iterable<ReactNode>
-                  | null
-                  | undefined
-                record: IAppointmentItem
-              }) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 text-[#030229] text-[15px]">
-                    {item.dateTime}
-                  </td>
-                  <td className="px-4 py-2 text-[#030229] text-[15px]">
-                    {item.patientId}
-                  </td>
-                  <td className="px-4 py-2 text-[#030229] text-[15px]">
-                    {item.patientName}
-                  </td>
-                  <td className="px-4 py-2 text-[#030229] text-[15px]">
-                    {item.purpose}
-                  </td>
-                  <td className="px-4 py-2 text-[#030229] text-[15px]">
-                    {item.doctor}
-                  </td>
-                  <td className="px-4 py-2 text-[#030229] text-[15px]">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        item.vitals === 'Done'
-                          ? 'bg-[#ccf0eb] text-[#70d5c7]'
-                          : 'bg-[#f0edcc] text-[#bbae15]'
-                      }`}
-                    >
-                      {item.vitals}
-                    </span>
-                  </td>
-                  {/* <td className="text-center px-4 py-2">
-                    <Icon
-                      icon="bitcoin-icons:exit-outline"
-                      width="20"
-                      height="20"
-                      onClick={() => {
-                        showModal?.(item.record)
-                        console.log('clicked', item.record)
-                      }}
-                      className="cursor-pointer"
-                    />
-                  </td> */}
-                </tr>
-              )
-            )
+            tableData.map((item: any) => (
+              <tr key={item.id} className="hover:bg-gray-50">
+                <td className="px-4 py-2 text-[#030229] text-[15px]">
+                  {item.dateTime}
+                </td>
+                <td className="px-4 py-2 text-[#030229] text-[15px]">
+                  {item.patientId}
+                </td>
+                <td className="px-4 py-2 text-[#030229] text-[15px]">
+                  {item.patientName}
+                </td>
+                <td className="px-4 py-2 text-[#030229] text-[15px]">
+                  {item.purpose}
+                </td>
+                <td className="px-4 py-2 text-[#030229] text-[15px]">
+                  {item.doctor}
+                </td>
+                <td className="px-4 text-center py-2 text-[#030229] text-[15px]">
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      item.status === 'Active'
+                        ? 'bg-[#ccf0eb] text-[#70d5c7]'
+                        : item.status === 'Closed'
+                        ? 'bg-[#f0edcc] text-[#bbae15]'
+                        : item.status === 'Done'
+                        ? 'bg-[#ccf0eb] text-[#70d5c7]'
+                        : 'bg-[#f0edcc] text-[#bbae15]'
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </td>
+                <td className="text-center px-4 py-2">
+                  <Icon
+                    icon="bitcoin-icons:exit-outline"
+                    width="20"
+                    height="20"
+                    onClick={() => {
+                      showModal(item.record)
+                      console.log('clicked', item.record)
+                    }}
+                    className="cursor-pointer"
+                  />
+                </td>
+              </tr>
+            ))
           ) : (
             <tr>
               <td colSpan={7} className="text-center py-4 text-gray-500">

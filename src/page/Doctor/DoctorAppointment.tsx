@@ -3,8 +3,6 @@ import { Table, Pagination, Modal as AntdModal } from 'antd'
 import { Icon } from '@iconify/react'
 import Layout from '../../layout/HealthHubLayout'
 import HeaderSection from '../../component/common/HeaderSection'
-import Modal from '../../component/common/Modal'
-import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
 import DoctorPatientVitalsModal from '../../component/ModalComponent/DoctorPatientVitalsModal'
 import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
 import { IAppointmentItem } from '../../types/types'
@@ -75,20 +73,29 @@ const DoctorAppointment = () => {
     },
     {
       title: <span className="text-[#69686A]">Status </span>,
-      dataIndex: 'vitals_status',
-      key: 'vitals_status',
-      render: (status: string) => (
-        <span
-          className={`px-3 py-1 rounded-full text-sm ${
-            status.toLowerCase() === 'done'
-              ? 'bg-[#ccf0eb] text-[#70d5c7]'
-              : 'bg-[#f0edcc] text-[#bbae15]'
-          }`}
-        >
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </span>
-      ),
+      dataIndex: 'consultation_status',
+      key: 'consultation_status',
+      render: (status: number) => {
+        const statusMap: Record<number, { label: string; color: string }> = {
+          0: { label: 'Close', color: 'bg-[#f0edcc] text-[#bbae15]' },
+          1: { label: 'Active', color: 'bg-[#ccf0eb] text-[#70d5c7]' },
+        }
+
+        const statusInfo = statusMap[status] || {
+          label: 'Unknown',
+          color: 'bg-gray-200 text-gray-600',
+        }
+
+        return (
+          <span
+            className={`px-3 py-1 rounded-full text-sm ${statusInfo.color}`}
+          >
+            {statusInfo.label}
+          </span>
+        )
+      },
     },
+
     {
       title: <span className="text-[#69686A]">View </span>,
       key: 'view',
@@ -97,7 +104,6 @@ const DoctorAppointment = () => {
           icon="mdi:eye"
           width="20"
           height="20"
-          onClick={() => showModal(record)}
           className="cursor-pointer text-[#0061FF]"
         />
       ),
@@ -105,11 +111,12 @@ const DoctorAppointment = () => {
     {
       title: <span className="text-[#69686A]">Action </span>,
       key: 'action',
-      render: () => (
+      render: (_: any, record: IAppointmentItem) => (
         <Icon
           icon="system-uicons:enter"
           width="21"
           height="21"
+          onClick={() => showModal(record)}
           className="cursor-pointer"
         />
       ),
@@ -148,7 +155,7 @@ const DoctorAppointment = () => {
       </div>
 
       <AntdModal
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
         centered
