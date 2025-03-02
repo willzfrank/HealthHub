@@ -74,12 +74,10 @@ const NurseDashboard = (props: Props) => {
         footer={null}
         centered
       >
-        {selectedAppointment && (
-          <NursePatientVitalsModal
-            appointment={selectedAppointment}
-            closeModal={() => setIsModalVisible(false)}
-          />
-        )}
+        <NursePatientVitalsModal
+          appointment={selectedAppointment}
+          closeModal={() => setIsModalVisible(false)}
+        />
       </AntdModal>
     </Layout>
   )

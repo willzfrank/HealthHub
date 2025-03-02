@@ -22,18 +22,15 @@ const NurseAppointment = () => {
     setIsModalVisible(false)
   }
 
-  const {
-    data: appointmentData,
-    error: isAppointmentError,
-    isLoading: isAppointmentLoading,
-  } = useFetchAppointmentsList()
+  const { data: appointmentData, isLoading: isAppointmentLoading } =
+    useFetchAppointmentsList()
 
   const formattedData = appointmentData?.response?.data.map(
     (item: IAppointmentItem) => ({
       key: item.id,
       patientID: item.file_number,
-      patientName: item.patient_name,
-      purpose: item.consultation_name,
+      patient_name: item.patient_name,
+      consultation_name: item.consultation_name,
       doctor: item.doctor,
       date: item.scheduled_date
         ? new Date(item.scheduled_date).toLocaleString()
@@ -49,8 +46,8 @@ const NurseAppointment = () => {
   const columns = [
     { title: 'Date/Time', dataIndex: 'date', key: 'date' },
     { title: 'Patient ID', dataIndex: 'patientID', key: 'patientID' },
-    { title: 'Patient Name', dataIndex: 'patientName', key: 'patientName' },
-    { title: 'Purpose', dataIndex: 'purpose', key: 'purpose' },
+    { title: 'Patient Name', dataIndex: 'patient_name', key: 'patient_name' },
+    { title: 'Purpose', dataIndex: 'consultation_name', key: 'consultation_name' },
     { title: 'Doctor', dataIndex: 'doctor', key: 'doctor' },
     {
       title: 'Vitals',
@@ -99,7 +96,7 @@ const NurseAppointment = () => {
       >
         <NursePatientVitalsModal
           appointment={selectedAppointment}
-          closeModal={()=> setIsModalVisible(false)}
+          closeModal={() => setIsModalVisible(false)}
         />
       </AntdModal>
       <div className="flex justify-between items-center mt-4">

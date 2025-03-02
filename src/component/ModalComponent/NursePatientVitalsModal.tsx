@@ -24,19 +24,16 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
   const { mutate: updateAppointment, isLoading } =
     useUpdateAppointmentNurse(closeModal)
 
-  const fullName = appointment?.patientName ?? ''
+  const fullName = appointment?.patient_name ?? ''
   const nameParts = fullName.split(' ')
+  console.log('appointment', appointment)
 
   const firstName = nameParts[0]
   const middleName =
     nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : ''
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
 
-  const {
-    data: doctors,
-    isLoading: isDoctorsLoading,
-    error: doctorsError,
-  } = useDoctors(1)
+  const { data: doctors, isLoading: isDoctorsLoading } = useDoctors(1)
 
   const handleChange = (e: { target: { id: any; value: any } }) => {
     const { id, value } = e.target
@@ -131,7 +128,7 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                 <input
                   id="procedure"
                   type="text"
-                  defaultValue={appointment?.purpose ?? 'N/A'}
+                  defaultValue={appointment?.consultation_name ?? 'N/A'}
                   readOnly
                   className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none cursor-not-allowed bg-[#F5F6FA] w-full"
                 />
