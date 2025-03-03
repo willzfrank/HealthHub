@@ -6,7 +6,7 @@ const usePayInvoice = () => {
     mutationFn: async (paymentData: {
       patient_id: string
       invoice_id: string
-      items: { item_id: string; amount: number }[]
+      items: { item_id: string; amount: string }[]
     }) => {
       const response = await axiosInstance.post(
         'admin/patient/invoice/pay',

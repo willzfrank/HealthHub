@@ -316,7 +316,7 @@ const AdminUserManagement: React.FC = () => {
               email: userData.response.profile.email,
               phone: userData.response.profile.phone || '',
               role: userData.response.role.id.toString(),
-              hospital_id: userData.response.profile.hospital_id || undefined,
+              hospital_id: userData.response.profile.hospital_id || 1,
             }}
           />
         )}
@@ -376,7 +376,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
       role: roles.length > 0 ? roles[0].id.toString() : '',
       password: '',
       password_confirmation: '',
-      hospital_id: '',
+      hospital_id: 1,
     }
   )
 
@@ -484,18 +484,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Hospital ID
-              </label>
-              <input
-                type="text"
-                name="hospital_id"
-                value={formData.hospital_id}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
+
             {isAdd && (
               <>
                 <div>
