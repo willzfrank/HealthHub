@@ -26,7 +26,6 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
 
   const fullName = appointment?.patient_name ?? ''
   const nameParts = fullName.split(' ')
-  console.log('appointment', appointment)
 
   const firstName = nameParts[0]
   const middleName =

@@ -40,9 +40,7 @@ const DoctorAppointment = () => {
     setSelectedAppointment(null)
   }
 
-  const handleTabClick = (tab: string) => {
-    setActiveTab(tab)
-  }
+
 
   const columns = [
     {
@@ -77,8 +75,11 @@ const DoctorAppointment = () => {
       key: 'consultation_status',
       render: (status: number) => {
         const statusMap: Record<number, { label: string; color: string }> = {
-          0: { label: 'Close', color: 'bg-[#f0edcc] text-[#bbae15]' },
-          1: { label: 'Active', color: 'bg-[#ccf0eb] text-[#70d5c7]' },
+          0: {
+            label: 'Done',
+            color: ' bg-[#ccf0eb] text-[#70d5c7]',
+          },
+          1: { label: 'Pending', color: 'bg-[#f0edcc] text-[#bbae15]' },
         }
 
         const statusInfo = statusMap[status] || {
