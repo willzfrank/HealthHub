@@ -33,8 +33,8 @@ const TodayAppointmentsTable = ({
     doctor: appointment.doctor,
     status: isDoctor
       ? appointment.consultation_status === CONSULTATION_ACTIVE
-        ? 'Active'
-        : 'Closed'
+        ? 'Pending'
+        : 'Done'
       : appointment.vitals_status === 'done'
       ? 'Done'
       : 'Pending',

@@ -130,7 +130,7 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
                     onChange={(e) => setQuantity(e.target.value)}
                   />
                 </div>
-                <div className="w-[10%] flex items-end">
+                <div className="w-[10%] flex items-end mt-5">
                   <Button
                     type="primary"
                     className="bg-[#0061FF] h-[38px]"
@@ -169,87 +169,6 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
                         </Button>
                       </div>
                     ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Add New Procedure Button/Form */}
-              {!showAddNewForm ? (
-                <button
-                  type="button"
-                  className="text-[#0061FF] font-medium flex items-center mt-2 hover:underline"
-                  onClick={() => setShowAddNewForm(true)}
-                >
-                  <span className="mr-1">+</span> Add new procedure
-                </button>
-              ) : (
-                <div className="bg-[#F5F6FA] p-4 rounded-md mt-3">
-                  <h4 className="text-[#0061FF] font-medium mb-3">
-                    Create New Procedure
-                  </h4>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="text-[#0061FF] text-[15px] mb-1 block">
-                        Procedure Name
-                      </label>
-                      <Input
-                        placeholder="Enter procedure name"
-                        value={newProcedure.name}
-                        onChange={(e) =>
-                          setNewProcedure((prev) => ({
-                            ...prev,
-                            name: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[#0061FF] text-[15px] mb-1 block">
-                        Purchase Price (₦)
-                      </label>
-                      <Input
-                        type="number"
-                        min="0"
-                        placeholder="0.00"
-                        value={newProcedure.purchase_price}
-                        onChange={(e) =>
-                          setNewProcedure((prev) => ({
-                            ...prev,
-                            purchase_price: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[#0061FF] text-[15px] mb-1 block">
-                        Selling Price (₦)
-                      </label>
-                      <Input
-                        type="number"
-                        min="0"
-                        placeholder="0.00"
-                        value={newProcedure.selling_price}
-                        onChange={(e) =>
-                          setNewProcedure((prev) => ({
-                            ...prev,
-                            selling_price: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-end mt-4 gap-2">
-                    <Button onClick={() => setShowAddNewForm(false)}>
-                      Cancel
-                    </Button>
-                    <Button
-                      type="primary"
-                      className="bg-[#0061FF]"
-                      onClick={handleAddNewProcedure}
-                      loading={addBillMutation.isLoading}
-                    >
-                      Create Procedure
-                    </Button>
                   </div>
                 </div>
               )}
