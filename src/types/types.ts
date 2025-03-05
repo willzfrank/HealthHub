@@ -29,6 +29,11 @@ export interface Doctor {
   email: string
   hospital: string
 }
+
+export interface Title {
+  id: number
+  name: string
+}
 export interface AuthState {
   isAuthenticated: boolean
   accessToken: string | null
@@ -90,7 +95,6 @@ export interface IInvoice {
   email?: string | null
   phone?: string | null
 }
-
 
 export interface IBillData {
   name: string

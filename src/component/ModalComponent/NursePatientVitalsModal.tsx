@@ -20,7 +20,6 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
     useFetchAppointment(appointment.key || appointment.id)
   const { titleData, loading: isTitlesLoading } = useFetchTitles()
   const { data: genderData, isLoading: isGenderLoading } = useFetchGender()
-  console.log('appointment', appointment)
 
   // Ensure we use appointmentDetails if available
   const details = appointmentDetails?.response ?? {}
