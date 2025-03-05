@@ -6,6 +6,7 @@ import HeaderSection from '../../component/common/HeaderSection'
 import DoctorPatientVitalsModal from '../../component/ModalComponent/DoctorPatientVitalsModal'
 import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
 import { IAppointmentItem } from '../../types/types'
+import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
 
 interface AppointmentItem {
   id: number
@@ -29,18 +30,33 @@ const DoctorAppointment = () => {
   const [activeTab, setActiveTab] = useState('Details')
   const [selectedAppointment, setSelectedAppointment] =
     useState<IAppointmentItem | null>(null)
+  const [selectedPatientData, setSelectedPatientData] =
+    useState<IAppointmentItem | null>(null)
+
+  // Function to handle tab changes
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab)
+  }
 
   const showModal = (record: IAppointmentItem) => {
     setSelectedAppointment(record)
     setIsModalVisible(true)
   }
 
+  const showPatientModal = (record: IAppointmentItem) => {
+    setSelectedPatientData(record)
+    setIsOpen(true)
+  }
+
+  const handleClosePatientModal = (record: any) => {
+    setSelectedPatientData(null)
+    setIsOpen(false)
+  }
+
   const handleCancel = () => {
     setIsModalVisible(false)
     setSelectedAppointment(null)
   }
-
-
 
   const columns = [
     {
@@ -106,6 +122,7 @@ const DoctorAppointment = () => {
           width="20"
           height="20"
           className="cursor-pointer text-[#0061FF]"
+          onClick={() => showPatientModal(record)}
         />
       ),
     },
@@ -164,16 +181,17 @@ const DoctorAppointment = () => {
         <DoctorPatientVitalsModal appointmentData={selectedAppointment} />
       </AntdModal>
 
-      {/* <Modal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+      <AntdModal
+        open={isOpen}
+        onCancel={handleClosePatientModal}
         title="Joe Biden - CPD-5002"
       >
         <PatientInformationModal
           handleTabClick={handleTabClick}
           activeTab={activeTab}
+          appointmentData={selectedPatientData}
         />
-      </Modal> */}
+      </AntdModal>
     </Layout>
   )
 }

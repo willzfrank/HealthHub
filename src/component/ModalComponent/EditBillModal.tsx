@@ -39,7 +39,7 @@ const EditBillModal: React.FC<EditBillModalProps> = ({
       setFormData({
         id: billData.id,
         procedureName: billData.procedureName,
-        purchase_price: billData.purchase_price,
+        purchase_price: billData.selling_price,
         selling_price: billData.selling_price,
       })
     }
@@ -78,7 +78,7 @@ const EditBillModal: React.FC<EditBillModalProps> = ({
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-6">
-            {/* <div className="space-y-2">
+            <div className="space-y-2">
               <label
                 htmlFor="procedureName"
                 className="block text-sm font-semibold text-[#0061FF]"
@@ -95,9 +95,9 @@ const EditBillModal: React.FC<EditBillModalProps> = ({
                 placeholder="Enter procedure name"
                 required
               />
-            </div> */}
+            </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label
                 htmlFor="purchase_price"
                 className="block text-sm font-semibold text-[#0061FF]"
@@ -121,7 +121,7 @@ const EditBillModal: React.FC<EditBillModalProps> = ({
                   required
                 />
               </div>
-            </div>
+            </div> */}
 
             <div className="space-y-2">
               <label

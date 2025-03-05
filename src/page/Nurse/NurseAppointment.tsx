@@ -47,7 +47,11 @@ const NurseAppointment = () => {
     { title: 'Date/Time', dataIndex: 'date', key: 'date' },
     { title: 'Patient ID', dataIndex: 'patientID', key: 'patientID' },
     { title: 'Patient Name', dataIndex: 'patient_name', key: 'patient_name' },
-    { title: 'Purpose', dataIndex: 'consultation_name', key: 'consultation_name' },
+    {
+      title: 'Purpose',
+      dataIndex: 'consultation_name',
+      key: 'consultation_name',
+    },
     { title: 'Doctor', dataIndex: 'doctor', key: 'doctor' },
     {
       title: 'Vitals',

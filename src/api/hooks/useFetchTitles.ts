@@ -1,11 +1,7 @@
 import { useQuery } from 'react-query'
 import axiosInstance from '../../api/axiosInstance'
 import { toast } from 'react-hot-toast'
-
-interface Title {
-  id: number
-  name: string
-}
+import { Title } from '../../types/types'
 
 const fetchTitles = async (): Promise<Title[]> => {
   try {

@@ -1,19 +1,44 @@
+import { useFetchBills } from '../../api/hooks/useFetchBills'
 import React from 'react'
 import PatientDetailsFormSection from '../HealthHubComponent/PatientSection/PatientDetailsFormSection'
 import PatientHistoryFormSection from '../HealthHubComponent/PatientSection/PatientHistoryFormSection'
 import TransactionsTable from '../HealthHubComponent/PatientSection/PatientTransactionTableSection'
+import useFetchAppointment from '../../api/hooks/useFetchAppointment'
 
 type PatientInformationModalProps = {
   handleTabClick: (tab: string) => void
   activeTab: string
-  invoice: any
+  appointmentData: any
 }
 
 const PatientInformationModal = ({
   handleTabClick,
   activeTab,
-  invoice,
+  appointmentData,
 }: PatientInformationModalProps) => {
+  const { data: appointmentDetails, isLoading: isAppointmentDetailsLoading } =
+    useFetchAppointment(appointmentData?.id ?? 0)
+
+  // Fetch bills data
+  const { data: billsData, isLoading: isBillsLoading } = useFetchBills(1, 10)
+
+  const patient = appointmentDetails?.response?.patient
+  const consultation = appointmentDetails?.response?.consultation
+  const medicalHistory = appointmentDetails?.response?.medical_history
+  const procedures = consultation?.procedures
+
+  // Transform procedures data to include the procedure name
+  const transformedProcedures = procedures?.map((proc: any) => {
+    const procedure = billsData?.response.data.find(
+      (bill: any) => bill.id === proc.billItemId
+    )
+    return {
+      billItemId: proc.billItemId,
+      quantity: proc.quantity,
+      name: procedure?.name || 'Unknown Procedure', // Use the procedure name
+    }
+  })
+
   return (
     <div>
       <div className="flex items-center justify-between gap-10">
@@ -36,22 +61,19 @@ const PatientInformationModal = ({
             </div>
           ))}
         </div>
-        <span className="text-[#030229] text-xs">
-          {activeTab === 'Details'
-            ? `Invoice Date : ${invoice?.invoice_date}`
-            : activeTab !== 'Transactions'
-            ? `Next Payment Due : ${invoice?.next_payment_date}`
-            : ''}
-        </span>
       </div>
 
       {/* Conditional Content */}
       <div className="mt-4">
         {activeTab === 'Details' && (
-          <PatientDetailsFormSection invoice={invoice} />
+          <PatientDetailsFormSection patient={patient} />
         )}
-        {activeTab === 'History' && <PatientHistoryFormSection />}
-        {activeTab === 'Transactions' && <TransactionsTable />}
+        {activeTab === 'History' && (
+          <PatientHistoryFormSection medicalHistory={medicalHistory} />
+        )}
+        {activeTab === 'Transactions' && (
+          <TransactionsTable procedures={transformedProcedures || []} />
+        )}
       </div>
     </div>
   )

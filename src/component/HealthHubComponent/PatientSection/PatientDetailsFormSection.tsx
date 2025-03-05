@@ -1,15 +1,29 @@
-import React from 'react'
+import useFetchTitles from "../../../api/hooks/useFetchTitles"
+import { Title } from "../../../types/types"
 
 type Props = {
-  invoice: any
+  patient: {
+    id: number
+    title_id: number
+    file_number: string
+    first_name: string
+    middle_name: string
+    last_name: string
+    date_of_birth: string
+    gender_id: number
+    name: string
+  }
 }
 
-const PatientDetailsFormSection = ({ invoice }: Props) => {
-  console.log('invoice', invoice)
+const PatientDetailsFormSection = ({ patient }: Props) => {
+  const { titleData, loading: isTitlesLoading } = useFetchTitles()
+  const selectedTitle =
+    titleData.find((title: Title) => title.id === patient.title_id)?.name || ''
   return (
     <div>
       <form>
         <div className="grid grid-cols-2 gap-5">
+          {/* Title */}
           <div>
             <label
               htmlFor="title"
@@ -17,17 +31,16 @@ const PatientDetailsFormSection = ({ invoice }: Props) => {
             >
               Title
             </label>
-            <select
+            <input
               id="title"
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-            >
-              <option value="chief">Chief</option>
-              <option value="mrs">Mrs</option>
-              <option value="mr">Mr</option>
-              <option value="dr">Dr</option>
-            </select>
+              type="text"
+              value={selectedTitle}
+              readOnly
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full"
+            />
           </div>
 
+          {/* Surname */}
           <div>
             <label
               htmlFor="surname"
@@ -38,10 +51,13 @@ const PatientDetailsFormSection = ({ invoice }: Props) => {
             <input
               id="surname"
               type="text"
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              value={patient?.last_name}
+              readOnly
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full"
             />
           </div>
 
+          {/* First Name */}
           <div>
             <label
               htmlFor="firstName"
@@ -52,10 +68,13 @@ const PatientDetailsFormSection = ({ invoice }: Props) => {
             <input
               id="firstName"
               type="text"
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              value={patient?.first_name}
+              readOnly
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full"
             />
           </div>
 
+          {/* Middle Name */}
           <div>
             <label
               htmlFor="middleName"
@@ -66,10 +85,13 @@ const PatientDetailsFormSection = ({ invoice }: Props) => {
             <input
               id="middleName"
               type="text"
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              value={patient?.middle_name}
+              readOnly
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full"
             />
           </div>
 
+          {/* Gender */}
           <div>
             <label
               htmlFor="gender"
@@ -80,70 +102,28 @@ const PatientDetailsFormSection = ({ invoice }: Props) => {
             <input
               id="gender"
               type="text"
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              value={patient?.gender_id === 1 ? 'Male' : 'Female'} // Map gender ID to text
+              readOnly
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full"
             />
           </div>
 
+          {/* Date of Birth */}
           <div>
             <label
               htmlFor="dob"
               className="text-[#666666] text-[13px] mb-2 font-medium"
             >
-              Date of birth
+              Date of Birth
             </label>
             <input
               id="dob"
               type="text"
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
+              value={patient?.date_of_birth}
+              readOnly
+              className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full"
             />
           </div>
-
-          <div>
-            <label
-              htmlFor="phoneNumber"
-              className="text-[#666666] text-[13px] mb-2 font-medium"
-            >
-              Phone Number
-            </label>
-            <input
-              id="phoneNumber"
-              type="text"
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="email"
-              className="text-[#666666] text-[13px] mb-2 font-medium"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-            />
-          </div>
-        </div>
-        <div className="mt-5">
-          <label
-            htmlFor="address"
-            className="text-[#666666] text-[13px]  font-medium"
-          >
-            Address
-          </label>
-          <input
-            id="address"
-            type="text"
-            className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
-          />
-        </div>
-
-        <div className="flex items-center justify-end my-2.5">
-          <button className="rounded-[3px] bg-[#0061FF] opacity-90 py-2.5 px-10">
-            <span className="text-[14px] text-white">Edit</span>
-          </button>
         </div>
       </form>
     </div>
