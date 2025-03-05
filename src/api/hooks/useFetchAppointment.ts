@@ -55,7 +55,7 @@ interface AppointmentResponse {
   message: string
 }
 
-const fetchAppointment = async (id: number): Promise<AppointmentResponse> => {
+const fetchAppointment = async (id: number): Promise<any> => {
   const response = await axiosInstance.post('admin/patient/get-appointment', {
     id,
   })
