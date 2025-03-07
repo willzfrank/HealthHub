@@ -4,6 +4,9 @@ import useGetInvoiceDetails from '../../api/hooks/useGetInvoiceData'
 import usePayInvoice from '../../api/hooks/usePayInvoice'
 import { formatDate } from '../../utils/utils'
 import usePaymentStatus from '../../hooks/usePaymentStatus'
+import useSettleInvoice from '../../api/hooks/useSettleInvoice'
+import { useState } from 'react'
+import PaymentMethodModal from './PaymentMethodModal'
 
 type InvoiceDetailsModalProps = {
   selectedInvoiceID: number | null
@@ -23,6 +26,10 @@ const InvoiceDetailsModal = ({
   } = useGetInvoiceDetails(selectedInvoiceID?.toString() ?? '')
   const payInvoice = usePayInvoice()
   const { getStatus, isLoading: isPaymentStatusesLoading } = usePaymentStatus()
+  const { settleInvoice, isLoading: isSettleInvoiceLoading } =
+    useSettleInvoice()
+  const [isPaymentMethodModalVisible, setPaymentMethodModalVisible] =
+    useState(false)
 
   // Modal table columns
   const modalTableColumns = [
@@ -66,14 +73,19 @@ const InvoiceDetailsModal = ({
     },
   ]
 
-  // Extract data from the API response
-  const currentInvoice = invoiceData?.response || {}
-  console.log('currentInvoice', currentInvoice)
+  console.log('currentInvoice', invoiceData)
 
   const handlePay = async () => {
+    setPaymentMethodModalVisible(true)
+  }
+
+  const handleSelectPaymentMethod = async (
+    method: 'POS' | 'Cash' | 'Monify'
+  ) => {
+    setPaymentMethodModalVisible(false)
+
     if (!selectedInvoiceID || !currentInvoice || !currentInvoice.items) return
 
-    // Map the items array to the expected payload structure
     const itemsPayload = currentInvoice.items.map((item: any) => ({
       item_id: item.bill_id.toString(),
       amount: item.amount.toString(),
@@ -85,15 +97,29 @@ const InvoiceDetailsModal = ({
       items: itemsPayload,
     }
 
+    const settleInvoicePayload = {
+      invoice_number: currentInvoice.invoice_number || '',
+      amount_paid: currentInvoice.amount_paid || '0',
+      payment_method: method === 'POS' ? 'POS' : 'CASH',
+      transaction_id: currentInvoice.request_reference || '',
+      channel: 'monnify',
+    }
+
     try {
-      await payInvoice.mutateAsync(paymentData)
+      if (method === 'Monify') {
+        await payInvoice.mutateAsync(paymentData)
+      } else if (method === 'POS') {
+        await settleInvoice(settleInvoicePayload)
+      } else if (method === 'Cash') {
+        await settleInvoice(settleInvoicePayload)
+      }
       onClose()
     } catch (error) {
       console.error('Payment failed:', error)
     }
   }
 
-  // Transform invoice items for AntD Table
+  const currentInvoice = invoiceData?.response || {}
   const modalTableData = currentInvoice.items
     ? currentInvoice.items.map((item: any, index: number) => ({
         key: index + 1,
@@ -208,7 +234,7 @@ const InvoiceDetailsModal = ({
 
             {getStatus(currentInvoice.payment_status) !== 'Paid' && (
               <button
-                className="border border-[#4880FF] rounded text-[#4880FF] px-5 py-1"
+                className="border border-[#4880FF] rounded text-[#4880FF] px-5 py-1 flex items-center"
                 onClick={handlePay}
                 disabled={payInvoice.isLoading || !currentInvoice.id}
               >
@@ -217,6 +243,12 @@ const InvoiceDetailsModal = ({
               </button>
             )}
           </div>
+
+          <PaymentMethodModal
+            visible={isPaymentMethodModalVisible}
+            onCancel={() => setPaymentMethodModalVisible(false)}
+            onSelectPaymentMethod={handleSelectPaymentMethod}
+          />
         </div>
       </div>
     </div>

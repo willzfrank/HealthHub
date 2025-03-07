@@ -40,6 +40,8 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
   const consultation = details?.consultation ?? {}
   const vitals = consultation?.vitals ?? {}
 
+  console.log('details', details)
+
   // Extract necessary vitals with fallbacks
   const [vitalsData, setVitalsData] = useState({
     vitals_blood_pressure: vitals?.blood_pressure ?? '',
@@ -240,6 +242,7 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                       id="vitals_blood_pressure"
                       type="text"
                       value={vitalsData.vitals_blood_pressure}
+                      // defaultValue={}
                       onChange={handleChange}
                       className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full"
                     />

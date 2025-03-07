@@ -6,6 +6,8 @@ import HeaderSection from '../../component/common/HeaderSection'
 import NursePatientVitalsModal from '../../component/ModalComponent/NursePatientVitalsModal'
 import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
 import { IAppointmentItem } from '../../types/types'
+import { formatDate } from '../../utils/utils'
+
 
 const NurseAppointment = () => {
   const [isModalVisible, setIsModalVisible] = useState(false)
@@ -44,7 +46,9 @@ const NurseAppointment = () => {
   )
 
   const columns = [
-    { title: 'Date/Time', dataIndex: 'date', key: 'date' },
+    { title: 'Date/Time', dataIndex: 'date', key: 'date',
+            render: (date: string) => formatDate(date),
+     },
     { title: 'Patient ID', dataIndex: 'patientID', key: 'patientID' },
     { title: 'Patient Name', dataIndex: 'patient_name', key: 'patient_name' },
     {
