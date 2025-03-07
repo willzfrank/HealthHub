@@ -7,6 +7,7 @@ import Modal from '../../component/common/Modal'
 import ReceptionistPatientFormModal from '../../component/ModalComponent/ReceptionistPatientFormModal'
 import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
 import { IAppointmentItem, IAppointmentStats } from '../../types/types'
+import { formatDate } from '../../utils/utils'
 
 const AppointmentsTable = () => {
   const {
@@ -59,7 +60,7 @@ const AppointmentsTable = () => {
       title: <span className="text-[#3A3A49]">Date</span>,
       dataIndex: 'scheduled_date',
       key: 'scheduled_date',
-      render: (date: string) => new Date(date).toLocaleString(),
+      render: (date: string) => formatDate(date),
     },
     {
       title: <span className="text-[#3A3A49]">Patient ID </span>,
@@ -97,7 +98,7 @@ const AppointmentsTable = () => {
   ]
 
   const dataSource =
-    appointmentData?.response?.data.map((appointment:IAppointmentItem) => ({
+    appointmentData?.response?.data.map((appointment: IAppointmentItem) => ({
       key: appointment.id,
       scheduled_date: appointment.scheduled_date,
       file_number: appointment.file_number,

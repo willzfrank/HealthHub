@@ -7,6 +7,8 @@ import DoctorPatientVitalsModal from '../../component/ModalComponent/DoctorPatie
 import useFetchAppointmentsList from '../../api/hooks/useFetchAppointmentsList'
 import { IAppointmentItem } from '../../types/types'
 import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
+import { formatDate } from '../../utils/utils'
+
 
 interface AppointmentItem {
   id: number
@@ -63,7 +65,7 @@ const DoctorAppointment = () => {
       title: <span className="text-[#69686A]">Date/Time </span>,
       dataIndex: 'scheduled_date',
       key: 'scheduled_date',
-      render: (date: string) => new Date(date).toLocaleString(),
+      render: (date: string) => formatDate(date),
     },
     {
       title: <span className="text-[#69686A]">Patient ID </span>,

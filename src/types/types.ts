@@ -243,3 +243,11 @@ export interface IPatientBill {
   name: string
   bill_items_pivot: IPatientBillItemPivot[]
 }
+
+export interface SettleInvoiceRequest {
+  invoice_number: string
+  amount_paid: string
+  payment_method: string
+  transaction_id: string
+  channel: string
+}
