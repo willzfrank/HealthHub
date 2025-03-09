@@ -4,7 +4,7 @@ import { Icon } from '@iconify/react'
 type PaymentMethodModalProps = {
   visible: boolean
   onCancel: () => void
-  onSelectPaymentMethod: (method: 'POS' | 'Cash' | 'Monify') => void
+  onSelectPaymentMethod: (method: 'POS' | 'Monify') => void
 }
 
 const PaymentMethodModal = ({
@@ -26,13 +26,6 @@ const PaymentMethodModal = ({
         >
           <span>POS</span>
           <Icon icon="mdi:credit-card" width="24" height="24" />
-        </button>
-        <button
-          className="flex items-center justify-between p-4 border rounded"
-          onClick={() => onSelectPaymentMethod('Cash')}
-        >
-          <span>Cash</span>
-          <Icon icon="mdi:cash" width="24" height="24" />
         </button>
         <button
           className="flex items-center justify-between p-4 border rounded"

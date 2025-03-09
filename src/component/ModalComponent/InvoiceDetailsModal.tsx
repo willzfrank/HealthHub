@@ -79,9 +79,7 @@ const InvoiceDetailsModal = ({
     setPaymentMethodModalVisible(true)
   }
 
-  const handleSelectPaymentMethod = async (
-    method: 'POS' | 'Cash' | 'Monify'
-  ) => {
+  const handleSelectPaymentMethod = async (method: 'POS' | 'Monify') => {
     setPaymentMethodModalVisible(false)
 
     if (!selectedInvoiceID || !currentInvoice || !currentInvoice.items) return
@@ -93,14 +91,14 @@ const InvoiceDetailsModal = ({
 
     const paymentData = {
       patient_id: currentInvoice.patient_id.toString(),
-      invoice_id: selectedKey || '',
+      invoice_id: selectedKey ?? '',
       items: itemsPayload,
     }
 
     const settleInvoicePayload = {
       invoice_number: currentInvoice.invoice_number || '',
       amount_paid: currentInvoice.amount_paid || '0',
-      payment_method: method === 'POS' ? 'POS' : 'CASH',
+      payment_method: method,
       transaction_id: currentInvoice.request_reference || '',
       channel: 'monnify',
     }
@@ -109,8 +107,6 @@ const InvoiceDetailsModal = ({
       if (method === 'Monify') {
         await payInvoice.mutateAsync(paymentData)
       } else if (method === 'POS') {
-        await settleInvoice(settleInvoicePayload)
-      } else if (method === 'Cash') {
         await settleInvoice(settleInvoicePayload)
       }
       onClose()
