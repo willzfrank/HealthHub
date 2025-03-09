@@ -120,13 +120,16 @@ const Transaction = () => {
             />
           </div>
 
-          <Modal  
+          <Modal
             title="Transaction Details"
             open={isModalVisible}
             onCancel={() => setIsModalVisible(false)}
             footer={null}
           >
-            <PayDetailsModal invoice={selectedInvoice} />
+            <PayDetailsModal
+              invoice={selectedInvoice}
+              onClose={() => setIsModalVisible(false)}
+            />
           </Modal>
         </>
       )}
