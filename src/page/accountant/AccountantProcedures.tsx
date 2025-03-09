@@ -7,6 +7,7 @@ import useAppointments from '../../api/hooks/useAppointments'
 import AccountantProceduresModal from '../../component/ModalComponent/AccountantProceduresModal'
 import { useGetBills } from '../../api/hooks/useAddBill'
 import EditBillModal from '../../component/ModalComponent/EditBillModal'
+import { formatDate } from '../../utils/utils'
 
 const AccountantProcedures = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
@@ -68,37 +69,37 @@ const AccountantProcedures = () => {
       title: 'Date Created',
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      render: (date: string) => formatDate(date),
     },
     {
       title: 'Last Edit',
       dataIndex: 'last_edit',
       key: 'last_edit',
-      render: (text: string | null) => text || 'N/A',
+      render: (date: string) => formatDate(date),
     },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_: any, record: any) => (
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item key="edit" onClick={() => handleEdit(record)}>
-                Edit
-              </Menu.Item>
-            </Menu>
-          }
-          trigger={['click']}
-        >
-          <Icon
-            icon="bi:three-dots-vertical"
-            width="20"
-            height="20"
-            className="cursor-pointer"
-          />
-        </Dropdown>
-      ),
-    },
+    // {
+    //   title: 'Actions',
+    //   key: 'actions',
+    //   render: (_: any, record: any) => (
+    //     <Dropdown
+    //       overlay={
+    //         <Menu>
+    //           <Menu.Item key="edit" onClick={() => handleEdit(record)}>
+    //             Edit
+    //           </Menu.Item>
+    //         </Menu>
+    //       }
+    //       trigger={['click']}
+    //     >
+    //       <Icon
+    //         icon="bi:three-dots-vertical"
+    //         width="20"
+    //         height="20"
+    //         className="cursor-pointer"
+    //       />
+    //     </Dropdown>
+    //   ),
+    // },
   ]
 
   return (
