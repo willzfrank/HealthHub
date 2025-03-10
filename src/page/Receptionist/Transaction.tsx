@@ -18,8 +18,8 @@ const Transaction = () => {
     message.error('Failed to load invoices.')
   }
 
-  const invoices = invoiceData?.response?.data || []
-  const totalInvoices = invoiceData?.response?.total || 0
+  const invoices = invoiceData?.data?.response?.data || []
+  const totalInvoices = invoiceData?.data?.response?.total || 0
 
   const filteredInvoices = invoices.filter(
     (invoice: IInvoice) => invoice.payment_status === 3

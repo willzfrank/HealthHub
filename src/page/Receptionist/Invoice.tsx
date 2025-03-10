@@ -13,13 +13,16 @@ import type { IInvoice } from '../../types/types'
 import useFetchPaymentStatuses from '../../api/hooks/useFetchPaymentStatuses'
 
 const Invoice = () => {
-  const { data: invoiceData, isLoading } = useInvoices(1)
+  const [currentPage, setCurrentPage] = useState(1) // State to manage current page
+  const { data: invoiceData, isLoading } = useInvoices(currentPage) // Pass currentPage to useInvoices
   const { data: paymentStatuses, isLoading: isPaymentStatusesLoading } =
     useFetchPaymentStatuses()
 
+    console.log('invoiceData', invoiceData?.data)
+
   // Transform API response to match table data structure
   const transformedData: IInvoice[] =
-    invoiceData?.response?.data?.map((invoice: IInvoice) => {
+    invoiceData?.data?.response?.data?.map((invoice: IInvoice) => {
       // Find the matching payment status by ID
       const matchedStatus = paymentStatuses?.find(
         (status: { id: number }) => status.id === invoice.payment_status
@@ -34,19 +37,17 @@ const Invoice = () => {
         procedure: invoice.description,
         amount: `₦${invoice.total.toLocaleString()}`,
         status: matchedStatus || 'Unknown',
-        payment_status: invoice.payment_status, 
+        payment_status: invoice.payment_status,
         paymentUrl: invoice.payment_url,
       }
     }) || []
 
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isBillModalOpen, setIsBillModalOpen] = useState(false)
   const [selectedInvoiceID, setSelectedInvoiceID] = useState<number | null>(
     null
   )
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
 
   const handleCancel = () => setIsModalVisible(false)
@@ -57,7 +58,6 @@ const Invoice = () => {
     setIsModalOpen(true)
   }
 
-  const handleScheduleCancel = () => setIsScheduleModalOpen(false)
   const onSelectChange = (keys: React.Key[]) => setSelectedRowKeys(keys)
 
   // Get status name from ID
@@ -81,6 +81,11 @@ const Invoice = () => {
     return statusColors[status] || 'bg-gray-100 text-gray-600'
   }
 
+  // Handle pagination change
+  const handlePaginationChange = (page: number) => {
+    setCurrentPage(page) // Update current page state
+  }
+
   return (
     <Layout>
       <HeaderSection title="Invoice" />
@@ -91,7 +96,7 @@ const Invoice = () => {
           onChange: onSelectChange,
         }}
         columns={[
-          { title: 'Bill', dataIndex: 'invoiceDate', key: 'invoiceDate' },
+          { title: 'Bill', dataIndex: 'invoiceID', key: 'invoiceID' },
           {
             title: 'Patient Name',
             dataIndex: 'patientName',
@@ -163,8 +168,10 @@ const Invoice = () => {
           <span className="text-[#69686A]"> Shown on page</span>
         </div>
         <Pagination
-          defaultCurrent={invoiceData?.response?.current_page || 1}
-          total={invoiceData?.response?.total || 1}
+          current={currentPage} // Use currentPage state
+          defaultCurrent={1}
+          total={invoiceData?.data?.response?.total || 1}
+          onChange={handlePaginationChange} // Handle page change
         />
       </div>
 
@@ -190,24 +197,6 @@ const Invoice = () => {
           onClose={() => setIsModalOpen(false)}
           selectedKey={selectedKey}
         />
-      </AntdModal>
-
-      <AntdModal
-        open={isScheduleModalOpen}
-        onCancel={handleScheduleCancel}
-        footer={null}
-        centered
-      >
-        {/* <ScheduleModal /> */}
-        test
-      </AntdModal>
-
-      <AntdModal
-        open={isBillModalOpen}
-        onCancel={() => setIsBillModalOpen(false)}
-        footer={null}
-      >
-        {/* <BillFormModal onClose={() => setIsBillModalOpen(false)} /> */}
       </AntdModal>
     </Layout>
   )

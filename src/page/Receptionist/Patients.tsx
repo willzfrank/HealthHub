@@ -231,19 +231,9 @@ const Patients = () => {
         />
       </footer>
 
-      {/* <Modal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        title="Joe Biden - CPD-5002"
-      >
-        <PatientInformationModal
-          handleTabClick={handleTabClick}
-          activeTab={activeTab}
-        />
-      </Modal> */}
 
       <AntdModal
-        visible={isScheduleModalOpen}
+        open={isScheduleModalOpen}
         onCancel={() => setIsScheduleModalOpen(false)}
         footer={null}
         centered

@@ -2,7 +2,7 @@ import { useFetchBills } from '../../api/hooks/useFetchBills'
 import React from 'react'
 import PatientDetailsFormSection from '../HealthHubComponent/PatientSection/PatientDetailsFormSection'
 import PatientHistoryFormSection from '../HealthHubComponent/PatientSection/PatientHistoryFormSection'
-import TransactionsTable from '../HealthHubComponent/PatientSection/PatientTransactionTableSection'
+// import TransactionsTable from '../HealthHubComponent/PatientSection/PatientTransactionTableSection'
 import useFetchAppointment from '../../api/hooks/useFetchAppointment'
 
 type PatientInformationModalProps = {
@@ -35,7 +35,7 @@ const PatientInformationModal = ({
     return {
       billItemId: proc.billItemId,
       quantity: proc.quantity,
-      name: procedure?.name || 'Unknown Procedure', // Use the procedure name
+      name: procedure?.name ?? 'Unknown Procedure', 
     }
   })
 
@@ -44,7 +44,7 @@ const PatientInformationModal = ({
       <div className="flex items-center justify-between gap-10">
         {/* Tabs */}
         <div className="flex items-center gap-1.5 border border-[#CCCCCC] rounded">
-          {['Details', 'History', 'Transactions'].map((tab) => (
+          {['Details', 'History'].map((tab) => (
             <div
               key={tab}
               onClick={() => handleTabClick(tab)}
@@ -71,9 +71,9 @@ const PatientInformationModal = ({
         {activeTab === 'History' && (
           <PatientHistoryFormSection medicalHistory={medicalHistory} />
         )}
-        {activeTab === 'Transactions' && (
+        {/* {activeTab === 'Transactions' && (
           <TransactionsTable procedures={transformedProcedures || []} />
-        )}
+        )} */}
       </div>
     </div>
   )

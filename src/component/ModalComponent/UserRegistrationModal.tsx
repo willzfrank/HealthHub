@@ -227,7 +227,7 @@ const UserRegistrationModal: React.FC<UserRegistrationModalProps> = ({
           </label>
           <select
             id="title_id"
-            value={formData.title_id}
+            value={formData?.title_id}
             onChange={handleChange}
             className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
           >

@@ -18,7 +18,7 @@ type Props = {
 const PatientDetailsFormSection = ({ patient }: Props) => {
   const { titleData, loading: isTitlesLoading } = useFetchTitles()
   const selectedTitle =
-    titleData.find((title: Title) => title.id === patient.title_id)?.name || ''
+    titleData.find((title: Title) => title.id === patient?.title_id)?.name ?? ''
   return (
     <div>
       <form>
