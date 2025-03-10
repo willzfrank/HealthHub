@@ -1,7 +1,6 @@
 import { Select, DatePicker } from 'antd'
 import dayjs from 'dayjs'
 import useDoctors from '../../api/hooks/useDoctors'
-import { getAuthCookie } from '../../api/axiosInstance'
 import { useUpdateAppointmentNurse } from '../../api/hooks/updateAppointmentNurse'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -27,10 +26,9 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
   // Extract patient data
   const patient = details?.patient ?? {}
   const selectedTitle =
-    titleData.find((t) => t.id === patient.title_id)?.name || ''
+    titleData.find((t) => t.id === patient?.title_id)?.name ?? ''
   const selectedGender =
-    genderData.find((g: { id: any }) => g.id === patient.gender_id)?.name || ''
-  const fullName = patient?.name || ''
+    genderData.find((g: { id: any }) => g.id === patient.gender_id)?.name ?? ''
 
   const firstName = patient?.first_name ?? ''
   const middleName = patient?.middle_name ?? ''
@@ -39,8 +37,6 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
   // Extract consultation data
   const consultation = details?.consultation ?? {}
   const vitals = consultation?.vitals ?? {}
-
-  console.log('details', details)
 
   // Extract necessary vitals with fallbacks
   const [vitalsData, setVitalsData] = useState({

@@ -9,7 +9,6 @@ import { IAppointmentItem } from '../../types/types'
 import PatientInformationModal from '../../component/ModalComponent/PatientInformationModal'
 import { formatDate } from '../../utils/utils'
 
-
 interface AppointmentItem {
   id: number
   file_number: string
@@ -180,13 +179,22 @@ const DoctorAppointment = () => {
         footer={null}
         centered
       >
-        <DoctorPatientVitalsModal appointmentData={selectedAppointment} />
+        <DoctorPatientVitalsModal
+          appointmentData={selectedAppointment}
+          onClose={handleCancel}
+        />
       </AntdModal>
 
       <AntdModal
         open={isOpen}
         onCancel={handleClosePatientModal}
-        title="Joe Biden - CPD-5002"
+        title={
+          selectedPatientData
+            ? `${selectedPatientData.patient_name} - ${selectedPatientData.file_number}`
+            : 'Patient Information'
+        }
+        footer={null}
+        width="50%"
       >
         <PatientInformationModal
           handleTabClick={handleTabClick}

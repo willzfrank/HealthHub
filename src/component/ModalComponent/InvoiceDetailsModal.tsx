@@ -7,6 +7,7 @@ import usePaymentStatus from '../../hooks/usePaymentStatus'
 import useSettleInvoice from '../../api/hooks/useSettleInvoice'
 import { useState } from 'react'
 import PaymentMethodModal from './PaymentMethodModal'
+import useInvoices from '../../api/hooks/useInvoices'
 
 type InvoiceDetailsModalProps = {
   selectedInvoiceID: number | null
@@ -19,6 +20,8 @@ const InvoiceDetailsModal = ({
   onClose,
   selectedKey,
 }: InvoiceDetailsModalProps) => {
+  const [posReceiptNo, setPosReceiptNo] = useState('')
+
   const {
     data: invoiceData,
     isLoading,
@@ -26,10 +29,10 @@ const InvoiceDetailsModal = ({
   } = useGetInvoiceDetails(selectedInvoiceID?.toString() ?? '')
   const payInvoice = usePayInvoice()
   const { getStatus, isLoading: isPaymentStatusesLoading } = usePaymentStatus()
-  const { settleInvoice, isLoading: isSettleInvoiceLoading } =
-    useSettleInvoice()
+  const { settleInvoice } = useSettleInvoice()
   const [isPaymentMethodModalVisible, setPaymentMethodModalVisible] =
     useState(false)
+  const { refetch: refetchInvoices } = useInvoices(1)
 
   // Modal table columns
   const modalTableColumns = [
@@ -73,15 +76,11 @@ const InvoiceDetailsModal = ({
     },
   ]
 
-  console.log('currentInvoice', invoiceData)
-
   const handlePay = async () => {
     setPaymentMethodModalVisible(true)
   }
 
-  const handleSelectPaymentMethod = async (
-    method: 'POS' | 'Cash' | 'Monify'
-  ) => {
+  const handleSelectPaymentMethod = async (method: 'POS' | 'Monify') => {
     setPaymentMethodModalVisible(false)
 
     if (!selectedInvoiceID || !currentInvoice || !currentInvoice.items) return
@@ -93,15 +92,15 @@ const InvoiceDetailsModal = ({
 
     const paymentData = {
       patient_id: currentInvoice.patient_id.toString(),
-      invoice_id: selectedKey || '',
+      invoice_id: selectedKey ?? '',
       items: itemsPayload,
     }
 
     const settleInvoicePayload = {
       invoice_number: currentInvoice.invoice_number || '',
       amount_paid: currentInvoice.amount_paid || '0',
-      payment_method: method === 'POS' ? 'POS' : 'CASH',
-      transaction_id: currentInvoice.request_reference || '',
+      payment_method: method,
+      transaction_id: posReceiptNo,
       channel: 'monnify',
     }
 
@@ -110,9 +109,8 @@ const InvoiceDetailsModal = ({
         await payInvoice.mutateAsync(paymentData)
       } else if (method === 'POS') {
         await settleInvoice(settleInvoicePayload)
-      } else if (method === 'Cash') {
-        await settleInvoice(settleInvoicePayload)
       }
+      await refetchInvoices()
       onClose()
     } catch (error) {
       console.error('Payment failed:', error)
@@ -248,6 +246,8 @@ const InvoiceDetailsModal = ({
             visible={isPaymentMethodModalVisible}
             onCancel={() => setPaymentMethodModalVisible(false)}
             onSelectPaymentMethod={handleSelectPaymentMethod}
+            setPosReceiptNo={setPosReceiptNo}
+            posReceiptNo={posReceiptNo}
           />
         </div>
       </div>

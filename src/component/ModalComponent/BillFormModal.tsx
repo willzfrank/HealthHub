@@ -183,7 +183,7 @@ const BillFormModal = ({
         <button
           className="text-white bg-[#0061FF] rounded px-20 py-2.5 cursor-pointer"
           onClick={handlePay}
-          disabled={selectedRowKeys.length === 0 || isGenerating}
+          disabled={isGenerating}
         >
           {isGenerating ? 'Processing...' : 'Proceed'}
         </button>
@@ -195,7 +195,10 @@ const BillFormModal = ({
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <PayDetailsModal invoice={invoiceDetails} />
+        <PayDetailsModal
+          invoice={invoiceDetails}
+          onClose={() => setIsModalOpen(false)}
+        />
       </AntdModal>
     </div>
   )

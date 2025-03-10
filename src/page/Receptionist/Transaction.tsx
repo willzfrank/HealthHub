@@ -18,8 +18,8 @@ const Transaction = () => {
     message.error('Failed to load invoices.')
   }
 
-  const invoices = invoiceData?.response?.data || []
-  const totalInvoices = invoiceData?.response?.total || 0
+  const invoices = invoiceData?.data?.response?.data || []
+  const totalInvoices = invoiceData?.data?.response?.total || 0
 
   const filteredInvoices = invoices.filter(
     (invoice: IInvoice) => invoice.payment_status === 3
@@ -120,13 +120,16 @@ const Transaction = () => {
             />
           </div>
 
-          <Modal  
+          <Modal
             title="Transaction Details"
             open={isModalVisible}
             onCancel={() => setIsModalVisible(false)}
             footer={null}
           >
-            <PayDetailsModal invoice={selectedInvoice} />
+            <PayDetailsModal
+              invoice={selectedInvoice}
+              onClose={() => setIsModalVisible(false)}
+            />
           </Modal>
         </>
       )}

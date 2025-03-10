@@ -72,7 +72,10 @@ const DoctorDashboard = (props: Props) => {
         footer={null}
         centered
       >
-        <DoctorPatientVitalsModal appointmentData={selectedAppointment} />
+        <DoctorPatientVitalsModal
+          appointmentData={selectedAppointment}
+          onClose={handleCancel}
+        />
       </AntdModal>
     </Layout>
   )

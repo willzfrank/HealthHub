@@ -13,9 +13,10 @@ import toast from 'react-hot-toast'
 
 type Props = {
   appointmentData: IAppointmentItem | null
+  onClose: () => void 
 }
 
-const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
+const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
   const [selectedDoctor, setSelectedDoctor] = useState<string>(
     appointmentData?.doctor ?? ''
   )
@@ -43,9 +44,9 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
   const vitals = consultation?.vitals ?? {}
 
   const selectedTitle =
-    titleData.find((t) => t.id === patient.title_id)?.name || ''
+    titleData.find((t) => t.id === patient?.title_id)?.name ?? ''
   const selectedGender =
-    genderData.find((g: { id: any }) => g.id === patient.gender_id)?.name || ''
+    genderData.find((g: { id: any }) => g.id === patient.gender_id)?.name ?? ''
 
   const firstName = patient?.first_name ?? ''
   const middleName = patient?.middle_name ?? ''
@@ -105,14 +106,13 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
       const response = await updateAppointmentMutation(payload)
       if (response.status) {
         toast.success('Appointment updated successfully!')
+        onClose()
+      } else if (response.response && Array.isArray(response.response)) {
+        response.response.forEach((error: any) => {
+          toast.error(`${error.field}: ${error.message}`)
+        })
       } else {
-        if (response.response && Array.isArray(response.response)) {
-          response.response.forEach((error: any) => {
-            toast.error(`${error.field}: ${error.message}`)
-          })
-        } else {
-          toast.error('Failed to update appointment.')
-        }
+        toast.error('Failed to update appointment.')
       }
     } catch (error: any) {
       if (
@@ -294,7 +294,7 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
                     <input
                       id="bloodPressure"
                       type="text"
-                      value={vitals.blood_pressure ?? 'N/A'}
+                      value={vitals?.blood_pressure ?? 'N/A'}
                       readOnly
                       className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
                     />
@@ -309,7 +309,7 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
                     <input
                       id="pulseRate"
                       type="text"
-                      value={vitals.pulse_rate ?? 'N/A'}
+                      value={vitals?.pulse_rate ?? 'N/A'}
                       readOnly
                       className="p-1.5 border border-[#CCCCCC] rounded-[8px] focus:outline-none focus:border-[#4379EE] focus:ring-1 focus:ring-[#4379EE] bg-[#F5F6FA] w-full"
                     />
@@ -460,9 +460,7 @@ const DoctorPatientVitalsModal = ({ appointmentData }: Props) => {
           <div className="flex items-center justify-between my-5">
             <button
               className="border text-[#0061FF] border-[#0061FF] rounded px-20 py-2.5"
-              onClick={() => {
-                // Handle cancel action
-              }}
+              onClick={onClose}
             >
               CANCEL
             </button>

@@ -32,7 +32,7 @@ const ScheduleModal = ({
   const { titleData } = useFetchTitles()
 
   const title =
-    titleData?.find((t) => t.id === selectedPatientData.title_id)?.name ?? ''
+    titleData?.find((t) => t.id === selectedPatientData?.title_id)?.name ?? ''
 
   // Find gender name
   const gender =
@@ -78,7 +78,6 @@ const ScheduleModal = ({
           setDoctorId(null)
           setScheduledDate(null)
           setReceptionistComment('')
-          toast.success('Appointment booked successfully!')
           onClose(false)
         },
       }

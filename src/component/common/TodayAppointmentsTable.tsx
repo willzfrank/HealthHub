@@ -64,14 +64,6 @@ const TodayAppointmentsTable = ({
             <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
               Doctor
             </th>
-            {isDoctor && (
-              <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
-                Consultation Status
-              </th>
-            )}
-            {/* <th className="px-4 pt-2 text-left text-[#69686A] text-[15px]">
-              Action
-            </th> */}
           </tr>
         </thead>
         <tbody>
@@ -93,38 +85,6 @@ const TodayAppointmentsTable = ({
                 <td className="px-4 py-2 text-[#030229] text-[15px]">
                   {item.doctor}
                 </td>
-                {isDoctor && (
-                  <td className="px-4 text-center py-2 text-[#030229] text-[15px]">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        item.status === 'Active'
-                          ? 'bg-[#ccf0eb] text-[#70d5c7]'
-                          : item.status === 'Closed'
-                          ? 'bg-[#f0edcc] text-[#bbae15]'
-                          : item.status === 'Done'
-                          ? 'bg-[#ccf0eb] text-[#70d5c7]'
-                          : 'bg-[#f0edcc] text-[#bbae15]'
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-                )}
-
-                {isDoctor && (
-                  <td className="text-center px-4 py-2">
-                    <Icon
-                      icon="bitcoin-icons:exit-outline"
-                      width="20"
-                      height="20"
-                      onClick={() => {
-                        showModal(item.record)
-                        console.log('clicked', item.record)
-                      }}
-                      className="cursor-pointer"
-                    />
-                  </td>
-                )}
               </tr>
             ))
           ) : (
