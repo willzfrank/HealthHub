@@ -14,13 +14,17 @@ const AccountantProcedures = () => {
   const [filter, setFilter] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [isAddProcedureModalOpen, setIsAddProcedureModalOpen] = useState(false)
-  const [perPage, setPerPage] = useState(10)
-  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(10) // Default items per page
+  const [page, setPage] = useState(1) // Default page
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedBill, setSelectedBill] = useState(null)
 
   const { data, isLoading, error } = useAppointments('2', perPage, page)
-  const { data: bills, isLoading: isBillsLoading, isError } = useGetBills()
+  const {
+    data: bills,
+    isLoading: isBillsLoading,
+    isError,
+  } = useGetBills(page, perPage)
 
   const onSelectChange = (selectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(selectedRowKeys)
@@ -77,29 +81,6 @@ const AccountantProcedures = () => {
       key: 'last_edit',
       render: (date: string) => formatDate(date),
     },
-    // {
-    //   title: 'Actions',
-    //   key: 'actions',
-    //   render: (_: any, record: any) => (
-    //     <Dropdown
-    //       overlay={
-    //         <Menu>
-    //           <Menu.Item key="edit" onClick={() => handleEdit(record)}>
-    //             Edit
-    //           </Menu.Item>
-    //         </Menu>
-    //       }
-    //       trigger={['click']}
-    //     >
-    //       <Icon
-    //         icon="bi:three-dots-vertical"
-    //         width="20"
-    //         height="20"
-    //         className="cursor-pointer"
-    //       />
-    //     </Dropdown>
-    //   ),
-    // },
   ]
 
   return (
@@ -156,7 +137,7 @@ const AccountantProcedures = () => {
         columns={columns}
         dataSource={bills?.response?.data || []}
         pagination={{
-          current: bills?.response?.current_page || 1,
+          current: page,
           total: bills?.response?.total || 0,
           pageSize: perPage,
           onChange: (newPage, newPageSize) => {
@@ -175,7 +156,9 @@ const AccountantProcedures = () => {
         onCancel={() => setIsAddProcedureModalOpen(false)}
         footer={null}
       >
-        <AccountantProceduresModal />
+        <AccountantProceduresModal
+          onClose={() => setIsAddProcedureModalOpen(false)}
+        />
       </AntdModal>
 
       <EditBillModal

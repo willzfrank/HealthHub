@@ -5,7 +5,7 @@ import axiosInstance from '../../api/axiosInstance'
 const fetchInvoices = async (page: any) => {
   try {
     const { data } = await axiosInstance.get('/admin/invoices', {
-      params: { page, per_page: 10 },
+      params: { page, per_page: 20 },
     })
 
     if (data?.status) {
