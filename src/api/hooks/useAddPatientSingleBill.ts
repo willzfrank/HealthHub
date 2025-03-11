@@ -3,18 +3,8 @@ import axiosInstance from '../axiosInstance'
 import toast from 'react-hot-toast'
 import { IAddPatientBillItemRequest } from '../../types/types'
 
-interface AddPatientBillItemResponse {
-  status: boolean
-  response: null
-  message: string
-}
-
 export const useAddPatientSingleBillItem = () => {
-  return useMutation<
-    AddPatientBillItemResponse,
-    Error,
-    IAddPatientBillItemRequest
-  >({
+  return useMutation<any, Error, an>({
     mutationFn: async (data) => {
       const response = await axiosInstance.post(
         '/admin/patient-bills/item/add',
