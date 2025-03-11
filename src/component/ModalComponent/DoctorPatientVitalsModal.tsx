@@ -10,10 +10,13 @@ import useFetchTitles from '../../api/hooks/useFetchTitles'
 import useFetchGender from '../../api/hooks/useFetchGender'
 import { useUpdateAppointment } from '../../api/hooks/useUpdateAppointmentDoctor'
 import toast from 'react-hot-toast'
+import { useAddPatientMultipleBillItems } from '../../api/hooks/useAddPatientMultipleBillItems'
+import { useAddPatientSingleBillItem } from '../../api/hooks/useAddPatientSingleBill'
+import { useDeletePatientBillItem } from '../../api/hooks/useDeletePatientBillItem'
 
 type Props = {
   appointmentData: IAppointmentItem | null
-  onClose: () => void 
+  onClose: () => void
 }
 
 const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
@@ -23,7 +26,11 @@ const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
   const [selectedProcedure, setSelectedProcedure] = useState<string>('')
   const [quantity, setQuantity] = useState<string>('1')
   const [selectedProcedures, setSelectedProcedures] = useState<
-    Array<{ name: string; quantity: string }>
+    Array<{
+      billItemId: any
+      name: string
+      quantity: string
+    }>
   >([])
   const [doctorComment, setDoctorComment] = useState<string>(
     appointmentData?.doctor_comment ?? ''
@@ -53,6 +60,10 @@ const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
   const lastName = patient?.last_name ?? ''
   const { data: doctors, isLoading: isDoctorsLoading } = useDoctors(1)
   const { data: billsData, isLoading: isBillsLoading } = useFetchBills(1, 10)
+  const { mutateAsync: addSingleBillItem } = useAddPatientSingleBillItem()
+  const { mutateAsync: addMultipleBillItems } = useAddPatientMultipleBillItems()
+  const { mutateAsync: deleteBillItem, isLoading: isDeletingBillItem } =
+    useDeletePatientBillItem()
 
   const {
     mutateAsync: updateAppointmentMutation,
@@ -64,12 +75,36 @@ const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
       setSelectedProcedures([
         ...selectedProcedures,
         {
+          billItemId: billsData?.response.data.find(
+            (b) => b.name === selectedProcedure
+          )?.id,
           name: selectedProcedure,
           quantity: quantity,
         },
       ])
       setSelectedProcedure('')
       setQuantity('1')
+    }
+  }
+
+  const handleDeleteProcedure = async (billItemId: string) => {
+    try {
+      const payload = {
+        patient_id: patient.id.toString(),
+        bill_id: billItemId,
+      }
+
+      const response = await deleteBillItem(payload)
+
+      if (response.status) {
+        toast.success('Bill item deleted successfully!')
+        // Optionally, refetch the appointment details to update the UI
+        // refetchAppointmentDetails();
+      } else {
+        toast.error('Failed to delete bill item.')
+      }
+    } catch (error: any) {
+      toast.error('An error occurred while deleting the bill item.')
     }
   }
 
@@ -89,28 +124,64 @@ const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
       return
     }
 
+    // Prepare the payload for updating the appointment
+    const proceduresPayload = selectedProcedures.map((proc) => ({
+      billItemId: billsData?.response.data.find((b) => b.name === proc.name)
+        ?.id,
+      quantity: parseInt(proc.quantity, 10),
+    }))
+
     const payload = {
       id: appointmentData?.id,
       doctor_id: selectedDoctorId,
       doctor_comment: doctorComment,
       patient_complaint: consultation.receptionist_comment,
-      procedures: selectedProcedures.map((proc) => ({
-        billItemId: billsData?.response.data.find((b) => b.name === proc.name)
-          ?.id,
-        quantity: parseInt(proc.quantity, 10),
-      })),
+      procedures: proceduresPayload,
       is_nurse: false,
     }
 
     try {
+      // Update the appointment first
       const response = await updateAppointmentMutation(payload)
+
       if (response.status) {
         toast.success('Appointment updated successfully!')
-        onClose()
-      } else if (response.response && Array.isArray(response.response)) {
-        response.response.forEach((error: any) => {
-          toast.error(`${error.field}: ${error.message}`)
-        })
+
+        // Add bill items based on the number of procedures
+        if (selectedProcedures.length === 1) {
+          // Single procedure
+          const singleBillPayload = {
+            patient_id: patient?.id.toString(),
+            bill_item_id: proceduresPayload[0]?.billItemId?.toString(),
+            quantity: proceduresPayload[0].quantity,
+          }
+
+          try {
+            await addSingleBillItem(singleBillPayload)
+            toast.success('Single bill item added successfully!')
+          } catch (error) {
+            toast.error('Failed to add single bill item.')
+          }
+        } else if (selectedProcedures.length > 1) {
+          // Multiple procedures
+          const multipleBillsPayload = {
+            patient_id: patient.id.toString(),
+            bills: proceduresPayload.map((proc: any) => ({
+              bill_item_id: proc?.billItemId.toString(),
+              quantity: proc.quantity,
+            })),
+          }
+
+          try {
+            await addMultipleBillItems(multipleBillsPayload)
+            toast.success('Multiple bill items added successfully!')
+          } catch (error) {
+            console.error('Error adding multiple bill items:', error)
+            toast.error('Failed to add multiple bill items.')
+          }
+        }
+
+        onClose() // Close the modal after successful submission
       } else {
         toast.error('Failed to update appointment.')
       }
@@ -127,7 +198,6 @@ const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
       }
     }
   }
-
   return (
     <div>
       <h3 className="text-[#030229] text-2xl font-semibold text-center mb-8">
@@ -405,6 +475,50 @@ const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
                     </Button>
                   </div>
                 </div>
+
+                {/* Existing Procedures List */}
+                {consultation?.procedures?.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-[#0061FF] font-medium mb-2">
+                      Existing Procedures
+                    </h4>
+                    <div className="bg-[#F5F6FA] p-3 rounded-md">
+                      {consultation.procedures.map((proc: any, index: any) => {
+                        const procedureName =
+                          billsData?.response.data.find(
+                            (bill) => bill.id === proc.billItemId
+                          )?.name || 'Unknown Procedure'
+
+                        return (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center mb-2 pb-2 border-b border-[#CCCCCC] last:border-b-0 last:mb-0 last:pb-0"
+                          >
+                            <div className="flex-1">
+                              <span className="font-medium">
+                                {procedureName}
+                              </span>
+                              <span className="ml-2 text-gray-500">
+                                x{proc.quantity}
+                              </span>
+                            </div>
+                            <Button
+                              danger
+                              type="text"
+                              size="small"
+                              onClick={() =>
+                                handleDeleteProcedure(proc.billItemId)
+                              }
+                              loading={isDeletingBillItem}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Selected Procedures List */}
                 {selectedProcedures.length > 0 && (
