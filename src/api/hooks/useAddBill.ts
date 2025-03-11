@@ -3,11 +3,11 @@ import axiosInstance from '../axiosInstance'
 import { IBillData } from '../../types/types'
 import { toast } from 'react-hot-toast'
 
-// Fetch all bills
-const getBills = async () => {
+// Fetch all bills with pagination
+const getBills = async (page: number, perPage: number) => {
   try {
     const response = await axiosInstance.get(
-      'admin/bills/list?per_page=10&page=1'
+      `admin/bills/list?per_page=${perPage}&page=${page}`
     )
     return response.data
   } catch (error: any) {
@@ -19,11 +19,13 @@ const getBills = async () => {
 }
 
 // fetch bills hook
-export const useGetBills = () => {
-  return useQuery('bills', getBills, {
+// Fetch bills hook with pagination
+export const useGetBills = (page: number, perPage: number) => {
+  return useQuery(['bills', page, perPage], () => getBills(page, perPage), {
     onError: (error: any) => {
       toast.error(error.message)
     },
+    keepPreviousData: true, // Optional: Keep previous data while fetching new data
   })
 }
 

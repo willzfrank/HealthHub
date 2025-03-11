@@ -17,8 +17,8 @@ type Props = {
 const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
   const { data: appointmentDetails, isLoading: isAppointmentDetailsLoading } =
     useFetchAppointment(appointment.key || appointment.id)
-  const { titleData, loading: isTitlesLoading } = useFetchTitles()
-  const { data: genderData, isLoading: isGenderLoading } = useFetchGender()
+  const { titleData } = useFetchTitles()
+  const { data: genderData } = useFetchGender()
 
   // Ensure we use appointmentDetails if available
   const details = appointmentDetails?.response ?? {}
@@ -40,8 +40,8 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
 
   // Extract necessary vitals with fallbacks
   const [vitalsData, setVitalsData] = useState({
-    vitals_blood_pressure: vitals?.blood_pressure ?? '',
-    vitals_pulse_rate: vitals?.pulse_rate ?? '',
+    vitals_blood_pressure: vitals?.blood_pressure,
+    vitals_pulse_rate: vitals?.pulse_rate,
   })
 
   // Handle doctor selection
@@ -78,6 +78,8 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
     }
     updateAppointment(data)
   }
+
+  console.log('vitals', vitals)
 
   return (
     <div>
@@ -177,10 +179,17 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                     <Select
                       className="w-full"
                       placeholder="Select a doctor"
+                      defaultValue={
+                        consultation?.doctor_id
+                          ? consultation.doctor_id.toString() // Set default value to the doctor_id from consultation
+                          : undefined
+                      }
                       loading={isDoctorsLoading}
                       value={
                         selectedDoctorId
                           ? selectedDoctorId.toString()
+                          : consultation?.doctor_id
+                          ? consultation.doctor_id.toString()
                           : undefined
                       }
                       onChange={(value) => setSelectedDoctorId(Number(value))}
@@ -238,7 +247,7 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                       id="vitals_blood_pressure"
                       type="text"
                       value={vitalsData.vitals_blood_pressure}
-                      // defaultValue={}
+                      defaultValue={vitals?.blood_pressure}
                       onChange={handleChange}
                       className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full"
                     />
@@ -251,6 +260,7 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                       id="vitals_pulse_rate"
                       type="text"
                       value={vitalsData.vitals_pulse_rate}
+                      defaultValue={vitals?.pulse_rate}
                       onChange={handleChange}
                       className="p-1.5 border border-[#CCCCCC] rounded-[8px] bg-[#F5F6FA] w-full"
                     />
@@ -263,6 +273,7 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
           <div className="flex items-center justify-between my-5">
             <button
               className="border text-[#0061FF] border-[#0061FF] rounded px-20 py-2.5"
+              type="button"
               onClick={closeModal}
             >
               CANCEL

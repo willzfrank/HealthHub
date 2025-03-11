@@ -18,7 +18,7 @@ const Invoice = () => {
   const { data: paymentStatuses, isLoading: isPaymentStatusesLoading } =
     useFetchPaymentStatuses()
 
-    console.log('invoiceData', invoiceData?.data)
+  console.log('invoiceData', invoiceData?.data)
 
   // Transform API response to match table data structure
   const transformedData: IInvoice[] =
@@ -168,10 +168,10 @@ const Invoice = () => {
           <span className="text-[#69686A]"> Shown on page</span>
         </div>
         <Pagination
-          current={currentPage} // Use currentPage state
+          current={currentPage}
           defaultCurrent={1}
           total={invoiceData?.data?.response?.total || 1}
-          onChange={handlePaginationChange} // Handle page change
+          onChange={handlePaginationChange}
         />
       </div>
 

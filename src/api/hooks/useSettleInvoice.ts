@@ -26,22 +26,20 @@ const useSettleInvoice = () => {
       return response.data
     },
     onSuccess: (data) => {
-      setIsSuccess(data.status)
-      toast.success(data.message || 'Invoice settled successfully!')
-    },
-    onError: (error: any) => {
-      setIsSuccess(false)
-      toast.error(
-        error.response?.data?.message ||
-          'An error occurred while settling the invoice.'
-      )
+      if (data.status) {
+        const successMessage = data.message || 'Invoice settled successfully!'
+        toast.success(successMessage)
+      } else {
+        toast.error(
+          data.message || 'An error occurred while settling the invoice.'
+        )
+      }
     },
   })
 
   return {
     settleInvoice: mutation.mutate,
     isLoading: mutation.isLoading,
-    isSuccess,
   }
 }
 

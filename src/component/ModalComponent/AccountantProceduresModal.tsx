@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { useAddBill } from '../../api/hooks/useAddBill'
 
-type Props = {}
+type Props = {
+  onClose: () => void
+}
 
-const AccountantProceduresModal = (props: Props) => {
+const AccountantProceduresModal = ({ onClose }: Props) => {
   const [formData, setFormData] = useState({
     procedureName: '',
     price: '',
@@ -108,6 +110,7 @@ const AccountantProceduresModal = (props: Props) => {
           <button
             type="button"
             className="w-1/2 py-2.5 px-6 rounded-lg border-2 border-[#0061FF] text-[#0061FF] font-semibold hover:bg-[#0061FF]/5 transition duration-200"
+            onClick={onClose}
           >
             CANCEL
           </button>

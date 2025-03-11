@@ -80,7 +80,11 @@ const InvoiceDetailsModal = ({
     setPaymentMethodModalVisible(true)
   }
 
-  const handleSelectPaymentMethod = async (method: 'POS' | 'Monify') => {
+  const handleSelectPaymentMethod = async (
+    method: 'POS' | 'CASH' | 'Online Payment',
+    posReceiptNo?: string,
+    posType?: 'internal' | 'external' // New posType parameter
+  ) => {
     setPaymentMethodModalVisible(false)
 
     if (!selectedInvoiceID || !currentInvoice || !currentInvoice.items) return
@@ -98,16 +102,18 @@ const InvoiceDetailsModal = ({
 
     const settleInvoicePayload = {
       invoice_number: currentInvoice.invoice_number || '',
-      amount_paid: currentInvoice.amount_paid || '0',
-      payment_method: method,
-      transaction_id: posReceiptNo,
+      amount_paid: currentInvoice.total || '0',
+      payment_method: method, // 'POS', 'Cash', or 'Online Payment'
+      transaction_id: posReceiptNo || `CASH-${Date.now()}`, // Auto-generated for Cash
       channel: 'monnify',
+      pos_type:
+        method === 'POS' ? posType : method === 'CASH' ? 'internal' : undefined,
     }
 
     try {
-      if (method === 'Monify') {
+      if (method === 'Online Payment') {
         await payInvoice.mutateAsync(paymentData)
-      } else if (method === 'POS') {
+      } else {
         await settleInvoice(settleInvoicePayload)
       }
       await refetchInvoices()
@@ -124,7 +130,7 @@ const InvoiceDetailsModal = ({
         bill_item: item.bill_item,
         quantity: item.quantity,
         amount: item.amount,
-        amount_paid: item.amount_paid,
+        amount_paid: item.total,
         payment_status: item.payment_status,
       }))
     : []
@@ -153,12 +159,12 @@ const InvoiceDetailsModal = ({
                 ? formatDate(currentInvoice.created_at)
                 : 'N/A'}
             </span>
-            <span className="text-[#404040] text-[14px]">
+            {/* <span className="text-[#404040] text-[14px]">
               Invoice Number: {currentInvoice.invoice_number || 'N/A'}
-            </span>
-            <span className="text-[#404040] text-[14px]">
+            </span> */}
+            {/* <span className="text-[#404040] text-[14px]">
               Year: {currentInvoice.year || 'N/A'}
-            </span>
+            </span> */}
           </div>
 
           {/* Invoice To - Dynamically Rendered */}
@@ -174,9 +180,9 @@ const InvoiceDetailsModal = ({
               <span className="text-[#404040] text-[14px]">
                 Phone: {currentInvoice.phone || 'N/A'}
               </span>
-              <span className="text-[#404040] text-[14px]">
+              {/* <span className="text-[#404040] text-[14px]">
                 Email: {currentInvoice.email || 'N/A'}
-              </span>
+              </span> */}
             </div>
           ) : (
             <p className="text-gray-500">Loading patient details...</p>
