@@ -1,7 +1,6 @@
 import { useMutation } from 'react-query'
 import axiosInstance from '../axiosInstance'
 import toast from 'react-hot-toast'
-import { IAddPatientBillItemRequest } from '../../types/types'
 
 export const useAddPatientSingleBillItem = () => {
   return useMutation<any, Error, any>({
