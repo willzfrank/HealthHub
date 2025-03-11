@@ -90,13 +90,13 @@ const Invoice = () => {
     <Layout>
       <HeaderSection title="Invoice" />
       <Table
-        rowSelection={{
-          type: 'checkbox',
-          selectedRowKeys,
-          onChange: onSelectChange,
-        }}
         columns={[
-          { title: 'Bill', dataIndex: 'invoiceID', key: 'invoiceID' },
+          { title: 'InvoiceID', dataIndex: 'invoiceID', key: 'invoiceID' },
+          {
+            title: 'InvoiceDate',
+            dataIndex: 'invoiceDate',
+            key: 'invoiceDate',
+          },
           {
             title: 'Patient Name',
             dataIndex: 'patientName',

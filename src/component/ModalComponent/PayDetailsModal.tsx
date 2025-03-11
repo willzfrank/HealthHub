@@ -46,7 +46,9 @@ const PayDetailsModal = ({
           <p className="text-gray-600">Invoice From:</p>
           <p className="font-bold">Shalom Dental Clinic</p>
           <p className="text-gray-500">Salem House, State House</p>
-          <p className="text-gray-600 mt-1.5">Invoice Date:  {formatDate(invoiceDate)}</p>
+          <p className="text-gray-600 mt-1.5">
+            Invoice Date: {formatDate(invoiceDate)}
+          </p>
         </div>
 
         {/* Invoice To */}
@@ -86,13 +88,13 @@ const PayDetailsModal = ({
           Close
         </button>
         {/* Uncomment to enable payment button */}
-        <button
+        {/* <button
           className="bg-blue-500 text-white px-5 py-2 rounded flex items-center gap-2"
           onClick={() => handleViewDetails(invoiceNumber, invoice?.id)}
         >
           Pay
           <Icon icon="mingcute:send-fill" width="16" height="16" />
-        </button>
+        </button> */}
       </div>
 
       <AntdModal

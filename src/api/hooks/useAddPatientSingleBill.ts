@@ -1,10 +1,9 @@
 import { useMutation } from 'react-query'
 import axiosInstance from '../axiosInstance'
 import toast from 'react-hot-toast'
-import { IAddPatientBillItemRequest } from '../../types/types'
 
 export const useAddPatientSingleBillItem = () => {
-  return useMutation<any, Error, an>({
+  return useMutation<any, Error, any>({
     mutationFn: async (data) => {
       const response = await axiosInstance.post(
         '/admin/patient-bills/item/add',
