@@ -19,13 +19,12 @@ const getBills = async (page: number, perPage: number) => {
 }
 
 // fetch bills hook
-// Fetch bills hook with pagination
 export const useGetBills = (page: number, perPage: number) => {
   return useQuery(['bills', page, perPage], () => getBills(page, perPage), {
     onError: (error: any) => {
       toast.error(error.message)
     },
-    keepPreviousData: true, // Optional: Keep previous data while fetching new data
+    keepPreviousData: true,
   })
 }
 

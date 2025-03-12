@@ -178,7 +178,6 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                     </label>
                     <Select
                       className="w-full"
-                      placeholder="Select a doctor"
                       defaultValue={
                         consultation?.doctor_id
                           ? consultation.doctor_id.toString() // Set default value to the doctor_id from consultation
