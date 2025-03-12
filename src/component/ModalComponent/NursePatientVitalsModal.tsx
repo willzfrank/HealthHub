@@ -2,7 +2,7 @@ import { Select, DatePicker } from 'antd'
 import dayjs from 'dayjs'
 import useDoctors from '../../api/hooks/useDoctors'
 import { useUpdateAppointmentNurse } from '../../api/hooks/updateAppointmentNurse'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import useFetchAppointment from '../../api/hooks/useFetchAppointment'
 import useFetchTitles from '../../api/hooks/useFetchTitles'
@@ -79,7 +79,11 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
     updateAppointment(data)
   }
 
-  console.log('vitals', vitals)
+  useEffect(() => {
+    if (consultation?.doctor_id && !selectedDoctorId) {
+      setSelectedDoctorId(consultation.doctor_id)
+    }
+  }, [consultation, selectedDoctorId])
 
   return (
     <div>
@@ -180,7 +184,7 @@ const NursePatientVitalsModal = ({ appointment, closeModal }: Props) => {
                       className="w-full"
                       defaultValue={
                         consultation?.doctor_id
-                          ? consultation.doctor_id.toString() // Set default value to the doctor_id from consultation
+                          ? consultation.doctor_id.toString()
                           : undefined
                       }
                       loading={isDoctorsLoading}
