@@ -104,7 +104,7 @@ const InvoiceDetailsModal = ({
       invoice_number: currentInvoice.invoice_number || '',
       amount_paid: currentInvoice.total || '0',
       payment_method: method, // 'POS', 'Cash', or 'Online Payment'
-      transaction_id: posReceiptNo || `CASH-${Date.now()}`, // Auto-generated for Cash
+      transaction_id: posReceiptNo ?? `CASH-${Date.now()}`, // Auto-generated for Cash
       channel: 'monnify',
       pos_type:
         method === 'POS' ? posType : method === 'CASH' ? 'internal' : undefined,
@@ -130,7 +130,7 @@ const InvoiceDetailsModal = ({
         bill_item: item.bill_item,
         quantity: item.quantity,
         amount: item.amount,
-        amount_paid: item.total,
+        amount_paid: item.amount_paid,
         payment_status: item.payment_status,
       }))
     : []
