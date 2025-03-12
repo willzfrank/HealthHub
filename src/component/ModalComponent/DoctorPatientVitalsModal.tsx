@@ -13,6 +13,7 @@ import toast from 'react-hot-toast'
 import { useAddPatientMultipleBillItems } from '../../api/hooks/useAddPatientMultipleBillItems'
 import { useAddPatientSingleBillItem } from '../../api/hooks/useAddPatientSingleBill'
 import { useDeletePatientBillItem } from '../../api/hooks/useDeletePatientBillItem'
+import { useCloseConsultation } from '../../api/hooks/useCloseConsultation'
 
 type Props = {
   appointmentData: IAppointmentItem | null
@@ -69,6 +70,23 @@ const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
     mutateAsync: updateAppointmentMutation,
     isLoading: isUpdatingAppointment,
   } = useUpdateAppointment()
+
+    const {
+      mutateAsync: closeConsultationMutation,
+      isLoading: isClosingConsultation,
+    } = useCloseConsultation()
+
+    const handleCloseConsultation = async () => {
+      if (appointmentData?.id) {
+        try {
+          await closeConsultationMutation(appointmentData.id)
+          onClose() 
+        } catch (error) {
+          console.error('Error closing consultation:', error)
+        }
+      }
+    }
+
 
   const handleAddProcedure = () => {
     if (selectedProcedure) {
@@ -573,18 +591,27 @@ const DoctorPatientVitalsModal = ({ appointmentData, onClose }: Props) => {
 
           <div className="flex items-center justify-between my-5">
             <button
-              className="border text-[#0061FF] border-[#0061FF] rounded px-20 py-2.5"
+              className="border text-[#0061FF] border-[#0061FF] rounded px-10 py-2.5"
               onClick={onClose}
             >
               CANCEL
             </button>
-            <button
-              className="text-white bg-[#0061FF] rounded px-20 py-2.5"
-              onClick={handleSubmit}
-              disabled={isUpdatingAppointment}
-            >
-              {isUpdatingAppointment ? 'SUBMITTING...' : 'SUBMIT'}
-            </button>
+            <div className="flex gap-4">
+              <button
+                className="text-white bg-[#FF0000] rounded px-10 py-2.5"
+                onClick={handleCloseConsultation}
+                disabled={isClosingConsultation}
+              >
+                {isClosingConsultation ? 'CLOSING...' : 'CLOSE CASE'}
+              </button>
+              <button
+                className="text-white bg-[#0061FF] rounded px-10 py-2.5"
+                onClick={handleSubmit}
+                disabled={isUpdatingAppointment}
+              >
+                {isUpdatingAppointment ? 'SUBMITTING...' : 'SUBMIT'}
+              </button>
+            </div>
           </div>
         </form>
       )}
